@@ -26,6 +26,15 @@ export default class Rectangle {
     }
 
     splitY() {
+        const intersectionX = Math.ceil((this.p0.x + this.p2.x) / 2);
+        const intersectionY = Math.ceil((this.p0.y + this.p2.y) / 2);
+        const intersection2X = Math.ceil((this.p1.x + this.p3.x) / 2);
+        const intersection2Y = Math.ceil((this.p1.y + this.p3.y) / 2);
 
+
+        return [
+            new Rectangle(this.p0, this.p1, p(intersectionX, intersectionY - 1), p(intersection2X, intersection2Y -1 )),
+            new Rectangle(p(intersectionX, intersectionY), p(intersection2X, intersection2Y), this.p2 , this.p3)
+        ];
     }
 }

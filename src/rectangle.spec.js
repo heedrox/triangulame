@@ -64,31 +64,31 @@ describe('Rectangle', () => {
             expect(rectangles.length).toBe(2);
         });
 
-        xit('returns a first rectangle', () => {
+        it('returns a first rectangle', () => {
             const rectangle = new Rectangle(p(0,50), p(100, 50), p(0, 500), p(100, 500) );
 
-            const rectangles = rectangle.splitX();
+            const rectangles = rectangle.splitY();
 
             expect(rectangles[0].p0.x).toBe(0);
             expect(rectangles[0].p0.y).toBe(50);
-            expect(rectangles[0].p1.x).toBe(49);
+            expect(rectangles[0].p1.x).toBe(100);
             expect(rectangles[0].p1.y).toBe(50);
             expect(rectangles[0].p2.x).toBe(0);
-            expect(rectangles[0].p2.y).toBe(500);
-            expect(rectangles[0].p3.x).toBe(49);
-            expect(rectangles[0].p3.y).toBe(500);
+            expect(rectangles[0].p2.y).toBe(274);
+            expect(rectangles[0].p3.x).toBe(100);
+            expect(rectangles[0].p3.y).toBe(274);
         });
 
-        xit('returns a seconds rectangle', () => {
+        it('returns a seconds rectangle', () => {
             const rectangle = new Rectangle(p(0,50), p(100, 50), p(0, 500), p(100, 500) );
 
-            const rectangles = rectangle.splitX();
+            const rectangles = rectangle.splitY();
 
-            expect(rectangles[1].p0.x).toBe(50);
-            expect(rectangles[1].p0.y).toBe(50);
+            expect(rectangles[1].p0.x).toBe(0);
+            expect(rectangles[1].p0.y).toBe(275);
             expect(rectangles[1].p1.x).toBe(100);
-            expect(rectangles[1].p1.y).toBe(50);
-            expect(rectangles[1].p2.x).toBe(50);
+            expect(rectangles[1].p1.y).toBe(275);
+            expect(rectangles[1].p2.x).toBe(0);
             expect(rectangles[1].p2.y).toBe(500);
             expect(rectangles[1].p3.x).toBe(100);
             expect(rectangles[1].p3.y).toBe(500);
