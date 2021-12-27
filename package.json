@@ -7,7 +7,7 @@
     "build": "webpack --config webpack/prod.js ",
     "start": "webpack-dev-server --config webpack/base.js",
     "test": "jest",
-    "tdd": "jest --watchAll",
+    "tdd": "jest --watchAll --coverage=false",
     "lint": "eslint src/"
   },
   "author": "Jordi <heedrox@gmail.com>",
