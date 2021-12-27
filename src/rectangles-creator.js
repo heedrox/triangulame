@@ -3,10 +3,11 @@ import Rectangle from "./rectangle";
 const p = (x,y) => ({x,y});
 
 export default class RectanglesCreator {
-    constructor(width, height, randomProvider = Math.random) {
+    constructor(width, height, randomIndexProvider = Math.random, randomOperationProvider = Math.random) {
         this.width = width;
         this.height = height;
-        this.randomProvider = randomProvider;
+        this.randomIndexProvider = randomIndexProvider;
+        this.randomOperationProvider = randomOperationProvider;
     }
 
     build(numberElements) {
@@ -17,11 +18,20 @@ export default class RectanglesCreator {
         const rectangle = new Rectangle(p0, p1, p2, p3);
         let rectangles = [ rectangle ];
         for (let i = 1; i < numberElements; i++) {
-            const randomIndex = Math.floor(this.randomProvider() * rectangles.length);
+            const randomIndex = Math.floor(this.randomIndexProvider() * rectangles.length);
             const rectangle = rectangles[randomIndex];
-            const newTwoRectangles = rectangle.splitX();
+            const newTwoRectangles = this.randomSplit(rectangle);
             rectangles.splice(randomIndex, 1, newTwoRectangles[0], newTwoRectangles[1]);
         }
         return rectangles;
+    }
+
+    randomSplit(rectangle) {
+        const operation =Math.floor(this.randomOperationProvider() * 2);
+        if (operation === 0) {
+            return rectangle.splitX();
+        } else {
+            return rectangle.splitY();
+        }
     }
 };
