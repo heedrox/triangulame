@@ -4,13 +4,11 @@ const p = (x, y) => ({ x, y });
 
 export default class RectanglesCreator {
   constructor(
-    width,
-    height,
     randomIndexProvider = Math.random,
     randomOperationProvider = Math.random,
   ) {
-    this.width = width;
-    this.height = height;
+    this.width = 100;
+    this.height = 100;
     this.randomIndexProvider = randomIndexProvider;
     this.randomOperationProvider = randomOperationProvider;
   }
