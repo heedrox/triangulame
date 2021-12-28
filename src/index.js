@@ -8,7 +8,7 @@ class MyGame extends Phaser.Scene {
 
   create() {
     const graphics = this.add.graphics({ x: 0, y: 0 });
-    graphics.lineStyle(2, 0x00aa00);
+    graphics.lineStyle(10, 0x000000, 1);
     const X_FACTOR = this.game.canvas.width / 100;
     const Y_FACTOR = this.game.canvas.height / 100;
 
@@ -29,6 +29,7 @@ const config = {
   scale: {
     mode: Phaser.Scale.RESIZE,
   },
+  backgroundColor: '#cccc00',
   autoCenter: 1,
   parent: 'phaser-triangles',
   width: document.documentElement.clientWidth,

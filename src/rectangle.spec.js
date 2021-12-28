@@ -19,7 +19,7 @@ describe('Rectangle', () => {
     it('returns 2 rectangles', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitX();
+      const rectangles = rectangle.splitX(0.5, 0.5);
 
       expect(rectangles.length).toBe(2);
     });
@@ -27,7 +27,7 @@ describe('Rectangle', () => {
     it('returns a first rectangle', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitX();
+      const rectangles = rectangle.splitX(0.5, 0.5);
 
       expect(rectangles[0].p0.x).toBe(0);
       expect(rectangles[0].p0.y).toBe(50);
@@ -42,7 +42,7 @@ describe('Rectangle', () => {
     it('returns a seconds rectangle', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitX();
+      const rectangles = rectangle.splitX(0.5, 0.5);
 
       expect(rectangles[1].p0.x).toBe(50);
       expect(rectangles[1].p0.y).toBe(50);
@@ -59,7 +59,7 @@ describe('Rectangle', () => {
     it('returns 2 rectangles', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitY();
+      const rectangles = rectangle.splitY(0.5, 0.5);
 
       expect(rectangles.length).toBe(2);
     });
@@ -67,7 +67,7 @@ describe('Rectangle', () => {
     it('returns a first rectangle', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitY();
+      const rectangles = rectangle.splitY(0.5, 0.5);
 
       expect(rectangles[0].p0.x).toBe(0);
       expect(rectangles[0].p0.y).toBe(50);
@@ -79,10 +79,10 @@ describe('Rectangle', () => {
       expect(rectangles[0].p3.y).toBe(274);
     });
 
-    it('returns a seconds rectangle', () => {
+    it('returns a second rectangle', () => {
       const rectangle = new Rectangle(p(0, 50), p(100, 50), p(0, 500), p(100, 500));
 
-      const rectangles = rectangle.splitY();
+      const rectangles = rectangle.splitY(0.5, 0.5);
 
       expect(rectangles[1].p0.x).toBe(0);
       expect(rectangles[1].p0.y).toBe(275);
@@ -92,6 +92,22 @@ describe('Rectangle', () => {
       expect(rectangles[1].p2.y).toBe(500);
       expect(rectangles[1].p3.x).toBe(100);
       expect(rectangles[1].p3.y).toBe(500);
+    });
+
+    it('skews rectangles in different sizes', () => {
+      const rectangle = new Rectangle(p(0, 0), p(100, 0), p(0, 100), p(100, 100));
+
+      const rectangles = rectangle.splitX(0.4, 0.6);
+
+      expect(rectangles[0].p0.x).toBe(0);
+      expect(rectangles[0].p1.x).toBe(39);
+      expect(rectangles[1].p0.x).toBe(40);
+      expect(rectangles[1].p1.x).toBe(100);
+
+      expect(rectangles[0].p2.x).toBe(0);
+      expect(rectangles[0].p3.x).toBe(59);
+      expect(rectangles[1].p2.x).toBe(60);
+      expect(rectangles[1].p3.x).toBe(100);
     });
   });
 });

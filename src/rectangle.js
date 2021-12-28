@@ -14,10 +14,10 @@ export default class Rectangle {
     this.p3 = p3;
   }
 
-  splitX() {
-    const intersectionX = Math.ceil((this.p0.x + this.p1.x) / 2);
+  splitX(skewUp, skewDown) {
+    const intersectionX = this.p0.x + Math.ceil((this.p1.x - this.p0.x) * skewUp);
     const intersectionY = Math.ceil((this.p0.y + this.p1.y) / 2);
-    const intersection2X = Math.ceil((this.p2.x + this.p3.x) / 2);
+    const intersection2X = this.p2.x + Math.ceil((this.p3.x - this.p2.x) * skewDown);
     const intersection2Y = Math.ceil((this.p2.y + this.p3.y) / 2);
     return [
       new Rectangle(
@@ -35,11 +35,11 @@ export default class Rectangle {
     ];
   }
 
-  splitY() {
+  splitY(skewLeft, skewRight) {
     const intersectionX = Math.ceil((this.p0.x + this.p2.x) / 2);
-    const intersectionY = Math.ceil((this.p0.y + this.p2.y) / 2);
+    const intersectionY = this.p0.y + Math.ceil((this.p2.y - this.p0.y) * skewLeft);
     const intersection2X = Math.ceil((this.p1.x + this.p3.x) / 2);
-    const intersection2Y = Math.ceil((this.p1.y + this.p3.y) / 2);
+    const intersection2Y = this.p1.y + Math.ceil((this.p3.y - this.p1.y) * skewRight);
 
     return [
       new Rectangle(

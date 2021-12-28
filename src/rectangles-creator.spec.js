@@ -1,5 +1,11 @@
 import RectanglesCreator from './rectangles-creator';
 
+const SPLIT_FIRST_RECTANGLE = jest.fn(() => 0);
+const SPLIT_LAST_RECTANGLE = jest.fn(() => 0.9999);
+const SPLIT_BY_X = jest.fn(() => 0);
+const SPLIT_BY_Y = jest.fn(() => 0.99);
+const SPLIT_EXACTLY_HALF = jest.fn(() => 0.5);
+
 describe('Rectangles Creator', () => {
   it('inits', () => {
     const builder = new RectanglesCreator();
@@ -50,9 +56,7 @@ describe('Rectangles Creator', () => {
   describe('splits randomly', () => {
     describe('horizontally', () => {
       it('case 1 - all first element', () => {
-        const mockIndexRandom = jest.fn(() => 0);
-        const mockOperationRandom = jest.fn(() => 0);
-        const builder = new RectanglesCreator(mockIndexRandom, mockOperationRandom);
+        const builder = new RectanglesCreator(SPLIT_FIRST_RECTANGLE, SPLIT_BY_X, SPLIT_EXACTLY_HALF);
 
         const rectangles = builder.build(4);
 
@@ -64,9 +68,7 @@ describe('Rectangles Creator', () => {
       });
 
       it('case 2 - all last element', () => {
-        const mockIndexRandom = jest.fn(() => 0.999);
-        const mockOperationRandom = jest.fn(() => 0);
-        const builder = new RectanglesCreator(mockIndexRandom, mockOperationRandom);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, SPLIT_EXACTLY_HALF);
 
         const rectangles = builder.build(4);
 
@@ -79,9 +81,7 @@ describe('Rectangles Creator', () => {
     });
     describe('vertically', () => {
       it('case 1 - all first elements', () => {
-        const mockIndexRandom = jest.fn(() => 0);
-        const mockOperationRandom = jest.fn(() => 0.9);
-        const builder = new RectanglesCreator(mockIndexRandom, mockOperationRandom);
+        const builder = new RectanglesCreator(SPLIT_FIRST_RECTANGLE, SPLIT_BY_Y, SPLIT_EXACTLY_HALF);
 
         const rectangles = builder.build(4);
 
@@ -101,9 +101,7 @@ describe('Rectangles Creator', () => {
     });
     describe('limits exist when splitting', () => {
       it('only splits rectangles greater than a 12% size', () => {
-        const mockIndexRandom = jest.fn(() => 0);
-        const mockOperationRandom = jest.fn(() => 0);
-        const builder = new RectanglesCreator(mockIndexRandom, mockOperationRandom);
+        const builder = new RectanglesCreator(SPLIT_FIRST_RECTANGLE, SPLIT_BY_X, SPLIT_EXACTLY_HALF);
 
         const rectangles = builder.build(5);
         //if we dont do  anything, this would be:
@@ -118,5 +116,53 @@ describe('Rectangles Creator', () => {
 
       });
     });
+
+    describe('skews rectangles a bit', () => {
+      it('does not split exactly by half, but with some pixels more or less', () => {
+        const splitBy40 = jest.fn(() => 0.4);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy40);
+
+        const rectangles = builder.build(3);
+
+        expect(rectangles[0].p0.x).toBe(0);
+        expect(rectangles[1].p0.x).toBe(40);
+        expect(rectangles[2].p0.x).toBe(64);
+      });
+
+      it('skews different in up and down', () => {
+        const splitFirst40Then60 = jest.fn().mockReturnValueOnce(0.4).mockReturnValueOnce(0.6);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitFirst40Then60);
+
+        const rectangles = builder.build(2);
+
+        expect(rectangles[0].p0.x).toBe(0);
+        expect(rectangles[1].p0.x).toBe(40);
+        expect(rectangles[0].p3.x).toBe(59);
+        expect(rectangles[1].p2.x).toBe(60);
+      });
+
+      it('does not skew more than 40%', () => {
+        const splitBy30 = jest.fn(() => 0.3);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy30);
+
+        const rectangles = builder.build(2);
+
+        expect(rectangles[0].p0.x).toBe(0);
+        expect(rectangles[1].p0.x).toBe(40);
+      });
+
+      it('does not skew more than 60%', () => {
+        const splitBy70 = jest.fn(() => 0.7);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy70);
+
+        const rectangles = builder.build(2);
+
+        expect(rectangles[0].p0.x).toBe(0);
+        expect(rectangles[1].p0.x).toBe(60);
+      });
+    });
+
+
+
   });
 });
