@@ -1,6 +1,16 @@
 import Rectangle from './rectangle';
 
+const OPERATIONS = [ 'SPLITX', 'SPLITY' ];
+
 const p = (x, y) => ({ x, y });
+const buildRectangle = (x, y, width, height) => {
+  const p0 = p(x, y);
+  const p1 = p(width, y);
+  const p2 = p(x, height);
+  const p3 = p(width, height);
+  return new Rectangle(p0, p1, p2, p3);
+};
+const anAction = (operation, index) => ({ operation, index });
 
 export default class RectanglesCreator {
   constructor(
@@ -14,25 +24,36 @@ export default class RectanglesCreator {
   }
 
   build(numberElements) {
-    const p0 = p(0, 0);
-    const p1 = p(this.width, 0);
-    const p2 = p(0, this.height);
-    const p3 = p(this.width, this.height);
-    const rectangles = [new Rectangle(p0, p1, p2, p3)];
+    const rectangles = [ buildRectangle(0, 0, this.width, this.height) ];
     for (let i = 1; i < numberElements; i += 1) {
-      const randomIndex = Math.floor(this.randomIndexProvider() * rectangles.length);
-      const selectedRectangle = rectangles[randomIndex];
-      const newTwoRectangles = this.randomSplit(selectedRectangle);
-      rectangles.splice(randomIndex, 1, newTwoRectangles[0], newTwoRectangles[1]);
+      const { operation, index } = this.findPossibleOperationAndIndex(rectangles);
+      const newTwoRectangles = operation === 'SPLITX' ? rectangles[index].splitX() : rectangles[index].splitY();
+      rectangles.splice(index, 1, newTwoRectangles[0], newTwoRectangles[1]);
     }
     return rectangles;
   }
 
-  randomSplit(rectangle) {
-    const operation = Math.floor(this.randomOperationProvider() * 2);
-    if (operation === 0) {
-      return rectangle.splitX();
+  findPossibleOperationAndIndex(rectangles) {
+    const operation = OPERATIONS[Math.floor(this.randomOperationProvider() * 2)];
+    try {
+      const randomIndex = this.findIndexToSplit(rectangles, operation);
+      return anAction(operation, randomIndex);
+    } catch (error) {
+      const newOperation = (operation === 'SPLITX') ? 'SPLITY' : 'SPLITX';
+      const newIndex = this.findIndexToSplit(rectangles, newOperation);
+      return anAction(newOperation, newIndex);
     }
-    return rectangle.splitY();
+  }
+
+  findIndexToSplit(rectangles, operation) {
+    let index = Math.floor(this.randomIndexProvider() * rectangles.length);
+    let k = 0;
+    while (rectangles[index].isTooSmall(operation)) {
+      if (k ++ >= 200) {
+        throw new Error('too many times');
+      }
+      index = (index + 1) % rectangles.length;
+    }
+    return index;
   }
 }

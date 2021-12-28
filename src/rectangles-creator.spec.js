@@ -100,7 +100,21 @@ describe('Rectangles Creator', () => {
       });
     });
     describe('limits exist when splitting', () => {
-      it('only splits rectangles greater than a 5% size', () => {
+      it('only splits rectangles greater than a 12% size', () => {
+        const mockIndexRandom = jest.fn(() => 0);
+        const mockOperationRandom = jest.fn(() => 0);
+        const builder = new RectanglesCreator(mockIndexRandom, mockOperationRandom);
+
+        const rectangles = builder.build(5);
+        //if we dont do  anything, this would be:
+        // expect(rectangles[0].p1.x).toBe(5);
+        // expect(rectangles[1].p1.x).toBe(11);
+        // expect(rectangles[2].p1.x).toBe(24);
+
+        //after changing
+        expect(rectangles[0].p1.x).toBe(11);
+        expect(rectangles[1].p1.x).toBe(24);
+        expect(rectangles[2].p1.x).toBe(36);
 
       });
     });

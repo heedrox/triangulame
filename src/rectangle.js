@@ -56,4 +56,16 @@ export default class Rectangle {
       ),
     ];
   }
+
+  isTooSmall(operation) {
+    return operation === 'SPLITX' ? this.isTooSmallX() : this.isTooSmallY();
+  }
+
+  isTooSmallX() {
+    return (this.p1.x - this.p0.x <= 12);
+  }
+
+  isTooSmallY() {
+    return (this.p2.y - this.p0.y <= 12)
+  }
 }
