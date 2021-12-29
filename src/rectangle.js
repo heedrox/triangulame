@@ -62,10 +62,10 @@ export default class Rectangle {
   }
 
   isTooSmallX() {
-    return (this.p1.x - this.p0.x <= 12);
+    return (this.p1.x - this.p0.x <= 12) || (this.p3.x - this.p2.x <= 12);
   }
 
   isTooSmallY() {
-    return (this.p2.y - this.p0.y <= 12)
+    return (this.p2.y - this.p0.y <= 12) || (this.p3.y - this.p1.y <= 12);
   }
 }
