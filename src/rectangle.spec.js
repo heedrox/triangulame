@@ -327,7 +327,7 @@ describe('Rectangle', () => {
   });
 
   describe('getType', () => {
-    it('tells wether is diagonal - Left To Right - Bottom', () => {
+    it('tells wether is triangle - Left To Right - Bottom', () => {
       const rectangle = new Rectangle(
         p(0, 0),
         p(0, 0),
@@ -337,10 +337,10 @@ describe('Rectangle', () => {
 
       const type = rectangle.getType();
 
-      expect(type).toBe('DIAGONAL-LTR-B');
+      expect(type).toBe('TRIANGLE-LTR-B');
     });
 
-    it('tells wether is diagonal - Left To Right - Top', () => {
+    it('tells wether is triangle - Left To Right - Top', () => {
       const rectangle = new Rectangle(
         p(0, 0),
         p(100, 0),
@@ -350,10 +350,10 @@ describe('Rectangle', () => {
 
       const type = rectangle.getType();
 
-      expect(type).toBe('DIAGONAL-LTR-T');
+      expect(type).toBe('TRIANGLE-LTR-T');
     });
 
-    it('tells wether is diagonal - Right to Left - Top', () => {
+    it('tells wether is triangle - Right to Left - Top', () => {
       const rectangle = new Rectangle(
         p(0, 0),
         p(100, 0),
@@ -363,10 +363,10 @@ describe('Rectangle', () => {
 
       const type = rectangle.getType();
 
-      expect(type).toBe('DIAGONAL-RTL-T');
+      expect(type).toBe('TRIANGLE-RTL-T');
     });
 
-    it('tells wether is diagonal - Right to Left - Bottom', () => {
+    it('tells wether is triangle - Right to Left - Bottom', () => {
       const rectangle = new Rectangle(
         p(100, 0),
         p(100, 0),
@@ -376,7 +376,7 @@ describe('Rectangle', () => {
 
       const type = rectangle.getType();
 
-      expect(type).toBe('DIAGONAL-RTL-B');
+      expect(type).toBe('TRIANGLE-RTL-B');
     });
 
     it('tells wether is exactly square', () => {

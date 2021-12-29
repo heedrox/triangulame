@@ -154,22 +154,22 @@ export default class Rectangle {
     if (equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
       && !equalPoints(this.p2, this.p3)
       && (this.p0.x === this.p2.x)) {
-      return 'DIAGONAL-LTR-B';
+      return 'TRIANGLE-LTR-B';
     }
     if (equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
       && !equalPoints(this.p2, this.p3)
       && (this.p1.x === this.p3.x)) {
-      return 'DIAGONAL-RTL-B';
+      return 'TRIANGLE-RTL-B';
     }
     if (!equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
       && !equalPoints(this.p0, this.p2) && equalPoints(this.p2, this.p3)
       && (this.p3.x === this.p1.x)) {
-      return 'DIAGONAL-LTR-T';
+      return 'TRIANGLE-LTR-T';
     }
     if (!equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
       && !equalPoints(this.p0, this.p2) && equalPoints(this.p2, this.p3)
       && (this.p3.x === this.p0.x)) {
-      return 'DIAGONAL-RTL-T';
+      return 'TRIANGLE-RTL-T';
     }
     if (this.isSquare()) return 'SQUARE';
 
