@@ -325,4 +325,74 @@ describe('Rectangle', () => {
 
     expect(rectangle.id).toBe(100);
   });
+
+  describe('getType', () => {
+    it('tells wether is diagonal - Left To Right - Bottom', () => {
+      const rectangle = new Rectangle(
+        p(0, 0),
+        p(0, 0),
+        p(0, 100),
+        p(100, 100),
+      );
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('DIAGONAL-LTR-B');
+    });
+
+    it('tells wether is diagonal - Left To Right - Top', () => {
+      const rectangle = new Rectangle(
+        p(0, 0),
+        p(100, 0),
+        p(100, 100),
+        p(100, 100),
+      );
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('DIAGONAL-LTR-T');
+    });
+
+    it('tells wether is diagonal - Right to Left - Top', () => {
+      const rectangle = new Rectangle(
+        p(0, 0),
+        p(100, 0),
+        p(0, 100),
+        p(0, 100),
+      );
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('DIAGONAL-RTL-T');
+    });
+
+    it('tells wether is diagonal - Right to Left - Bottom', () => {
+      const rectangle = new Rectangle(
+        p(100, 0),
+        p(100, 0),
+        p(0, 100),
+        p(100, 100),
+      );
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('DIAGONAL-RTL-B');
+    });
+
+    it('tells wether is exactly square', () => {
+      const rectangle = new Rectangle(p(0, 0), p(100, 0), p(0, 100), p(100, 100));
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('SQUARE');
+    });
+
+    it('tells wether is rectangle', () => {
+      const rectangle = new Rectangle(p(0, 0), p(50, 0), p(0, 100), p(100, 100));
+
+      const type = rectangle.getType();
+
+      expect(type).toBe('RECTANGLE');
+    });
+  });
 });

@@ -19,6 +19,8 @@ const smallerDifference = (p0, p1, p2, p3) => {
   return Math.min(...nonZeroDifferences);
 };
 
+const equalPoints = (p0, p1) => (p0.x === p1.x) && (p0.y === p1.y);
+
 export default class Rectangle {
   constructor(p0, p1, p2, p3) {
     this.p0 = p0;
@@ -146,5 +148,31 @@ export default class Rectangle {
 
   setId(id) {
     this.id = id;
+  }
+
+  getType() {
+    if (equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
+      && !equalPoints(this.p2, this.p3)
+      && (this.p0.x === this.p2.x)) {
+      return 'DIAGONAL-LTR-B';
+    }
+    if (equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
+      && !equalPoints(this.p2, this.p3)
+      && (this.p1.x === this.p3.x)) {
+      return 'DIAGONAL-RTL-B';
+    }
+    if (!equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
+      && !equalPoints(this.p0, this.p2) && equalPoints(this.p2, this.p3)
+      && (this.p3.x === this.p1.x)) {
+      return 'DIAGONAL-LTR-T';
+    }
+    if (!equalPoints(this.p0, this.p1) && !equalPoints(this.p1, this.p2)
+      && !equalPoints(this.p0, this.p2) && equalPoints(this.p2, this.p3)
+      && (this.p3.x === this.p0.x)) {
+      return 'DIAGONAL-RTL-T';
+    }
+    if (this.isSquare()) return 'SQUARE';
+
+    return 'RECTANGLE';
   }
 }
