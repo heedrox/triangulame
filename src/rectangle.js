@@ -11,6 +11,16 @@ const p = (x, y) => ({
 
 const equalPoints = (p1, p2) => p1.x === p2.x && p1.y === p2.y;
 
+const smallerDifference = (p0, p1, p2, p3) => {
+  const differences = [];
+  differences.push(Math.abs(p0.x - p1.x));
+  differences.push(Math.abs(p2.x - p3.x));
+  differences.push(Math.abs(p0.y - p2.y));
+  differences.push(Math.abs(p1.y - p3.y));
+  const nonZeroDifferences = differences.filter((d) => d !== 0);
+  return Math.min(...nonZeroDifferences);
+};
+
 export default class Rectangle {
   constructor(p0, p1, p2, p3) {
     this.p0 = p0;
@@ -79,6 +89,23 @@ export default class Rectangle {
     ];
   }
 
+  splitDRTL() {
+    return [
+      new Rectangle(
+        this.p0,
+        this.p1,
+        this.p2,
+        this.p2,
+      ),
+      new Rectangle(
+        this.p1,
+        this.p1,
+        this.p2,
+        this.p3,
+      ),
+    ];
+  }
+
   canBeSplit(operation) {
     switch (operation) {
       case 'SPLITX':
@@ -86,7 +113,8 @@ export default class Rectangle {
       case 'SPLITY':
         return this.canBeSplitY();
       case 'SPLITDLTR':
-        return this.canBeSplitDLTR();
+      case 'SPLITDRTL':
+        return this.canBeSplitDiagonally();
       default:
         return false;
     }
@@ -100,15 +128,20 @@ export default class Rectangle {
     return (this.p2.y - this.p0.y > 12) && (this.p3.y - this.p1.y > 12);
   }
 
-  canBeSplitDLTR() {
-    if (equalPoints(this.p0, this.p1)
-      || equalPoints(this.p0, this.p2)
-      || equalPoints(this.p0, this.p3)
-      || equalPoints(this.p1, this.p2)
-      || equalPoints(this.p1, this.p3)
-      || equalPoints(this.p2, this.p3)) {
+  canBeSplitDiagonally() {
+    if (!this.isSquare()) {
       return false;
     }
-    return true;
+    const smallerDiff = smallerDifference(this.p0, this.p1, this.p2, this.p3);
+    if (smallerDiff >= 12 && smallerDiff <= 24) {
+      return true;
+    }
+    return false;
+  }
+
+  isSquare() {
+    return (this.p1.x - this.p0.x === this.p3.x - this.p2.x)
+      && (this.p2.y - this.p0.y === this.p3.y - this.p1.y)
+      && (this.p1.x - this.p0.x === this.p2.y - this.p0.y);
   }
 }

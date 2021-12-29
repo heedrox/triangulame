@@ -2,10 +2,8 @@ import RectanglesCreator from './rectangles-creator';
 
 const SPLIT_FIRST_RECTANGLE = jest.fn(() => 0);
 const SPLIT_LAST_RECTANGLE = jest.fn(() => 0.9999);
-const SPLIT_BY_X = jest.fn(() => 0);
-const SPLIT_BY_Y = jest.fn(() => 0.99);
-const SPLIT_BY_DLTR = jest.fn(() => 0.35);
-const SPLIT_EXACTLY_HALF = jest.fn(() => 0.5);
+const SPLIT_BY_X = jest.fn(() => 'SPLITX');
+const SPLIT_BY_Y = jest.fn(() => 'SPLITY');
 
 describe('Rectangles Creator', () => {
   it('inits', () => {
@@ -74,7 +72,6 @@ describe('Rectangles Creator', () => {
         const builder = new RectanglesCreator(
           SPLIT_FIRST_RECTANGLE,
           SPLIT_BY_X,
-          SPLIT_EXACTLY_HALF,
         );
 
         const rectangles = builder.build(4);
@@ -92,7 +89,7 @@ describe('Rectangles Creator', () => {
       });
 
       it('case 2 - all last element', () => {
-        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, SPLIT_EXACTLY_HALF);
+        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X);
 
         const rectangles = builder.build(4);
 
@@ -113,7 +110,6 @@ describe('Rectangles Creator', () => {
         const builder = new RectanglesCreator(
           SPLIT_FIRST_RECTANGLE,
           SPLIT_BY_Y,
-          SPLIT_EXACTLY_HALF,
         );
 
         const rectangles = builder.build(4);
@@ -144,58 +140,12 @@ describe('Rectangles Creator', () => {
           .toBe(50);
       });
     });
-    describe('diagonally left to right', () => {
-      const builder = new RectanglesCreator(
-        SPLIT_FIRST_RECTANGLE,
-        SPLIT_BY_DLTR,
-        SPLIT_EXACTLY_HALF,
-      );
 
-      const rectangles = builder.build(2);
-
-      expect(rectangles.length)
-        .toBe(2);
-
-      expect(rectangles[0].p0.x)
-        .toBe(0);
-      expect(rectangles[0].p0.y)
-        .toBe(0);
-      expect(rectangles[0].p1.x)
-        .toBe(0);
-      expect(rectangles[0].p1.y)
-        .toBe(0);
-      expect(rectangles[0].p2.x)
-        .toBe(0);
-      expect(rectangles[0].p2.y)
-        .toBe(100);
-      expect(rectangles[0].p3.x)
-        .toBe(100);
-      expect(rectangles[0].p3.y)
-        .toBe(100);
-
-      expect(rectangles[1].p0.x)
-        .toBe(0);
-      expect(rectangles[1].p0.y)
-        .toBe(0);
-      expect(rectangles[1].p1.x)
-        .toBe(100);
-      expect(rectangles[1].p1.y)
-        .toBe(0);
-      expect(rectangles[1].p2.x)
-        .toBe(100);
-      expect(rectangles[1].p2.y)
-        .toBe(100);
-      expect(rectangles[1].p3.x)
-        .toBe(100);
-      expect(rectangles[1].p3.y)
-        .toBe(100);
-    });
     describe('limits exist when splitting', () => {
       it('only splits rectangles greater than a 12% size', () => {
         const builder = new RectanglesCreator(
           SPLIT_FIRST_RECTANGLE,
           SPLIT_BY_X,
-          SPLIT_EXACTLY_HALF,
         );
 
         const rectangles = builder.build(5);

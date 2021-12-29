@@ -273,11 +273,25 @@ describe('Rectangle', () => {
           .toBe(false);
       });
     });
-    describe('when splitting by diagonnaly - LTR', () => {
-      it('can be split in ordinary conditions', () => {
+    describe('when splitting by diagonnaly', () => {
+      it('can be split if size less than or equal to 24', () => {
         const rectangle = new Rectangle(
           p(0, 0),
-          p(100, 0),
+          p(24, 0),
+          p(0, 24),
+          p(24, 24),
+        );
+
+        const canBeSplit = rectangle.canBeSplit('SPLITDLTR');
+
+        expect(rectangle.isSquare()).toBe(true);
+        expect(canBeSplit)
+          .toBe(true);
+      });
+      it('cannot be split if it is a triangle in Left To Right', () => {
+        const rectangle = new Rectangle(
+          p(0, 0),
+          p(0, 0),
           p(0, 100),
           p(100, 100),
         );
@@ -285,9 +299,10 @@ describe('Rectangle', () => {
         const canBeSplit = rectangle.canBeSplit('SPLITDLTR');
 
         expect(canBeSplit)
-          .toBe(true);
+          .toBe(false);
       });
-      it('cannot be split if it is a triangle', () => {
+
+      it('cannot be split if it is a triangle in Right to Left', () => {
         const rectangle = new Rectangle(
           p(0, 0),
           p(0, 0),
@@ -295,7 +310,7 @@ describe('Rectangle', () => {
           p(100, 100),
         );
 
-        const canBeSplit = rectangle.canBeSplit('SPLITDLTR');
+        const canBeSplit = rectangle.canBeSplit('SPLITDRTL');
 
         expect(canBeSplit)
           .toBe(false);
