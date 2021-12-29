@@ -317,4 +317,12 @@ describe('Rectangle', () => {
       });
     });
   });
+
+  it('ids can be set', () => {
+    const rectangle = new Rectangle(null, null, null, null);
+
+    rectangle.setId(100);
+
+    expect(rectangle.id).toBe(100);
+  });
 });

@@ -1,5 +1,6 @@
 import Rectangle from './rectangle';
 import defaultOperationProvider from './random-provider/default-operation-provider';
+import shuffleArray from './lib/shuffle-array';
 
 const p = (x, y) => ({
   x,
@@ -16,6 +17,14 @@ const anAction = (operation, index) => ({
   operation,
   index,
 });
+
+const buildRandomArray = (n) => shuffleArray(Array(n).fill(null).map((a, b) => b + 1));
+
+const assignRandomIds = (rectangles) => {
+  const array = buildRandomArray(rectangles.length);
+  rectangles.forEach((r, index) => r.setId(array[index]));
+  return rectangles;
+};
 
 const splitByOperation = (operation, rectangle) => {
   switch (operation) {
@@ -35,26 +44,21 @@ export default class RectanglesCreator {
   constructor(
     randomIndexProvider = Math.random,
     randomOperationProvider = defaultOperationProvider,
-    randomSkewProvider = Math.random,
   ) {
     this.width = 100;
     this.height = 100;
     this.randomIndexProvider = randomIndexProvider;
     this.randomOperationProvider = randomOperationProvider;
-    this.randomSkewProvider = randomSkewProvider;
   }
 
   build(numberElements) {
     const rectangles = [buildRectangle(0, 0, this.width, this.height)];
     for (let i = 1; i < numberElements; i += 1) {
-      const {
-        operation,
-        index,
-      } = this.findPossibleOperationAndIndex(rectangles);
+      const { operation, index } = this.findPossibleOperationAndIndex(rectangles);
       const newTwoRectangles = splitByOperation(operation, rectangles[index]);
       rectangles.splice(index, 1, newTwoRectangles[0], newTwoRectangles[1]);
     }
-    return rectangles;
+    return assignRandomIds(rectangles);
   }
 
   findPossibleOperationAndIndex(rectangles) {

@@ -161,4 +161,17 @@ describe('Rectangles Creator', () => {
       });
     });
   });
+
+  it('assigns ids to rectangles', () => {
+    const builder = new RectanglesCreator();
+
+    const rectangles = builder.build(5);
+
+    expect(typeof rectangles[0].id).toBe('number');
+    expect(rectangles.find((r) => r.id === 1)).not.toBeUndefined();
+    expect(rectangles.find((r) => r.id === 2)).not.toBeUndefined();
+    expect(rectangles.find((r) => r.id === 3)).not.toBeUndefined();
+    expect(rectangles.find((r) => r.id === 4)).not.toBeUndefined();
+    expect(rectangles.find((r) => r.id === 5)).not.toBeUndefined();
+  });
 });
