@@ -1,14 +1,11 @@
+import p from './point';
+
 /**
  *  p0 ------- p1
  *  |          |
  *  |          |
  *  p2 ------- p3
  */
-const p = (x, y) => ({
-  x,
-  y,
-});
-
 const smallerDifference = (p0, p1, p2, p3) => {
   const differences = [];
   differences.push(Math.abs(p0.x - p1.x));

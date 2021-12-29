@@ -1,11 +1,8 @@
 import Rectangle from './rectangle';
 import defaultOperationProvider from './random-provider/default-operation-provider';
 import shuffleArray from './lib/shuffle-array';
+import p from './point';
 
-const p = (x, y) => ({
-  x,
-  y,
-});
 const buildRectangle = (x, y, width, height) => {
   const p0 = p(x, y);
   const p1 = p(width, y);
