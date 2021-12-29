@@ -27,6 +27,21 @@ export default class Rectangle {
     this.id = undefined;
   }
 
+  splitByOperation(operation) {
+    switch (operation) {
+      case 'SPLITX':
+        return this.splitX();
+      case 'SPLITDLTR':
+        return this.splitDLTR();
+      case 'SPLITDRTL':
+        return this.splitDRTL();
+      case 'SPLITY':
+        return this.splitY();
+      default:
+        throw new Error(`Unknown operation: ${operation}`);
+    }
+  }
+
   splitX() {
     const intersectionX = Math.ceil((this.p0.x + this.p1.x) / 2);
     const intersectionY = Math.ceil((this.p0.y + this.p1.y) / 2);

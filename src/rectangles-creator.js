@@ -23,20 +23,6 @@ const assignRandomIds = (rectangles) => {
   return rectangles;
 };
 
-const splitByOperation = (operation, rectangle) => {
-  switch (operation) {
-    case 'SPLITX':
-      return rectangle.splitX();
-    case 'SPLITDLTR':
-      return rectangle.splitDLTR();
-    case 'SPLITDRTL':
-      return rectangle.splitDRTL();
-    case 'SPLITY':
-      return rectangle.splitY();
-    default:
-      throw new Error(`Unknown operation: ${operation}`);
-  }
-};
 export default class RectanglesCreator {
   constructor(
     randomIndexProvider = Math.random,
@@ -52,7 +38,7 @@ export default class RectanglesCreator {
     const rectangles = [buildRectangle(0, 0, this.width, this.height)];
     for (let i = 1; i < numberElements; i += 1) {
       const { operation, index } = this.findPossibleOperationAndIndex(rectangles);
-      const newTwoRectangles = splitByOperation(operation, rectangles[index]);
+      const newTwoRectangles = rectangles[index].splitByOperation(operation);
       rectangles.splice(index, 1, newTwoRectangles[0], newTwoRectangles[1]);
     }
     return assignRandomIds(rectangles);
