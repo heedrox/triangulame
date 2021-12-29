@@ -327,72 +327,22 @@ describe('Rectangle', () => {
   });
 
   describe('getType', () => {
-    it('tells whether is triangle - Left To Right - Bottom', () => {
-      const rectangle = new Rectangle(
-        p(0, 0),
-        p(0, 0),
-        p(0, 100),
-        p(100, 100),
-      );
+    it.each`
+      p0                | p1                 | p2                 | p3                  | expected
+      ${p(0, 0)}   | ${p(0, 0)}    | ${p(0, 100)}   | ${p(100, 0)}   | ${'TRIANGLE-LTR-B'}
+      ${p(0, 0)}   | ${p(100, 0)}  | ${p(100, 100)} | ${p(100, 100)} | ${'TRIANGLE-LTR-T'}
+      ${p(0, 0)}   | ${p(1000, 0)} | ${p(0, 100)}   | ${p(0, 100)}   | ${'TRIANGLE-RTL-T'}
+      ${p(100, 0)} | ${p(100, 0)}  | ${p(0, 100)}   | ${p(100, 100)} | ${'TRIANGLE-RTL-B'}
+      ${p(0, 0)}   | ${p(100, 0)}  | ${p(0, 100)}   | ${p(100, 100)} | ${'SQUARE'}
+      ${p(0, 0)}   | ${p(50, 0)}   | ${p(0, 100)}   | ${p(100, 100)} | ${'RECTANGLE'}
+    `('tells whether is $expected', ({
+      p0, p1, p2, p3, expected,
+    }) => {
+      const rectangle = new Rectangle(p0, p1, p2, p3);
 
       const type = rectangle.getType();
 
-      expect(type).toBe('TRIANGLE-LTR-B');
-    });
-
-    it('tells whether is triangle - Left To Right - Top', () => {
-      const rectangle = new Rectangle(
-        p(0, 0),
-        p(100, 0),
-        p(100, 100),
-        p(100, 100),
-      );
-
-      const type = rectangle.getType();
-
-      expect(type).toBe('TRIANGLE-LTR-T');
-    });
-
-    it('tells whether is triangle - Right to Left - Top', () => {
-      const rectangle = new Rectangle(
-        p(0, 0),
-        p(100, 0),
-        p(0, 100),
-        p(0, 100),
-      );
-
-      const type = rectangle.getType();
-
-      expect(type).toBe('TRIANGLE-RTL-T');
-    });
-
-    it('tells whether is triangle - Right to Left - Bottom', () => {
-      const rectangle = new Rectangle(
-        p(100, 0),
-        p(100, 0),
-        p(0, 100),
-        p(100, 100),
-      );
-
-      const type = rectangle.getType();
-
-      expect(type).toBe('TRIANGLE-RTL-B');
-    });
-
-    it('tells whether is exactly square', () => {
-      const rectangle = new Rectangle(p(0, 0), p(100, 0), p(0, 100), p(100, 100));
-
-      const type = rectangle.getType();
-
-      expect(type).toBe('SQUARE');
-    });
-
-    it('tells whether is rectangle', () => {
-      const rectangle = new Rectangle(p(0, 0), p(50, 0), p(0, 100), p(100, 100));
-
-      const type = rectangle.getType();
-
-      expect(type).toBe('RECTANGLE');
+      expect(type).toBe(expected);
     });
   });
 });
