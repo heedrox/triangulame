@@ -1,6 +1,6 @@
 import Rectangle from './rectangle';
 
-const OPERATIONS = ['SPLITX', 'SPLITY'];
+const OPERATIONS = ['SPLITX', 'SPLITDLTR', 'SPLITY'];
 
 const p = (x, y) => ({x, y});
 const buildRectangle = (x, y, width, height) => {
@@ -12,6 +12,18 @@ const buildRectangle = (x, y, width, height) => {
 };
 const anAction = (operation, index) => ({operation, index});
 
+const splitByOperation = (operation, rectangle) => {
+    switch (operation) {
+        case 'SPLITX':
+            return rectangle.splitX();
+        case 'SPLITDLTR':
+            return rectangle.splitDLTR();
+        case 'SPLITY':
+            return rectangle.splitY();
+        default:
+            throw new Error(`Unknown operation: ${operation}`);
+    }
+};
 export default class RectanglesCreator {
     constructor(
         randomIndexProvider = Math.random,
@@ -29,15 +41,14 @@ export default class RectanglesCreator {
         const rectangles = [buildRectangle(0, 0, this.width, this.height)];
         for (let i = 1; i < numberElements; i += 1) {
             const {operation, index} = this.findPossibleOperationAndIndex(rectangles);
-            const newTwoRectangles = operation === 'SPLITX' ? rectangles[index].splitX() : rectangles[index].splitY();
+            const newTwoRectangles = splitByOperation(operation, rectangles[index]);
             rectangles.splice(index, 1, newTwoRectangles[0], newTwoRectangles[1]);
-            console.log('operation, index, newToRectangles', operation, index, newTwoRectangles, rectangles);
         }
         return rectangles;
     }
 
     findPossibleOperationAndIndex(rectangles) {
-        const operation = OPERATIONS[Math.floor(this.randomOperationProvider() * 2)];
+        const operation = OPERATIONS[Math.floor(this.randomOperationProvider() * 3)];
         try {
             const randomIndex = this.findIndexToSplit(rectangles, operation);
             return anAction(operation, randomIndex);
@@ -51,7 +62,7 @@ export default class RectanglesCreator {
     findIndexToSplit(rectangles, operation) {
         let index = Math.floor(this.randomIndexProvider() * rectangles.length);
         let k = 0;
-        while (rectangles[index].isTooSmall(operation)) {
+        while (!rectangles[index].canBeSplit(operation)) {
             if (k++ >= 200) {
                 throw new Error('too many times');
             }
