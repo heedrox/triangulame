@@ -29,10 +29,9 @@ export default class RectanglesCreator {
         const rectangles = [buildRectangle(0, 0, this.width, this.height)];
         for (let i = 1; i < numberElements; i += 1) {
             const {operation, index} = this.findPossibleOperationAndIndex(rectangles);
-            const skewOneSide = this.getSkew();
-            const skewOtherSide = this.getSkew();
-            const newTwoRectangles = operation === 'SPLITX' ? rectangles[index].splitX(skewOneSide, skewOtherSide) : rectangles[index].splitY(skewOneSide, skewOtherSide);
+            const newTwoRectangles = operation === 'SPLITX' ? rectangles[index].splitX() : rectangles[index].splitY();
             rectangles.splice(index, 1, newTwoRectangles[0], newTwoRectangles[1]);
+            console.log('operation, index, newToRectangles', operation, index, newTwoRectangles, rectangles);
         }
         return rectangles;
     }

@@ -116,53 +116,5 @@ describe('Rectangles Creator', () => {
 
       });
     });
-
-    describe('skews rectangles a bit', () => {
-      it('does not split exactly by half, but with some pixels more or less', () => {
-        const splitBy40 = jest.fn(() => 0.4);
-        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy40);
-
-        const rectangles = builder.build(3);
-
-        expect(rectangles[0].p0.x).toBe(0);
-        expect(rectangles[1].p0.x).toBe(40);
-        expect(rectangles[2].p0.x).toBe(64);
-      });
-
-      it('skews different in up and down', () => {
-        const splitFirst40Then60 = jest.fn().mockReturnValueOnce(0.4).mockReturnValueOnce(0.6);
-        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitFirst40Then60);
-
-        const rectangles = builder.build(2);
-
-        expect(rectangles[0].p0.x).toBe(0);
-        expect(rectangles[1].p0.x).toBe(40);
-        expect(rectangles[0].p3.x).toBe(59);
-        expect(rectangles[1].p2.x).toBe(60);
-      });
-
-      it('does not skew more than 40%', () => {
-        const splitBy30 = jest.fn(() => 0.3);
-        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy30);
-
-        const rectangles = builder.build(2);
-
-        expect(rectangles[0].p0.x).toBe(0);
-        expect(rectangles[1].p0.x).toBe(40);
-      });
-
-      it('does not skew more than 60%', () => {
-        const splitBy70 = jest.fn(() => 0.7);
-        const builder = new RectanglesCreator(SPLIT_LAST_RECTANGLE, SPLIT_BY_X, splitBy70);
-
-        const rectangles = builder.build(2);
-
-        expect(rectangles[0].p0.x).toBe(0);
-        expect(rectangles[1].p0.x).toBe(60);
-      });
-    });
-
-
-
   });
 });

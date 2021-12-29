@@ -3,7 +3,8 @@ import RectanglesCreator from "./rectangles-creator";
 
 class MyGame extends Phaser.Scene {
   preload() {
-    this.rectangles = new RectanglesCreator().build(64);
+    this.rectangles = new RectanglesCreator().build(52);
+    console.log(this.rectangles);
   }
 
   create() {

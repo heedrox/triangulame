@@ -93,21 +93,5 @@ describe('Rectangle', () => {
       expect(rectangles[1].p3.x).toBe(100);
       expect(rectangles[1].p3.y).toBe(500);
     });
-
-    it('skews rectangles in different sizes', () => {
-      const rectangle = new Rectangle(p(0, 0), p(100, 0), p(0, 100), p(100, 100));
-
-      const rectangles = rectangle.splitX(0.4, 0.6);
-
-      expect(rectangles[0].p0.x).toBe(0);
-      expect(rectangles[0].p1.x).toBe(39);
-      expect(rectangles[1].p0.x).toBe(40);
-      expect(rectangles[1].p1.x).toBe(100);
-
-      expect(rectangles[0].p2.x).toBe(0);
-      expect(rectangles[0].p3.x).toBe(59);
-      expect(rectangles[1].p2.x).toBe(60);
-      expect(rectangles[1].p3.x).toBe(100);
-    });
   });
 });
