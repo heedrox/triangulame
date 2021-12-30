@@ -1,7 +1,7 @@
 import Rectangle from './rectangle';
 import defaultOperationProvider from '../random-provider/default-operation-provider';
 import shuffleArray from '../lib/shuffle-array';
-import p from '../point';
+import p from './point';
 
 const buildRectangle = (x, y, width, height) => {
   const p0 = p(x, y);
