@@ -1,17 +1,7 @@
 import Phaser from 'phaser';
 import RectanglesCreator from './rectangles-creator';
 
-const getFontSize = (r, xf, yf) => {
-  const topX = r.p1.x - r.p0.x;
-  const leftY = r.p2.y - r.p0.y;
-  const bottomX = r.p3.x - r.p2.x;
-  const rightY = r.p3.y - r.p1.y;
-
-  const values = [topX, leftY, bottomX, rightY].filter((v) => v > 0);
-  const min = Math.min(...values);
-  const isX = min === topX || min === bottomX;
-  return isX ? min * xf * 0.7 : min * yf * 0.7;
-};
+const BACKGROUND_PIECE = 0xcccc00;
 
 const getTextPosition = (r, xf, yf) => {
   const type = r.getType();
@@ -22,26 +12,44 @@ const getTextPosition = (r, xf, yf) => {
 
     const posX = Math.max(r.p0.x, r.p2.x);
 
-    return { x: (posX + (sizeX * 0.15)) * xf, y: (r.p0.y + (sizeY * 0.15)) * yf };
+    return {
+      x: (posX + (sizeX * 0.5)) * xf,
+      y: (r.p0.y + (sizeY * 0.5)) * yf,
+    };
   }
 
-  const paddingX = Math.max(r.p1.x - r.p0.x, r.p3.x - r.p2.x) * 0.4;
-  const paddingY = Math.min(r.p2.y - r.p0.y, r.p3.y - r.p1.y) * 0.6;
+  const paddingX = Math.max(r.p1.x - r.p0.x, r.p3.x - r.p2.x) * 0.66;
+  const paddingY = Math.min(r.p2.y - r.p0.y, r.p3.y - r.p1.y) * 0.8;
 
   if (type === 'TRIANGLE-LTR-T') {
-    return { x: (r.p0.x + paddingX + (r.id < 10 ? 1.5 : 0)) * xf, y: (r.p0.y + 1) * yf };
+    return {
+      x: (r.p0.x + paddingX + (r.id < 10 ? 0.75 : 0)) * xf,
+      y: (r.p0.y + 3) * yf,
+    };
   }
   if (type === 'TRIANGLE-LTR-B') {
-    return { x: (r.p0.x + 1 + (r.id < 10 ? 1.5 : 0)) * xf, y: (r.p0.y + paddingY) * yf };
+    return {
+      x: (r.p0.x + 4 + (r.id < 10 ? 0.75 : 0)) * xf,
+      y: (r.p0.y + paddingY) * yf,
+    };
   }
   if (type === 'TRIANGLE-RTL-T') {
-    return { x: (r.p0.x + 1 + (r.id < 10 ? 1.5 : 0)) * xf, y: (r.p0.y + 1) * yf };
+    return {
+      x: (r.p0.x + 4 + (r.id < 10 ? 0.75 : 0)) * xf,
+      y: (r.p0.y + 3) * yf,
+    };
   }
   if (type === 'TRIANGLE-RTL-B') {
-    return { x: (r.p2.x + paddingX + (r.id < 10 ? 1.5 : 0)) * xf, y: (r.p0.y + paddingY) * yf };
+    return {
+      x: (r.p2.x + paddingX + (r.id < 10 ? 0.75 : 0)) * xf,
+      y: (r.p0.y + paddingY) * yf,
+    };
   }
 
-  return { x: 0, y: 0 };
+  return {
+    x: 0,
+    y: 0,
+  };
 };
 
 const getStretch = (textBounds, r, xf, yf) => {
@@ -81,15 +89,8 @@ class MyGame extends Phaser.Scene {
     const X_FACTOR = this.game.canvas.width / 100;
     const Y_FACTOR = (this.game.canvas.height * 0.85) / 100;
 
-    this.rectangles.forEach((rectangle) => {
-      /* const polygon = new Phaser.Geom.Polygon([
-        rectangle.p0.x * X_FACTOR, rectangle.p0.y * Y_FACTOR,
-        rectangle.p1.x * X_FACTOR, rectangle.p1.y * Y_FACTOR,
-        rectangle.p3.x * X_FACTOR, rectangle.p3.y * Y_FACTOR,
-        rectangle.p2.x * X_FACTOR, rectangle.p2.y * Y_FACTOR
-      ]);
-      graphics.fillStyle(0xaaaa00, 1);
-      graphics.fillPoints(polygon.points, true); */
+    this.texts = Array(this.rectangles.length).fill(null);
+    this.rectangles.forEach((rectangle, nr) => {
       graphics.beginPath();
       graphics.moveTo(rectangle.p0.x * X_FACTOR, rectangle.p0.y * Y_FACTOR);
       graphics.lineTo(rectangle.p1.x * X_FACTOR, rectangle.p1.y * Y_FACTOR);
@@ -105,22 +106,69 @@ class MyGame extends Phaser.Scene {
         fontSize: '200px',
         color: '#000000',
       });
+      text.setOrigin(0.5);
       const textStretch = getStretch(text.getBounds(), rectangle, X_FACTOR, Y_FACTOR);
       text.setScale(textStretch.x, textStretch.y);
+      this.texts[nr] = text;
+    });
+    const polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
+      r.p0.x * X_FACTOR, r.p0.y * Y_FACTOR,
+      r.p1.x * X_FACTOR, r.p1.y * Y_FACTOR,
+      r.p3.x * X_FACTOR, r.p3.y * Y_FACTOR,
+      r.p2.x * X_FACTOR, r.p2.y * Y_FACTOR,
+    ]));
 
-      /* this.input.on('pointerup', (pointer) => {
-        const polygon = new Phaser.Geom.Polygon([
-          rectangle.p0.x * X_FACTOR, rectangle.p0.y * Y_FACTOR,
-          rectangle.p1.x * X_FACTOR, rectangle.p1.y * Y_FACTOR,
-          rectangle.p3.x * X_FACTOR, rectangle.p3.y * Y_FACTOR,
-          rectangle.p2.x * X_FACTOR, rectangle.p2.y * Y_FACTOR,
-        ]);
-
+    this.input.on('pointerup', (pointer) => {
+      polygons.forEach((polygon, nr) => {
         if (Phaser.Geom.Polygon.ContainsPoint(polygon, pointer)) {
-          console.log('in square ', rectangle.id, rectangle);
+          console.log('in square ', this.rectangles[nr].id);
+          const poly = new Phaser.GameObjects.Polygon(
+            this,
+            0,
+            0,
+            polygon.points,
+            BACKGROUND_PIECE,
+            1,
+          );
+          const bounds = poly.getBounds();
+          poly.setOrigin(0.5);
+          poly.setX(bounds.width / 2);
+          poly.setY(bounds.height / 2);
+          console.log(poly.x, poly.y);
+          console.log(polygon.points);
+          const minx = Math.min(...polygon.points.map((p) => p.x));
+          const miny = Math.min(...polygon.points.map((p) => p.y));
+          const newPoints = polygon.points.map((p) => ({
+            x: p.x - minx,
+            y: p.y - miny,
+          }));
+          const newPoly = new Phaser.GameObjects.Polygon(
+            this,
+            minx,
+            miny,
+            newPoints,
+            BACKGROUND_PIECE,
+            1,
+          );
+          const bounds2 = newPoly.getBounds();
+          newPoly.setOrigin(0.5);
+          newPoly.setX(newPoly.x + bounds2.width / 2);
+          newPoly.setY(newPoly.y + bounds2.height / 2);
+          this.add.existing(newPoly);
+          graphics.fillStyle(0x000000);
+          graphics.fillPoints(polygon.points, true);
+          this.texts[nr].setDepth(1);
+          this.tweens.add({
+            targets: [newPoly, this.texts[nr]],
+            angle: 720 + 360,
+            ease: 'Linear',
+            duration: 1000,
+            repeat: 0,
+            scale: 0,
+          });
+          // graphics.fillPoints(polygon.points, true);
         }
-        graphics.fillPoints(polygon.points, true);
-      }); */
+      });
     });
   }
 }
@@ -130,7 +178,7 @@ const config = {
   scale: {
     mode: Phaser.Scale.RESIZE,
   },
-  backgroundColor: '#cccc00',
+  backgroundColor: BACKGROUND_PIECE,
   autoCenter: 1,
   parent: 'phaser-triangles',
   width: document.documentElement.clientWidth,
