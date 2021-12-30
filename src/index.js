@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import RectanglesCreator from './rectangles-creator';
+import RectanglesCreator from './domain/rectangles-creator';
 
 const BACKGROUND_PIECE = 0xcccc00;
 
@@ -81,6 +81,7 @@ class MyGame extends Phaser.Scene {
   }
 
   create() {
+    this.goalId = 1;
     const graphics = this.add.graphics({
       x: 0,
       y: 0,
@@ -122,51 +123,54 @@ class MyGame extends Phaser.Scene {
       polygons.forEach((polygon, nr) => {
         if (Phaser.Geom.Polygon.ContainsPoint(polygon, pointer)) {
           console.log('in square ', this.rectangles[nr].id);
-          const poly = new Phaser.GameObjects.Polygon(
-            this,
-            0,
-            0,
-            polygon.points,
-            BACKGROUND_PIECE,
-            1,
-          );
-          const bounds = poly.getBounds();
-          poly.setOrigin(0.5);
-          poly.setX(bounds.width / 2);
-          poly.setY(bounds.height / 2);
-          console.log(poly.x, poly.y);
-          console.log(polygon.points);
-          const minx = Math.min(...polygon.points.map((p) => p.x));
-          const miny = Math.min(...polygon.points.map((p) => p.y));
-          const newPoints = polygon.points.map((p) => ({
-            x: p.x - minx,
-            y: p.y - miny,
-          }));
-          const newPoly = new Phaser.GameObjects.Polygon(
-            this,
-            minx,
-            miny,
-            newPoints,
-            BACKGROUND_PIECE,
-            1,
-          );
-          const bounds2 = newPoly.getBounds();
-          newPoly.setOrigin(0.5);
-          newPoly.setX(newPoly.x + bounds2.width / 2);
-          newPoly.setY(newPoly.y + bounds2.height / 2);
-          this.add.existing(newPoly);
-          graphics.fillStyle(0x000000);
-          graphics.fillPoints(polygon.points, true);
-          this.texts[nr].setDepth(1);
-          this.tweens.add({
-            targets: [newPoly, this.texts[nr]],
-            angle: 720 + 360,
-            ease: 'Linear',
-            duration: 1000,
-            repeat: 0,
-            scale: 0,
-          });
-          // graphics.fillPoints(polygon.points, true);
+          if (this.rectangles[nr].id === this.goalId) {
+            console.log('yeyyyy');
+            this.goalId += 1;
+            const poly = new Phaser.GameObjects.Polygon(
+              this,
+              0,
+              0,
+              polygon.points,
+              BACKGROUND_PIECE,
+              1,
+            );
+            const bounds = poly.getBounds();
+            poly.setOrigin(0.5);
+            poly.setX(bounds.width / 2);
+            poly.setY(bounds.height / 2);
+            console.log(poly.x, poly.y);
+            console.log(polygon.points);
+            const minx = Math.min(...polygon.points.map((p) => p.x));
+            const miny = Math.min(...polygon.points.map((p) => p.y));
+            const newPoints = polygon.points.map((p) => ({
+              x: p.x - minx,
+              y: p.y - miny,
+            }));
+            const newPoly = new Phaser.GameObjects.Polygon(
+              this,
+              minx,
+              miny,
+              newPoints,
+              BACKGROUND_PIECE,
+              1,
+            );
+            const bounds2 = newPoly.getBounds();
+            newPoly.setOrigin(0.5);
+            newPoly.setX(newPoly.x + bounds2.width / 2);
+            newPoly.setY(newPoly.y + bounds2.height / 2);
+            this.add.existing(newPoly);
+            graphics.fillStyle(0x000000);
+            graphics.fillPoints(polygon.points, true);
+            this.texts[nr].setDepth(1);
+            this.tweens.add({
+              targets: [newPoly, this.texts[nr]],
+              angle: 720 + 360,
+              ease: 'Linear',
+              duration: 1000,
+              repeat: 0,
+              scale: 0,
+            });
+          }
         }
       });
     });

@@ -1,4 +1,4 @@
-import p from './point';
+import p from '../point';
 
 /**
  *  p0 ------- p1
