@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 import RectanglesCreator from '../domain/rectangles-creator';
+import ingameOgg from '../assets/audio/ingame.ogg';
+import ingameMp3 from '../assets/audio/ingame.mp3';
 
 const BACKGROUND_PIECE = 0xcccc00;
+const INGAME_THEME = 'INGAME_THEME';
 
 const getTextPosition = (r, xf, yf) => {
   const type = r.getType();
@@ -76,10 +79,11 @@ const getStretch = (textBounds, r, xf, yf) => {
 
 class MyGame extends Phaser.Scene {
   init() {
+    this.totalGoal = 48;
     this.xFactor = this.game.canvas.width / 100;
     this.yFactor = (this.game.canvas.height * 0.85) / 100;
     this.goalId = 1;
-    this.rectangles = new RectanglesCreator().build(64);
+    this.rectangles = new RectanglesCreator().build(this.totalGoal);
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,
@@ -89,7 +93,29 @@ class MyGame extends Phaser.Scene {
     this.texts = Array(this.rectangles.length).fill(null);
   }
 
+  preload() {
+    this.load.audio(INGAME_THEME, [
+      ingameOgg,
+      ingameMp3,
+    ]);
+
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    this.loadingText = this.make.text({
+      x: w / 2,
+      y: h / 2 - 50,
+      text: ['El show está a', 'punto de comenzar.', 'Espera ...'].join('\n'),
+      style: {
+        font: '60px monospace',
+        fill: '#000000',
+        align: 'center',
+      },
+    });
+    this.loadingText.setOrigin(0.5, 0.5);
+  }
+
   create() {
+    this.loadingText.destroy();
     const graphics = this.buildGraphics();
 
     this.paintScreen(graphics);
@@ -97,6 +123,12 @@ class MyGame extends Phaser.Scene {
     this.input.on('pointerup', (pointer) => {
       this.checkRectanglePressed(graphics, pointer);
     });
+
+    const music = this.sound.add(INGAME_THEME, {
+      volume: 0.25,
+      loop: true,
+    });
+    music.play();
   }
 
   paintScreen(graphics) {
@@ -104,6 +136,8 @@ class MyGame extends Phaser.Scene {
       this.addRectangle(graphics, rectangle);
       this.texts[nr] = this.addTextToRectangle(rectangle);
     });
+
+    this.paintBottom(graphics);
   }
 
   buildGraphics() {
@@ -142,8 +176,13 @@ class MyGame extends Phaser.Scene {
     this.polygons.forEach((polygon, nr) => {
       if (Phaser.Geom.Polygon.ContainsPoint(polygon, pointer)) {
         if (this.rectangles[nr].id === this.goalId) {
+          if (this.goalId === 1) {
+            this.startTimer();
+          }
           this.goalId += 1;
+          this.updateGoal();
           this.removeRectangle(graphics, polygon, this.texts[nr]);
+          this.checkEnd(graphics);
         }
       }
     });
@@ -192,6 +231,90 @@ class MyGame extends Phaser.Scene {
       repeat: 0,
       scale: 0,
     });
+  }
+
+  paintBottom(graphics) {
+    const h = this.game.canvas.height;
+    const w = this.game.canvas.width;
+    const splitSizeX = h * 0.15;
+    graphics.fillStyle(0x531D00, 1);
+    graphics.fillRect(0, h * 0.85, w, h * 0.15);
+    graphics.fillStyle(0x000000, 1);
+    graphics.fillRoundedRect(10, h * 0.85 + 15, w - splitSizeX - 20, h * 0.15 - 20, 32);
+    graphics.fillStyle(0x000000, 1);
+    graphics.fillRoundedRect(w - splitSizeX, h * 0.85 + 15, splitSizeX - 10, h * 0.15 - 20, 32);
+
+    this.paintGoal();
+  }
+
+  paintGoal() {
+    const h = this.game.canvas.height;
+    const w = this.game.canvas.width;
+    const splitSizeX = h * 0.15;
+    const circleX = w - splitSizeX / 2;
+    const circleY = h * (0.925);
+    const whiteCircle = this.add.circle(circleX, circleY, splitSizeX * 0.2 + 10, 0xffffff);
+    const circle = this.add.circle(circleX, circleY, splitSizeX * 0.2, BACKGROUND_PIECE);
+    this.goalText = this.add.text(w - splitSizeX / 2, h * 0.925, this.goalId, {
+      fontFamily: 'Arial',
+      fontSize: splitSizeX * 0.3,
+      color: '#000000',
+    });
+    this.goalText.setOrigin(0.5);
+    this.add.tween({
+      targets: [circle, whiteCircle, this.goalText],
+      scale: 1.1,
+      ease: 'Bounce.easeOut',
+      duration: 1000,
+      repeatDelay: 1000,
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+
+  updateGoal() {
+    this.goalText.setText(this.goalId);
+  }
+
+  checkEnd(graphics) {
+    if (this.goalId > this.totalGoal) {
+      graphics.destroy();
+
+      const w = this.cameras.main.width;
+      const h = this.cameras.main.height;
+      this.loadingText = this.make.text({
+        x: w / 2,
+        y: h / 2 - 50,
+        text: `${this.getTotalSeconds()} segs.`,
+        style: {
+          font: '60px monospace',
+          fill: '#000000',
+          align: 'center',
+        },
+      });
+      this.loadingText.setOrigin(0.5, 0.5);
+      this.goalText.setText('');
+
+      const restart = this.add.text(w / 2, 3 / 4 * h, 'Reintentar', {
+        font: '60px monospace',
+        fill: '#444444',
+      }).setInteractive();
+
+      restart.setOrigin(0.5);
+      restart.on('pointerup', () => {
+        this.scene.restart();
+      });
+    }
+  }
+
+  startTimer() {
+    this.startDate = new Date();
+  }
+
+  getTotalSeconds() {
+    const endDate = new Date();
+    const diff = endDate.getTime() - this.startDate.getTime();
+    return Math.round(diff / 1000);
   }
 }
 

@@ -15,3 +15,6 @@ dist/
 
 # Testing
 coverage
+
+# Firease
+.firebaserc
