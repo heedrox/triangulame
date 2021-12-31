@@ -35,8 +35,7 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitX();
 
-      expect(rectangles.length)
-        .toBe(2);
+      expect(rectangles.length).toBe(2);
     });
 
     it('returns a first rectangle', () => {
@@ -49,22 +48,14 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitX();
 
-      expect(rectangles[0].p0.x)
-        .toBe(0);
-      expect(rectangles[0].p0.y)
-        .toBe(50);
-      expect(rectangles[0].p1.x)
-        .toBe(49);
-      expect(rectangles[0].p1.y)
-        .toBe(50);
-      expect(rectangles[0].p2.x)
-        .toBe(0);
-      expect(rectangles[0].p2.y)
-        .toBe(500);
-      expect(rectangles[0].p3.x)
-        .toBe(49);
-      expect(rectangles[0].p3.y)
-        .toBe(500);
+      expect(rectangles[0].p0.x).toBe(0);
+      expect(rectangles[0].p0.y).toBe(50);
+      expect(rectangles[0].p1.x).toBe(49);
+      expect(rectangles[0].p1.y).toBe(50);
+      expect(rectangles[0].p2.x).toBe(0);
+      expect(rectangles[0].p2.y).toBe(500);
+      expect(rectangles[0].p3.x).toBe(49);
+      expect(rectangles[0].p3.y).toBe(500);
     });
 
     it('returns a seconds rectangle', () => {
@@ -77,22 +68,14 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitX();
 
-      expect(rectangles[1].p0.x)
-        .toBe(50);
-      expect(rectangles[1].p0.y)
-        .toBe(50);
-      expect(rectangles[1].p1.x)
-        .toBe(100);
-      expect(rectangles[1].p1.y)
-        .toBe(50);
-      expect(rectangles[1].p2.x)
-        .toBe(50);
-      expect(rectangles[1].p2.y)
-        .toBe(500);
-      expect(rectangles[1].p3.x)
-        .toBe(100);
-      expect(rectangles[1].p3.y)
-        .toBe(500);
+      expect(rectangles[1].p0.x).toBe(50);
+      expect(rectangles[1].p0.y).toBe(50);
+      expect(rectangles[1].p1.x).toBe(100);
+      expect(rectangles[1].p1.y).toBe(50);
+      expect(rectangles[1].p2.x).toBe(50);
+      expect(rectangles[1].p2.y).toBe(500);
+      expect(rectangles[1].p3.x).toBe(100);
+      expect(rectangles[1].p3.y).toBe(500);
     });
   });
 
@@ -107,8 +90,7 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitY();
 
-      expect(rectangles.length)
-        .toBe(2);
+      expect(rectangles.length).toBe(2);
     });
 
     it('returns a first rectangle', () => {
@@ -121,22 +103,14 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitY();
 
-      expect(rectangles[0].p0.x)
-        .toBe(0);
-      expect(rectangles[0].p0.y)
-        .toBe(50);
-      expect(rectangles[0].p1.x)
-        .toBe(100);
-      expect(rectangles[0].p1.y)
-        .toBe(50);
-      expect(rectangles[0].p2.x)
-        .toBe(0);
-      expect(rectangles[0].p2.y)
-        .toBe(274);
-      expect(rectangles[0].p3.x)
-        .toBe(100);
-      expect(rectangles[0].p3.y)
-        .toBe(274);
+      expect(rectangles[0].p0.x).toBe(0);
+      expect(rectangles[0].p0.y).toBe(50);
+      expect(rectangles[0].p1.x).toBe(100);
+      expect(rectangles[0].p1.y).toBe(50);
+      expect(rectangles[0].p2.x).toBe(0);
+      expect(rectangles[0].p2.y).toBe(274);
+      expect(rectangles[0].p3.x).toBe(100);
+      expect(rectangles[0].p3.y).toBe(274);
     });
 
     it('returns a second rectangle', () => {
@@ -149,22 +123,14 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitY();
 
-      expect(rectangles[1].p0.x)
-        .toBe(0);
-      expect(rectangles[1].p0.y)
-        .toBe(275);
-      expect(rectangles[1].p1.x)
-        .toBe(100);
-      expect(rectangles[1].p1.y)
-        .toBe(275);
-      expect(rectangles[1].p2.x)
-        .toBe(0);
-      expect(rectangles[1].p2.y)
-        .toBe(500);
-      expect(rectangles[1].p3.x)
-        .toBe(100);
-      expect(rectangles[1].p3.y)
-        .toBe(500);
+      expect(rectangles[1].p0.x).toBe(0);
+      expect(rectangles[1].p0.y).toBe(275);
+      expect(rectangles[1].p1.x).toBe(100);
+      expect(rectangles[1].p1.y).toBe(275);
+      expect(rectangles[1].p2.x).toBe(0);
+      expect(rectangles[1].p2.y).toBe(500);
+      expect(rectangles[1].p3.x).toBe(100);
+      expect(rectangles[1].p3.y).toBe(500);
     });
   });
 
@@ -179,39 +145,23 @@ describe('Rectangle', () => {
 
       const rectangles = rectangle.splitDLTR(0);
 
-      expect(rectangles[0].p0.x)
-        .toBe(0);
-      expect(rectangles[0].p0.y)
-        .toBe(0);
-      expect(rectangles[0].p1.x)
-        .toBe(0);
-      expect(rectangles[0].p1.y)
-        .toBe(0);
-      expect(rectangles[0].p2.x)
-        .toBe(0);
-      expect(rectangles[0].p2.y)
-        .toBe(100);
-      expect(rectangles[0].p3.x)
-        .toBe(100);
-      expect(rectangles[0].p3.y)
-        .toBe(100);
+      expect(rectangles[0].p0.x).toBe(0);
+      expect(rectangles[0].p0.y).toBe(0);
+      expect(rectangles[0].p1.x).toBe(0);
+      expect(rectangles[0].p1.y).toBe(0);
+      expect(rectangles[0].p2.x).toBe(0);
+      expect(rectangles[0].p2.y).toBe(100);
+      expect(rectangles[0].p3.x).toBe(100);
+      expect(rectangles[0].p3.y).toBe(100);
 
-      expect(rectangles[1].p0.x)
-        .toBe(0);
-      expect(rectangles[1].p0.y)
-        .toBe(0);
-      expect(rectangles[1].p1.x)
-        .toBe(100);
-      expect(rectangles[1].p1.y)
-        .toBe(0);
-      expect(rectangles[1].p2.x)
-        .toBe(100);
-      expect(rectangles[1].p2.y)
-        .toBe(100);
-      expect(rectangles[1].p3.x)
-        .toBe(100);
-      expect(rectangles[1].p3.y)
-        .toBe(100);
+      expect(rectangles[1].p0.x).toBe(0);
+      expect(rectangles[1].p0.y).toBe(0);
+      expect(rectangles[1].p1.x).toBe(100);
+      expect(rectangles[1].p1.y).toBe(0);
+      expect(rectangles[1].p2.x).toBe(100);
+      expect(rectangles[1].p2.y).toBe(100);
+      expect(rectangles[1].p3.x).toBe(100);
+      expect(rectangles[1].p3.y).toBe(100);
     });
   });
 
@@ -227,8 +177,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITX');
 
-        expect(canBeSplit)
-          .toBe(true);
+        expect(canBeSplit).toBe(true);
       });
 
       it('cannot be split if any size is lower than 12', () => {
@@ -241,8 +190,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITX');
 
-        expect(canBeSplit)
-          .toBe(false);
+        expect(canBeSplit).toBe(false);
       });
     });
     describe('when splitting by Y', () => {
@@ -256,8 +204,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITY');
 
-        expect(canBeSplit)
-          .toBe(true);
+        expect(canBeSplit).toBe(true);
       });
 
       it('cannot be split if any size is lower than 12', () => {
@@ -270,8 +217,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITY');
 
-        expect(canBeSplit)
-          .toBe(false);
+        expect(canBeSplit).toBe(false);
       });
     });
     describe('when splitting by diagonnaly', () => {
@@ -286,8 +232,7 @@ describe('Rectangle', () => {
         const canBeSplit = rectangle.canBeSplit('SPLITDLTR');
 
         expect(rectangle.isSquare()).toBe(true);
-        expect(canBeSplit)
-          .toBe(true);
+        expect(canBeSplit).toBe(true);
       });
       it('cannot be split if it is a triangle in Left To Right', () => {
         const rectangle = new Rectangle(
@@ -299,8 +244,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITDLTR');
 
-        expect(canBeSplit)
-          .toBe(false);
+        expect(canBeSplit).toBe(false);
       });
 
       it('cannot be split if it is a triangle in Right to Left', () => {
@@ -313,8 +257,7 @@ describe('Rectangle', () => {
 
         const canBeSplit = rectangle.canBeSplit('SPLITDRTL');
 
-        expect(canBeSplit)
-          .toBe(false);
+        expect(canBeSplit).toBe(false);
       });
     });
   });
@@ -337,7 +280,11 @@ describe('Rectangle', () => {
       ${p(0, 0)}   | ${p(100, 0)}  | ${p(0, 100)}   | ${p(100, 100)} | ${'SQUARE'}
       ${p(0, 0)}   | ${p(50, 0)}   | ${p(0, 100)}   | ${p(100, 100)} | ${'RECTANGLE'}
     `('tells whether is $expected', ({
-      p0, p1, p2, p3, expected,
+      p0,
+      p1,
+      p2,
+      p3,
+      expected,
     }) => {
       const rectangle = new Rectangle(p0, p1, p2, p3);
 
