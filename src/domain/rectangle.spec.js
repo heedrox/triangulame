@@ -13,14 +13,15 @@ describe('Rectangle', () => {
       p(0, 500),
       p(100, 500),
     );
-    rectangle.p0.x = 0;
-    rectangle.p0.y = 50;
-    rectangle.p1.x = 100;
-    rectangle.p1.x = 100;
-    rectangle.p2.x = 0;
-    rectangle.p2.y = 500;
-    rectangle.p3.x = 100;
-    rectangle.p3.y = 500;
+
+    expect(rectangle.p0.x).toBe(0);
+    expect(rectangle.p0.y).toBe(50);
+    expect(rectangle.p1.x).toBe(100);
+    expect(rectangle.p1.y).toBe(50);
+    expect(rectangle.p2.x).toBe(0);
+    expect(rectangle.p2.y).toBe(500);
+    expect(rectangle.p3.x).toBe(100);
+    expect(rectangle.p3.y).toBe(500);
   });
 
   describe('When splitting by X axis', () => {
