@@ -2,9 +2,14 @@ import Phaser from 'phaser';
 import RectanglesCreator from '../domain/rectangles-creator';
 import ingameOgg from '../assets/audio/ingame.ogg';
 import ingameMp3 from '../assets/audio/ingame.mp3';
+import comboOgg from '../assets/audio/combo.ogg';
+import comboMp3 from '../assets/audio/combo.mp3';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
+const COMBO_THEME = 'COMBO_THEME';
+const COMBO_SECS = 1.5;
+const COMBO_MIN_LIMIT = 3;
 
 const getTextPosition = (r, xf, yf) => {
   const type = r.getType();
@@ -91,6 +96,8 @@ class MyGame extends Phaser.Scene {
       r.p2.x * this.xFactor, r.p2.y * this.yFactor,
     ]));
     this.texts = Array(this.rectangles.length).fill(null);
+    this.goalTimes = [];
+    this.setLastComboTimeNow();
   }
 
   preload() {
@@ -98,13 +105,17 @@ class MyGame extends Phaser.Scene {
       ingameOgg,
       ingameMp3,
     ]);
+    this.load.audio(COMBO_THEME, [
+      comboOgg,
+      comboMp3,
+    ]);
 
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     this.loadingText = this.make.text({
       x: w / 2,
       y: h / 2 - 50,
-      text: ['El show está a', 'punto de comenzar.', 'Espera ...'].join('\n'),
+      text: ['El show está a', 'punto de comenzar.', 'Por favor, espera ...'].join('\n'),
       style: {
         font: '60px monospace',
         fill: '#000000',
@@ -120,15 +131,15 @@ class MyGame extends Phaser.Scene {
 
     this.paintScreen(graphics);
 
-    this.input.on('pointerup', (pointer) => {
+    this.input.on('pointerdown', (pointer) => {
       this.checkRectanglePressed(graphics, pointer);
     });
 
-    const music = this.sound.add(INGAME_THEME, {
+    this.music = this.sound.add(INGAME_THEME, {
       volume: 0.25,
       loop: true,
     });
-    music.play();
+    this.music.play();
   }
 
   paintScreen(graphics) {
@@ -179,6 +190,7 @@ class MyGame extends Phaser.Scene {
           if (this.goalId === 1) {
             this.startTimer();
           }
+          this.checkCombo();
           this.goalId += 1;
           this.updateGoal();
           this.removeRectangle(graphics, polygon, this.texts[nr]);
@@ -225,9 +237,9 @@ class MyGame extends Phaser.Scene {
     text.setDepth(1);
     this.tweens.add({
       targets: [newPoly, text],
-      angle: 720 + 360,
+      angle: 360 * 3 * COMBO_SECS,
       ease: 'Linear',
-      duration: 1000,
+      duration: COMBO_SECS * 1000,
       repeat: 0,
       scale: 0,
     });
@@ -257,7 +269,7 @@ class MyGame extends Phaser.Scene {
     const circle = this.add.circle(circleX, circleY, splitSizeX * 0.2, BACKGROUND_PIECE);
     this.goalText = this.add.text(w - splitSizeX / 2, h * 0.925, this.goalId, {
       fontFamily: 'Arial',
-      fontSize: splitSizeX * 0.3,
+      fontSize: splitSizeX * 0.2,
       color: '#000000',
     });
     this.goalText.setOrigin(0.5);
@@ -302,6 +314,7 @@ class MyGame extends Phaser.Scene {
 
       restart.setOrigin(0.5);
       restart.on('pointerup', () => {
+        this.music.stop();
         this.scene.restart();
       });
     }
@@ -315,6 +328,46 @@ class MyGame extends Phaser.Scene {
     const endDate = new Date();
     const diff = endDate.getTime() - this.startDate.getTime();
     return Math.round(diff / 1000);
+  }
+
+  checkCombo() {
+    const gotTime = new Date().getTime() / 1000;
+    if (gotTime - this.lastGoalTime <= COMBO_SECS) {
+      this.goalTimes.push(1);
+      if (this.goalTimes.length >= COMBO_MIN_LIMIT) {
+        this.showCombo(this.goalTimes.length);
+      }
+    } else {
+      this.goalTimes = [1];
+      this.lastGoalTime = gotTime;
+    }
+  }
+
+  showCombo(number) {
+    const comboText = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, `COMBO\nx${number}`, {
+      font: '60px monospace',
+      fill: '#000000',
+      align: 'center',
+      stroke: '#ffffff',
+      strokeThickness: 10,
+    });
+    comboText.setOrigin(0.5);
+    this.add.tween({
+      targets: comboText,
+      alpha: 0,
+      start: { scale: 0 },
+      scale: 10,
+      duration: 1500,
+      ease: Phaser.Math.Easing.Quadratic.Out,
+    });
+    this.sound.add(COMBO_THEME, {
+      volume: 1,
+      loop: false,
+    }).play();
+  }
+
+  setLastComboTimeNow() {
+    this.lastGoalTime = new Date().getTime() / 1000;
   }
 }
 
