@@ -92,13 +92,17 @@ class MyGame extends Phaser.Scene {
   create() {
     const graphics = this.buildGraphics();
 
-    this.rectangles.forEach((rectangle, nr) => {
-      this.addRectangle(graphics, rectangle);
-      this.texts[nr] = this.addTextToRectangle(rectangle);
-    });
+    this.paintScreen(graphics);
 
     this.input.on('pointerup', (pointer) => {
       this.checkRectanglePressed(graphics, pointer);
+    });
+  }
+
+  paintScreen(graphics) {
+    this.rectangles.forEach((rectangle, nr) => {
+      this.addRectangle(graphics, rectangle);
+      this.texts[nr] = this.addTextToRectangle(rectangle);
     });
   }
 
