@@ -4,7 +4,7 @@ class GameEngine {
   }
 
   start() {
-    this.ui.showWelcomeScreen();
+    this.ui.start();
   }
 }
 

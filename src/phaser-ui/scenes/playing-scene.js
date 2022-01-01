@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
-import RectanglesCreator from '../domain/rectangles-creator';
-import ingameOgg from '../assets/audio/ingame.ogg';
-import ingameMp3 from '../assets/audio/ingame.mp3';
-import comboOgg from '../assets/audio/combo.ogg';
-import comboMp3 from '../assets/audio/combo.mp3';
+import RectanglesCreator from '../../domain/rectangles-creator';
+import ingameOgg from '../../assets/audio/ingame.ogg';
+import ingameMp3 from '../../assets/audio/ingame.mp3';
+import comboOgg from '../../assets/audio/combo.ogg';
+import comboMp3 from '../../assets/audio/combo.mp3';
+import SCENE_KEYS from './constants/scene-keys';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
@@ -82,7 +83,14 @@ const getStretch = (textBounds, r, xf, yf) => {
   };
 };
 
-class MyGame extends Phaser.Scene {
+class PlayingScene extends Phaser.Scene {
+  constructor(i18n) {
+    super({
+      key: SCENE_KEYS.PLAYING_SCENE,
+    });
+    this.i18n = i18n;
+  }
+
   init() {
     this.totalGoal = 48;
     this.xFactor = this.game.canvas.width / 100;
@@ -371,22 +379,4 @@ class MyGame extends Phaser.Scene {
   }
 }
 
-const config = {
-  type: Phaser.AUTO,
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-  },
-  backgroundColor: BACKGROUND_PIECE,
-  autoCenter: 1,
-  parent: 'phaser-triangles',
-  width: document.documentElement.clientWidth,
-  height: document.documentElement.clientHeight,
-  scene: MyGame,
-};
-
-const start = () => {
-// eslint-disable-next-line no-unused-vars
-  const game = new Phaser.Game(config);
-};
-
-export default { start };
+export default PlayingScene;

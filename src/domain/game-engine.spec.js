@@ -1,14 +1,14 @@
 import GameEngine from './game-engine';
 
 describe('Game Engine', () => {
-  it('starts with welcome screen', () => {
+  it('starts UI when starts', () => {
     const mockUi = {
-      showWelcomeScreen: jest.fn(),
+      start: jest.fn(),
     };
     const gameEngine = new GameEngine(mockUi);
 
     gameEngine.start();
 
-    expect(mockUi.showWelcomeScreen.mock.calls.length).toBe(1);
+    expect(mockUi.start.mock.calls.length).toBe(1);
   });
 });
