@@ -35,9 +35,13 @@ class PhaserUi {
   getNameAndRoom() {
     return new Promise((resolve) => {
       this.game.scene.start(SCENE_KEYS.WELCOME_SCENE, {
-        oncomplete: (name, room) => {
+        oncomplete: ({ name, room }) => {
+          localStorage.setItem('previousName', name);
+          localStorage.setItem('previousRoom', room);
           resolve({ name, room });
         },
+        previousName: localStorage.getItem('previousName'),
+        previousRoom: localStorage.getItem('previousRoom'),
       });
     });
   }
