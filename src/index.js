@@ -1,3 +1,3 @@
-import Game from './phaser/game';
+import Game from './phaser-ui/game';
 
 Game.start();
