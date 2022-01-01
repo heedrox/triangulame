@@ -4,6 +4,8 @@ import PhaserUi from './phaser-ui';
 import I18n from './i18n';
 
 const i18n = new I18n();
+i18n.init();
+
 const ui = new PhaserUi(i18n);
 
 const gameEngine = new GameEngine(ui);

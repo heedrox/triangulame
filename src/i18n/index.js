@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import es from './es';
 
 class I18n {
   constructor() {
@@ -8,16 +9,12 @@ class I18n {
   init() {
     this.i18next.init({
       lng: navigator.language,
-      fallbackLng: 'es-ES',
+      fallbackLng: 'es',
       supportedLngs: ['es', 'en'],
       nonExplicitSupportedLngs: true,
-      debug: true,
+      debug: false,
       resources: {
-        es: {
-          translation: {
-            key: 'hello world',
-          },
-        },
+        es,
       },
     });
   }

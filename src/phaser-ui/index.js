@@ -15,6 +15,9 @@ const config = {
   parent: 'phaser-triangles',
   width: document.documentElement.clientWidth,
   height: document.documentElement.clientHeight,
+  dom: {
+    createContainer: true,
+  },
   scene: [],
 };
 
@@ -30,8 +33,13 @@ class PhaserUi {
   }
 
   getNameAndRoom() {
-    this.game.scene.start(SCENE_KEYS.WELCOME_SCENE);
-    return Promise.resolve({ name: 'name', room: 'room' });
+    return new Promise((resolve) => {
+      this.game.scene.start(SCENE_KEYS.WELCOME_SCENE, {
+        oncomplete: (name, room) => {
+          resolve({ name, room });
+        },
+      });
+    });
   }
 
   playGame(room) {
