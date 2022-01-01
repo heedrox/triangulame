@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import GameEngine from './domain/game-engine';
 import PhaserUi from './phaser-ui';
 import I18n from './i18n';

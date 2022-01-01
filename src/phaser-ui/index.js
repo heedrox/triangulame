@@ -27,7 +27,15 @@ class PhaserUi {
     this.game = new Phaser.Game(config);
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));
+  }
+
+  getNameAndRoom() {
     this.game.scene.start(SCENE_KEYS.WELCOME_SCENE);
+    return Promise.resolve({ name: 'name', room: 'room' });
+  }
+
+  playGame(room) {
+    this.game.scene.start(SCENE_KEYS.PLAYING_SCENE);
   }
 }
 

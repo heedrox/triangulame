@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "i18next": "^21.6.4",
-    "phaser": "^3.50.0"
+    "phaser": "^3.50.0",
+    "babel-polyfill": "^6.26.0"
   }
 }

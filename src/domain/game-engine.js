@@ -3,8 +3,10 @@ class GameEngine {
     this.ui = ui;
   }
 
-  start() {
+  async start() {
     this.ui.start();
+    const { room } = await this.ui.getNameAndRoom();
+    this.ui.playGame({ room });
   }
 }
 
