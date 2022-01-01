@@ -1,5 +1,4 @@
 import GameEngine from './game-engine';
-import 'babel-polyfill';
 
 const MOCK_UI = () => ({
   start: jest.fn(),
