@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
-import PlayingScene from './scenes/playing-scene';
 import WelcomeScene from './scenes/welcome-scene';
+import PlayersScene from './scenes/players-scene';
+import PlayingScene from './scenes/playing-scene';
 import SCENE_KEYS from './scenes/constants/scene-keys';
 
 const BACKGROUND_PIECE = 0xcccc00;
@@ -29,12 +30,14 @@ class PhaserUi {
   start() {
     this.game = new Phaser.Game(config);
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
+    this.game.scene.add(SCENE_KEYS.PLAYERS_SCENE, new PlayersScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));
   }
 
-  getNameAndRoom() {
+  getNameAndRoom({ checkValidity }) {
     return new Promise((resolve) => {
       this.game.scene.start(SCENE_KEYS.WELCOME_SCENE, {
+        checkValidity,
         oncomplete: ({ name, room }) => {
           localStorage.setItem('previousName', name);
           localStorage.setItem('previousRoom', room);
@@ -44,6 +47,10 @@ class PhaserUi {
         previousRoom: localStorage.getItem('previousRoom'),
       });
     });
+  }
+
+  waitForPlayers(room) {
+    this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE);
   }
 
   playGame(room) {

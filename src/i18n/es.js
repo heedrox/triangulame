@@ -5,6 +5,7 @@ const es = ({
     name: 'Tu nombre',
     room: 'Sala común',
     'room-info': '* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala (distingue mayúsc. / minúsc.)',
+    'room-not-available': 'Esta sala no está disponible.\nIntroduce otra, por favor.',
   },
 });
 

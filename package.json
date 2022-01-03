@@ -35,8 +35,9 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "firebase": "^9.6.1",
     "i18next": "^21.6.4",
-    "phaser": "^3.50.0",
-    "babel-polyfill": "^6.26.0"
+    "phaser": "^3.50.0"
   }
 }

@@ -14,6 +14,7 @@ class WelcomeScene extends Phaser.Scene {
     this.oncomplete = data.oncomplete;
     this.previousName = data.previousName;
     this.previousRoom = data.previousRoom;
+    this.checkValidity = data.checkValidity;
   }
 
   create() {
@@ -76,16 +77,46 @@ class WelcomeScene extends Phaser.Scene {
     });
   }
 
-  clickStart() {
+  async clickStart() {
     const name = this.form.getChildByID('name').value.trim();
     const room = this.form.getChildByID('room').value.trim();
     if (name !== '' && room !== '') {
-      this.scene.stop();
-      this.oncomplete({
-        name,
-        room,
-      });
+      const isValid = await this.checkValidity(room);
+      if (isValid) {
+        this.scene.stop();
+        this.oncomplete({
+          name,
+          room,
+        });
+      } else {
+        this.showRoomNotAvailable();
+      }
     }
+  }
+
+  showRoomNotAvailable() {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    const errorTxt = this.add.text(w / 2, h + 100, this.i18n.get('room-not-available'), {
+      font: '48px monospace',
+      fill: '#cc0000',
+      align: 'center',
+    }).setOrigin(0.5, 0.5);
+
+    this.add.tween({
+      targets: [errorTxt],
+      duration: 1000,
+      y: h * 0.75,
+      ease: 'Power2',
+    });
+    this.add.tween({
+      targets: [errorTxt],
+      duration: 2000,
+      delay: 2000,
+      alpha: 0,
+      ease: 'Power2',
+    });
   }
 }
 

@@ -1,12 +1,25 @@
+import {
+  get, set, ref,
+} from 'firebase/database';
+import { db } from '../firebase/app';
+import GAME_STATUS from './game-status';
+
 class GameEngine {
-  constructor(ui) {
+  constructor(ui, repository) {
     this.ui = ui;
+    this.repository = repository;
   }
 
   async start() {
     this.ui.start();
-    const { room } = await this.ui.getNameAndRoom();
-    this.ui.playGame({ room });
+    const { room } = await this.ui.getNameAndRoom({
+      checkValidity: async (rName) => {
+        const aGame = await this.repository.game.get(rName);
+        return !aGame || aGame.status === GAME_STATUS.WAITING_FOR_PLAYERS || !aGame.status;
+      },
+    });
+
+    this.ui.waitForPlayers({ room });
   }
 }
 
