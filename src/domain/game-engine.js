@@ -19,6 +19,10 @@ class GameEngine {
       },
     });
 
+    const aGame = await this.repository.game.get(room);
+    if (!aGame) {
+      await this.repository.game.create(room);
+    }
     this.ui.waitForPlayers({ room });
   }
 }
