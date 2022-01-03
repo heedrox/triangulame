@@ -1,5 +1,6 @@
 import GameEngine from './game-engine';
 import GAME_STATUS from './game-status';
+import Game from './game';
 
 const MOCK_UI = () => ({
   start: jest.fn(),
@@ -38,8 +39,8 @@ describe('Game Engine', () => {
   it.each`
     game                                           | expected
     ${null}                                        | ${true}
-    ${{ status: GAME_STATUS.WAITING_FOR_PLAYERS }} | ${true}
-    ${{ status: GAME_STATUS.FINISHED }}            | ${false}
+    ${new Game({ status: GAME_STATUS.WAITING_FOR_PLAYERS })} | ${true}
+    ${new Game({ status: GAME_STATUS.FINISHED })}            | ${false}
   `('when checking room is valid - #game', async ({ game, expected }) => {
     const mockUi = MOCK_UI();
     const repository = {
@@ -61,7 +62,7 @@ describe('Game Engine', () => {
   describe('handles creation of room game', () => {
     it.each`
      explanation              | game                                           | callsExpected
-     ${'room exists'}         | ${{ status: GAME_STATUS.WAITING_FOR_PLAYERS }} | ${0}
+     ${'room exists'}         | ${new Game({ status: GAME_STATUS.WAITING_FOR_PLAYERS })} | ${0}
      ${'room does not exist'} | ${null}                                        | ${1}
     `('creates room if it does not exist. case #explanation', async ({ game, callsExpected }) => {
       const mockUi = MOCK_UI();

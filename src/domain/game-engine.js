@@ -3,6 +3,7 @@ import {
 } from 'firebase/database';
 import { db } from '../firebase/app';
 import GAME_STATUS from './game-status';
+import Game from './game';
 
 class GameEngine {
   constructor(ui, repository) {
@@ -21,7 +22,8 @@ class GameEngine {
 
     const aGame = await this.repository.game.get(room);
     if (!aGame) {
-      await this.repository.game.create({ id: room, status: GAME_STATUS.WAITING_FOR_PLAYERS });
+      const newGame = new Game({ id: room });
+      await this.repository.game.create(newGame);
     }
     this.ui.waitForPlayers({ room });
   }
