@@ -21,7 +21,7 @@ class GameEngine {
 
     const aGame = await this.repository.game.get(room);
     if (!aGame) {
-      await this.repository.game.create(room);
+      await this.repository.game.create({ id: room, status: GAME_STATUS.WAITING_FOR_PLAYERS });
     }
     this.ui.waitForPlayers({ room });
   }

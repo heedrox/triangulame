@@ -76,6 +76,20 @@ describe('Game Engine', () => {
 
       expect(repository.game.create.mock.calls.length).toBe(callsExpected);
     });
+
+    it('creates game in WAITING_FOR_PLAYER status', async () => {
+      const mockUi = MOCK_UI();
+      const repository = {
+        game: {
+          get: jest.fn(() => Promise.resolve(null)),
+          create: jest.fn(),
+        },
+      };
+      const gameEngine = new GameEngine(mockUi, repository);
+      await gameEngine.start();
+
+      expect(repository.game.create.mock.calls[0][0].status).toBe(GAME_STATUS.WAITING_FOR_PLAYERS);
+    });
   });
 
   it('waits for players in the returned room', async () => {

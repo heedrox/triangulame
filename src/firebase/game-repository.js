@@ -1,4 +1,4 @@
-import { get, ref } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 
 class GameRepository {
   constructor(db) {
@@ -9,6 +9,11 @@ class GameRepository {
     const roomRef = ref(this.db, `games/${roomName}`);
     const room = await get(roomRef);
     return room.val();
+  }
+
+  async create(room) {
+    const roomRef = ref(this.db, `games/${room.id}`);
+    set(roomRef, room);
   }
 }
 
