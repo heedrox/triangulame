@@ -7,14 +7,15 @@ class GameRepository {
   }
 
   async get(roomName) {
-    const roomRef = ref(this.db, `games/${roomName}`);
-    const room = await get(roomRef);
-    return new Game(room.val());
+    const gameRef = ref(this.db, `games/${roomName}`);
+    const gameSnapshot = await get(gameRef);
+    const game = gameSnapshot.val();
+    return game ? new Game(game) : null;
   }
 
   async create(room) {
-    const roomRef = ref(this.db, `games/${room.id}`);
-    return set(roomRef, room);
+    const gameRef = ref(this.db, `games/${room.id}`);
+    return set(gameRef, room);
   }
 }
 
