@@ -1,5 +1,5 @@
 import Rectangle from './rectangle';
-import defaultOperationProvider from '../random-provider/default-operation-provider';
+import defaultOperationProvider from '../lib/random-provider/default-operation-provider';
 import shuffleArray from '../lib/shuffle-array';
 import p from './point';
 

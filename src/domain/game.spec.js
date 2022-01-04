@@ -25,6 +25,14 @@ describe('Game', () => {
 
       expect(game.status).toBe(GAME_STATUS.WAITING_FOR_PLAYERS);
     });
+
+    it('a game created without players, creates with empty object', () => {
+      const game = new Game({
+        id: 'ID',
+      });
+
+      expect(game.players).toEqual({});
+    });
   });
 
   it('tells whether can be joined', () => {

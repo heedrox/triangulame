@@ -3,6 +3,7 @@ import WelcomeScene from './scenes/welcome-scene';
 import PlayersScene from './scenes/players-scene';
 import PlayingScene from './scenes/playing-scene';
 import SCENE_KEYS from './scenes/constants/scene-keys';
+import eventsCenter from './events-center';
 
 const BACKGROUND_PIECE = 0xcccc00;
 
@@ -25,6 +26,7 @@ const config = {
 class PhaserUi {
   constructor(i18n) {
     this.i18n = i18n;
+    this.eventsCenter = eventsCenter;
   }
 
   start() {
@@ -50,11 +52,15 @@ class PhaserUi {
   }
 
   waitForPlayers(room) {
-    this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE);
+    this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE, { room });
+  }
+
+  updatePlayers(players) {
+    this.eventsCenter.emit('players.updated', { players });
   }
 
   playGame(room) {
-    this.game.scene.start(SCENE_KEYS.PLAYING_SCENE);
+    this.game.scene.start(SCENE_KEYS.PLAYING_SCENE, { room });
   }
 }
 

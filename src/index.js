@@ -9,8 +9,9 @@ i18n.init();
 
 const ui = new PhaserUi(i18n);
 const repository = new FirebaseRepository();
+const localDb = localStorage;
 
-const gameEngine = new GameEngine(ui, repository);
+const gameEngine = new GameEngine(ui, repository, localDb);
 
 (async () => {
   await gameEngine.start();
