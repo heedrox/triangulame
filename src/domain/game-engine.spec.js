@@ -20,6 +20,8 @@ const MOCK_REPOSITORY = () => ({
     create: jest.fn(() => Promise.resolve({})),
     watch: () => {},
     addPlayer: jest.fn(() => Promise.resolve({})),
+    keepPlayerAlive: jest.fn(() => Promise.resolve({})),
+    updatePlayers: jest.fn(() => Promise.resolve({})),
   },
 });
 
@@ -162,5 +164,41 @@ describe('Game Engine', () => {
     await gameEngine.start();
 
     expect(mockUi.updatePlayers.mock.calls.length).toBe(0);
+  });
+
+  it('keep players alive so that they can now they are still connected', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
+    await gameEngine.start();
+
+    expect(repository.game.keepPlayerAlive.mock.calls.length).toBe(1);
+  });
+
+  it('removes users that are not me and have not been seen more than 10 secs ago', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    const db = localDb();
+    db.setItem('uuid', 'uid1');
+    repository.game.watch = jest.fn((room, path, cbk) => {
+      cbk({
+        uid1: { name: 'n1', lastSeen: 1641321420891 },
+        uid2: { name: 'n2', lastSeen: 1641321420891 - 11000 },
+      });
+    });
+
+    const gameEngine = new GameEngine(mockUi, repository, db);
+    await gameEngine.start();
+
+    expect(mockUi.updatePlayers.mock.calls.length).toBe(1);
+    expect(mockUi.updatePlayers.mock.calls[0][0]).toEqual({
+      uid1: { name: 'n1', lastSeen: 1641321420891 },
+    });
+    expect(repository.game.updatePlayers.mock.calls.length).toBe(1);
+    expect(repository.game.updatePlayers.mock.calls[0][0]).toEqual('ROOM');
+    expect(repository.game.updatePlayers.mock.calls[0][1]).toEqual({
+      uid1: { name: 'n1', lastSeen: 1641321420891 },
+    });
   });
 });

@@ -2,6 +2,21 @@ import { v4 as uuidv4 } from 'uuid';
 import GAME_STATUS from './game-status';
 import Game from './game';
 
+const removePlayersAgoSecs = (myId, players, secs) => {
+  const newPlayers = JSON.parse(JSON.stringify(players));
+  const myPlayer = players[myId];
+  if (!myPlayer) return [myId];
+  const myLastSeen = myPlayer.lastSeen;
+  Object.keys(players).forEach((id) => {
+    if (players[id].lastSeen && players[id].lastSeen < myLastSeen - secs * 1000) {
+      delete newPlayers[id];
+    } else if (players[id].lastSeen === null) {
+      delete newPlayers[id];
+    }
+  });
+  return newPlayers;
+};
+
 class GameEngine {
   constructor(ui, repository, localDb) {
     this.ui = ui;
@@ -25,8 +40,12 @@ class GameEngine {
     }
     const id = this.getPlayerId();
     await this.repository.game.addPlayer(room, { id, name });
+    await this.repository.game.keepPlayerAlive(room, id);
+
     this.repository.game.watch(room, '/players', (players) => {
-      this.ui.updatePlayers(players);
+      const newPlayers = removePlayersAgoSecs(id, players, 10);
+      this.ui.updatePlayers(newPlayers);
+      this.repository.game.updatePlayers(room, newPlayers);
     });
     await this.ui.waitForPlayers({ room });
   }

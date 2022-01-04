@@ -1,5 +1,5 @@
 import {
-  get, ref, set, onValue, update,
+  get, ref, set, onValue, update, remove, serverTimestamp,
 } from 'firebase/database';
 import Game from '../domain/game';
 
@@ -26,8 +26,26 @@ class GameRepository {
   }
 
   async addPlayer(room, player) {
-    const playersRef = ref(this.db, `games/${room.id}/players`);
+    const playersRef = ref(this.db, `games/${room}/players`);
     return update(playersRef, { [player.id]: player });
+  }
+
+  async removePlayer(room, player) {
+    const playerRef = ref(this.db, `games/${room}/players/${player.id}`);
+    return remove(playerRef);
+  }
+
+  async updatePlayers(room, players) {
+    const playersRef = ref(this.db, `games/${room}/players`);
+    return set(playersRef, players);
+  }
+
+  async keepPlayerAlive(room, id) {
+    setInterval(() => {
+      console.log('updateo');
+      const playerRef = ref(this.db, `games/${room}/players/${id}`);
+      return update(playerRef, { lastSeen: serverTimestamp() });
+    }, 5000);
   }
 }
 
