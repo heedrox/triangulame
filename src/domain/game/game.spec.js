@@ -1,5 +1,5 @@
 import Game from './game';
-import GAME_STATUS from './game-status';
+import GAME_STATUS from '../game-status';
 
 describe('Game', () => {
   describe('#constructor', () => {

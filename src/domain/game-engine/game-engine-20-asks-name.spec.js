@@ -1,9 +1,9 @@
 import GameEngine from './game-engine';
-import GAME_STATUS from './game-status';
-import Game from './game';
-import LocalStorageMock from '../../tests/local-storage-mock';
-import MOCK_REPOSITORY from '../../tests/mock-repository';
-import MOCK_UI from '../../tests/mock-ui';
+import GAME_STATUS from '../game-status';
+import Game from '../game/game';
+import LocalStorageMock from '../../../tests/local-storage-mock';
+import MOCK_REPOSITORY from '../../../tests/mock-repository';
+import MOCK_UI from '../../../tests/mock-ui';
 
 const localDb = () => new LocalStorageMock();
 

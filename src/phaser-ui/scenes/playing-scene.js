@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import RectanglesCreator from '../../domain/rectangles-creator';
+import RectanglesCreator from '../../domain/rectangles-creator/rectangles-creator';
 import ingameOgg from '../../assets/audio/ingame.ogg';
 import ingameMp3 from '../../assets/audio/ingame.mp3';
 import comboOgg from '../../assets/audio/combo.ogg';

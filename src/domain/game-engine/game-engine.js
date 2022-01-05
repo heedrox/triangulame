@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import GAME_STATUS from './game-status';
-import Game from './game';
+import GAME_STATUS from '../game-status';
+import Game from '../game/game';
 
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));

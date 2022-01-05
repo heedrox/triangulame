@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import GameEngine from './domain/game-engine';
+import GameEngine from './domain/game-engine/game-engine';
 import PhaserUi from './phaser-ui';
 import I18n from './i18n';
 import FirebaseRepository from './firebase/firebase-repository';

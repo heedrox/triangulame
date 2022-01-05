@@ -1,4 +1,4 @@
-import GAME_STATUS from './game-status';
+import GAME_STATUS from '../game-status';
 
 class Game {
   constructor(options) {

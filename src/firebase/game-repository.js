@@ -1,7 +1,7 @@
 import {
   get, ref, set, onValue, update, remove, serverTimestamp,
 } from 'firebase/database';
-import Game from '../domain/game';
+import Game from '../domain/game/game';
 
 class GameRepository {
   constructor(db) {
