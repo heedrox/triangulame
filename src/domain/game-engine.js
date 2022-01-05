@@ -10,7 +10,7 @@ const removePlayersAgoSecs = (myId, players, secs) => {
   Object.keys(players).forEach((id) => {
     if (players[id].lastSeen && players[id].lastSeen < myLastSeen - secs * 1000) {
       delete newPlayers[id];
-    } else if (players[id].lastSeen === null) {
+    } else if (players[id].lastSeen === null || players[id].lastSeen === undefined) {
       delete newPlayers[id];
     }
   });

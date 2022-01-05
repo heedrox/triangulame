@@ -51,7 +51,7 @@ class PhaserUi {
     });
   }
 
-  waitForPlayers(room) {
+  waitForPlayers({ room }) {
     this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE, { room });
   }
 

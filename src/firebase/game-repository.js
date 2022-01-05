@@ -27,7 +27,12 @@ class GameRepository {
 
   async addPlayer(room, player) {
     const playersRef = ref(this.db, `games/${room}/players`);
-    return update(playersRef, { [player.id]: player });
+    return update(playersRef, {
+      [player.id]: {
+        ...player,
+        lastSeen: serverTimestamp(),
+      },
+    });
   }
 
   async removePlayer(room, player) {
@@ -42,7 +47,6 @@ class GameRepository {
 
   async keepPlayerAlive(room, id) {
     setInterval(() => {
-      console.log('updateo');
       const playerRef = ref(this.db, `games/${room}/players/${id}`);
       return update(playerRef, { lastSeen: serverTimestamp() });
     }, 5000);
