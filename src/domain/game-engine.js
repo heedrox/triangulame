@@ -31,6 +31,7 @@ class GameEngine {
     const id = this.getPlayerId();
     await this.addPlayerToGame(id, room, name);
     await this.waitForPlayers(id, room);
+    await this.ui.playGame();
   }
 
   async getNameAndRoom() {

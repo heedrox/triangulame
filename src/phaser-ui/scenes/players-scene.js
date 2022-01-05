@@ -17,10 +17,12 @@ class PlayersScene extends Phaser.Scene {
     this.eventsCenter = eventsCenter;
     this.texts = [];
     this.sortedPlayers = [];
+    this.oncomplete = null;
   }
 
   init(data) {
     this.room = data.room;
+    this.oncomplete = data.oncomplete;
   }
 
   create() {
@@ -135,14 +137,15 @@ class PlayersScene extends Phaser.Scene {
   updateStartOrWarnTextVisibility(myId) {
     this.warnText.setText(this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }));
     const wVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id !== myId;
-    const bVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id === myId;
+    const bVisible = this.sortedPlayers.length >= 2 && this.sortedPlayers[0].id === myId;
     this.warnText.setVisible(wVisible);
     this.startButton.setVisible(bVisible);
     this.rectangle.setVisible(bVisible);
   }
 
   clickStart() {
-
+    this.scene.stop();
+    this.oncomplete();
   }
 }
 

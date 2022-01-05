@@ -52,7 +52,12 @@ class PhaserUi {
   }
 
   waitForPlayers({ room }) {
-    this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE, { room });
+    return new Promise((resolve) => {
+      this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE, {
+        room,
+        oncomplete: () => resolve(),
+      });
+    });
   }
 
   updatePlayers(players, myId) {
