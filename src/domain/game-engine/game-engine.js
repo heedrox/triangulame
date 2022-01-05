@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import GAME_STATUS from '../game-status';
 import Game from '../game/game';
+import RectanglesCreator from '../rectangles-creator/rectangles-creator';
+
+const GAME_GOAL = 48;
 
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));
@@ -31,7 +34,7 @@ class GameEngine {
     const id = this.getPlayerId();
     await this.addPlayerToGame(id, room, name);
     await this.waitForPlayers(id, room);
-    await this.ui.playGame();
+    await this.playGame(room);
   }
 
   async getNameAndRoom() {
@@ -60,7 +63,7 @@ class GameEngine {
     this.repository.game.watch(room, '/players', (players) => {
       const alivePlayers = removePlayersAgoSecs(id, players, 10);
       this.ui.updatePlayers(alivePlayers, id);
-      this.repository.game.updatePlayers(room, alivePlayers);
+      this.repository.game.update(room, { players: alivePlayers });
     });
     await this.ui.waitForPlayers({ room });
   }
@@ -70,6 +73,14 @@ class GameEngine {
     if (id) return id;
     this.localDb.setItem('uuid', uuidv4());
     return this.localDb.getItem('uuid');
+  }
+
+  async playGame(room) {
+    const rectangles = new RectanglesCreator().build(GAME_GOAL);
+    await this.repository.game.update(room, {
+      status: GAME_STATUS.PLAYING,
+      rectangles,
+    });
   }
 }
 

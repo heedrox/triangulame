@@ -6,6 +6,7 @@ const MOCK_REPOSITORY = () => ({
     addPlayer: jest.fn(() => Promise.resolve({})),
     keepPlayerAlive: jest.fn(() => Promise.resolve({})),
     updatePlayers: jest.fn(() => Promise.resolve({})),
+    update: jest.fn(),
   },
 });
 

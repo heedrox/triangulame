@@ -20,6 +20,11 @@ class GameRepository {
     return set(gameRef, room);
   }
 
+  async update(roomId, game) {
+    const gameRef = ref(this.db, `games/${roomId}`);
+    return update(gameRef, game);
+  }
+
   watch(room, path, callback) {
     const pathRef = ref(this.db, `games/${room}/${path}`);
     onValue(pathRef, (snapshot) => callback(snapshot.val()));
@@ -40,14 +45,9 @@ class GameRepository {
     return remove(playerRef);
   }
 
-  async updatePlayers(room, players) {
-    const playersRef = ref(this.db, `games/${room}/players`);
-    return set(playersRef, players);
-  }
-
-  async keepPlayerAlive(room, id) {
+  async keepPlayerAlive(roomId, id) {
     setInterval(() => {
-      const playerRef = ref(this.db, `games/${room}/players/${id}`);
+      const playerRef = ref(this.db, `games/${roomId}/players/${id}`);
       return update(playerRef, { lastSeen: serverTimestamp() });
     }, 5000);
   }
