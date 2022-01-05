@@ -15,6 +15,8 @@ class PlayersScene extends Phaser.Scene {
     });
     this.i18n = i18n;
     this.eventsCenter = eventsCenter;
+    this.texts = [];
+    this.sortedPlayers = [];
   }
 
   init(data) {
@@ -22,7 +24,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   create() {
-    const updatePlayersFn = (data) => this.updatePlayers(data.players);
+    const updatePlayersFn = (data) => this.updatePlayers(data.players, data.myId);
     this.eventsCenter.on('players.updated', updatePlayersFn);
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -31,6 +33,7 @@ class PlayersScene extends Phaser.Scene {
 
     this.addRoomName();
     this.texts = this.createRectanglesForNames();
+    this.addStartButton();
   }
 
   addRoomName() {
@@ -63,17 +66,16 @@ class PlayersScene extends Phaser.Scene {
       .setStrokeStyle(10, 0xffffff)
       .setOrigin(0.5, 0.5);
 
-    const text = this.add.text(x, y, '          ', {
+    return this.add.text(x, y, '          ', {
       font: '60px monospace',
       fill: '#000',
       align: 'center',
     }).setOrigin(0.5, 0.5);
-
-    return text;
   }
 
-  updatePlayers(players) {
+  updatePlayers(players, myId) {
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
+    this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {
       this.texts[idx].setText(player.name);
     });
@@ -81,6 +83,66 @@ class PlayersScene extends Phaser.Scene {
     restToEmpty.forEach((idxEmpty) => {
       this.texts[idxEmpty].setText('');
     });
+    this.updateStartOrWarnTextVisibility(myId);
+  }
+
+  addStartButton() {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    this.startButton = this.add.text(w / 2, h, this.i18n.get('start'), {
+      font: '60px monospace',
+      fill: '#000',
+      align: 'center',
+      strokeThickness: 5,
+    }).setOrigin(0.5, 0.5)
+      .setVisible(false);
+
+    this.startButton.setY(h - 200 - this.startButton.height);
+
+    this.rectangle = this.add
+      .rectangle(
+        w / 2,
+        h - 200 - this.startButton.height,
+        this.startButton.width + 50,
+        this.startButton.height + 25,
+        0x000000,
+        0.1,
+      )
+      .setStrokeStyle(10, 0xffffff)
+      .setOrigin(0.5, 0.5)
+      .setVisible(false)
+      .setInteractive()
+      .on('pointerdown', this.clickStart, this);
+
+    this.warnText = this.add.text(w / 2, h - 200, this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }), {
+      font: '36px monospace',
+      fill: '#000',
+      align: 'center',
+    }).setVisible(false)
+      .setOrigin(0.5, 0.5);
+
+    this.updateStartOrWarnTextVisibility('');
+  }
+
+  getMainPlayer() {
+    if (this.sortedPlayers && this.sortedPlayers.length >= 1) {
+      return this.sortedPlayers[0];
+    }
+    return { name: '' };
+  }
+
+  updateStartOrWarnTextVisibility(myId) {
+    this.warnText.setText(this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }));
+    const wVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id !== myId;
+    const bVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id === myId;
+    this.warnText.setVisible(wVisible);
+    this.startButton.setVisible(bVisible);
+    this.rectangle.setVisible(bVisible);
+  }
+
+  clickStart() {
+
   }
 }
 

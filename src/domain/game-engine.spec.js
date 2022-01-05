@@ -195,6 +195,7 @@ describe('Game Engine', () => {
     expect(mockUi.updatePlayers.mock.calls[0][0]).toEqual({
       uid1: { name: 'n1', lastSeen: 1641321420891 },
     });
+    expect(mockUi.updatePlayers.mock.calls[0][1]).toEqual('uid1');
     expect(repository.game.updatePlayers.mock.calls.length).toBe(1);
     expect(repository.game.updatePlayers.mock.calls[0][0]).toEqual('ROOM');
     expect(repository.game.updatePlayers.mock.calls[0][1]).toEqual({

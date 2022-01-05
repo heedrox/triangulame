@@ -26,26 +26,40 @@ class GameEngine {
 
   async start() {
     this.ui.start();
-    const { name, room } = await this.ui.getNameAndRoom({
+    const { name, room } = await this.getNameAndRoom();
+    await this.createGameIfNotExists(room);
+    const id = this.getPlayerId();
+    await this.addPlayerToGame(id, room, name);
+    await this.waitForPlayers(id, room);
+  }
+
+  async getNameAndRoom() {
+    return this.ui.getNameAndRoom({
       checkValidity: async (rName) => {
         const aGame = await this.repository.game.get(rName);
         return !aGame || aGame.status === GAME_STATUS.WAITING_FOR_PLAYERS || !aGame.status;
       },
     });
+  }
 
+  async createGameIfNotExists(room) {
     const aGame = await this.repository.game.get(room);
     if (!aGame) {
       const newGame = new Game({ id: room });
       await this.repository.game.create(newGame);
     }
-    const id = this.getPlayerId();
+  }
+
+  async addPlayerToGame(id, room, name) {
     await this.repository.game.addPlayer(room, { id, name });
     await this.repository.game.keepPlayerAlive(room, id);
+  }
 
+  async waitForPlayers(id, room) {
     this.repository.game.watch(room, '/players', (players) => {
-      const newPlayers = removePlayersAgoSecs(id, players, 10);
-      this.ui.updatePlayers(newPlayers);
-      this.repository.game.updatePlayers(room, newPlayers);
+      const alivePlayers = removePlayersAgoSecs(id, players, 10);
+      this.ui.updatePlayers(alivePlayers, id);
+      this.repository.game.updatePlayers(room, alivePlayers);
     });
     await this.ui.waitForPlayers({ room });
   }

@@ -19,8 +19,8 @@ class I18n {
     });
   }
 
-  get(key) {
-    return this.i18next.t(key);
+  get(...data) {
+    return this.i18next.t(...data);
   }
 }
 
