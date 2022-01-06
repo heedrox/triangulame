@@ -3,7 +3,7 @@ import GAME_STATUS from '../game-status';
 import Game from '../game/game';
 import RectanglesCreator from '../rectangles-creator/rectangles-creator';
 
-const GAME_GOAL = 48;
+const GAME_GOAL = 6;
 
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));
@@ -89,12 +89,27 @@ class GameEngine {
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
-      this.ui.playGame(this.game);
+      this.ui.playGame(this.game, {
+        onFinish: (totalSecs) => {
+          this.updateGameStatusToEnd(totalSecs);
+        },
+      });
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.playerId, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.playerId);
       this.repository.game.update(newGame.id, { players: alivePlayers });
+    } else if (previousStatus === GAME_STATUS.PLAYING
+      && this.game.status === GAME_STATUS.FINISHED) {
+      this.ui.endGame(this.game);
     }
+  }
+
+  async updateGameStatusToEnd(totalSecs) {
+    this.repository.game.update(this.game.id, {
+      status: GAME_STATUS.FINISHED,
+      winner: this.playerId,
+      winnerSecs: totalSecs,
+    });
   }
 }
 

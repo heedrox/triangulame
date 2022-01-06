@@ -28,7 +28,7 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    expect(repository.game.update.mock.calls[0][1].rectangles.length >= 30).toBeTruthy();
+    expect(repository.game.update.mock.calls[0][1].rectangles.length >= 4).toBeTruthy();
   });
 
   describe('when status changes, handles start of game', () => {

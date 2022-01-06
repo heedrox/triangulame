@@ -4,6 +4,7 @@ import PlayersScene from './scenes/players-scene';
 import PlayingScene from './scenes/playing-scene';
 import SCENE_KEYS from './scenes/constants/scene-keys';
 import eventsCenter from './events-center';
+import EndingScene from './scenes/ending-scene';
 
 const BACKGROUND_PIECE = 0xcccc00;
 
@@ -34,6 +35,7 @@ class PhaserUi {
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYERS_SCENE, new PlayersScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));
+    this.game.scene.add(SCENE_KEYS.ENDING_SCENE, new EndingScene(this.i18n));
   }
 
   getNameAndRoom({ checkValidity }) {
@@ -62,12 +64,20 @@ class PhaserUi {
     this.eventsCenter.emit('players.updated', { players, myId });
   }
 
-  playGame(room) {
+  playGame(game, callbacks) {
     this.game.scene.stop(SCENE_KEYS.PLAYERS_SCENE);
     this.game.scene.start(SCENE_KEYS.PLAYING_SCENE, {
-      room: room.id,
-      players: room.players,
-      rectangles: room.rectangles,
+      room: game.id,
+      players: game.players,
+      rectangles: game.rectangles,
+      onFinish: (totalSecs) => callbacks.onFinish(totalSecs),
+    });
+  }
+
+  endGame(game) {
+    this.game.scene.stop(SCENE_KEYS.PLAYING_SCENE);
+    this.game.scene.start(SCENE_KEYS.ENDING_SCENE, {
+      game,
     });
   }
 }

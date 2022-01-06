@@ -7,6 +7,7 @@ const MOCK_UI = () => ({
   waitForPlayers: jest.fn(),
   updatePlayers: jest.fn(),
   playGame: jest.fn(),
+  endGame: jest.fn(),
 });
 
 export default MOCK_UI;

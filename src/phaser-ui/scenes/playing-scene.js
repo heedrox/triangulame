@@ -112,6 +112,7 @@ class PlayingScene extends Phaser.Scene {
     this.texts = Array(this.rectangles.length).fill(null);
     this.goalTimes = [];
     this.setLastComboTimeNow();
+    this.onFinish = data.onFinish;
   }
 
   preload() {
@@ -304,6 +305,7 @@ class PlayingScene extends Phaser.Scene {
 
   checkEnd(graphics) {
     if (this.goalId > this.totalGoal) {
+      this.onFinish(this.getTotalSeconds());
       graphics.destroy();
 
       const w = this.cameras.main.width;
