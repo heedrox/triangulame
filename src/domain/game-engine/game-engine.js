@@ -38,8 +38,13 @@ class GameEngine {
     this.repository.game.watch(room, this.handleGameUpdate.bind(this));
 
     await this.addPlayerToGame(this.playerId, room, name);
-    await this.ui.waitForPlayers({ room });
-    await this.startGame(room);
+
+    await this.ui.waitForPlayers({
+      room,
+      onClickStart: () => {
+        this.startPlaying(room);
+      },
+    });
   }
 
   async getNameAndRoom() {
@@ -71,7 +76,7 @@ class GameEngine {
     return this.localDb.getItem('uuid');
   }
 
-  async startGame(room) {
+  async startPlaying(room) {
     const rectangles = new RectanglesCreator().build(GAME_GOAL);
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,

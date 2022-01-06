@@ -17,12 +17,12 @@ class PlayersScene extends Phaser.Scene {
     this.eventsCenter = eventsCenter;
     this.texts = [];
     this.sortedPlayers = [];
-    this.oncomplete = null;
+    this.onClickStart = null;
   }
 
   init(data) {
     this.room = data.room;
-    this.oncomplete = data.oncomplete;
+    this.onClickStart = data.onClickStart;
   }
 
   create() {
@@ -144,8 +144,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   clickStart() {
-    this.scene.stop();
-    this.oncomplete();
+    this.onClickStart();
   }
 }
 

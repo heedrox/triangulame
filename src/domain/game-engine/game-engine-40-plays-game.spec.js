@@ -10,7 +10,7 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
   it('changes game status to PLAYING', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
-    mockUi.waitForPlayers = jest.fn(() => Promise.resolve());
+    mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
@@ -23,7 +23,7 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
   it('builds and saves rectangles', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
-    mockUi.waitForPlayers = jest.fn(() => Promise.resolve());
+    mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
@@ -35,7 +35,7 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
     it('starts game when state changes from WAITING_FOR_PLAYERS to PLAYING', async () => {
       const mockUi = MOCK_UI();
       const repository = MOCK_REPOSITORY();
-      mockUi.waitForPlayers = jest.fn(() => Promise.resolve());
+      mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
       repository.game.watch = ((_, fn) => fn({
         status: GAME_STATUS.PLAYING,
         players: {},
@@ -50,7 +50,7 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
     it('does not start game when state does not change to PLAYING', async () => {
       const mockUi = MOCK_UI();
       const repository = MOCK_REPOSITORY();
-      mockUi.waitForPlayers = jest.fn(() => Promise.resolve());
+      mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
       repository.game.watch = ((_, fn) => fn({
         status: GAME_STATUS.WAITING_FOR_PLAYERS,
         players: {},

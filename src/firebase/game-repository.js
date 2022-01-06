@@ -49,7 +49,7 @@ class GameRepository {
     setInterval(() => {
       const playerRef = ref(this.db, `games/${roomId}/players/${id}`);
       return update(playerRef, { lastSeen: serverTimestamp() });
-    }, 5000);
+    }, 1000);
   }
 }
 
