@@ -35,9 +35,7 @@ class GameEngine {
     const { name, room } = await this.getNameAndRoom();
     this.game = await this.createGameIfNotExists(room);
 
-    this.repository.game.watch(room, (newGame) => {
-      this.handleGameUpdate(newGame);
-    });
+    this.repository.game.watch(room, this.handleGameUpdate.bind(this));
 
     await this.addPlayerToGame(this.playerId, room, name);
     await this.ui.waitForPlayers({ room });
