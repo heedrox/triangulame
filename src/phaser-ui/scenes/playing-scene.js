@@ -155,6 +155,11 @@ class PlayingScene extends Phaser.Scene {
       loop: true,
     });
     this.music.play();
+    this.events.on('shutdown', () => {
+      if (this.music) {
+        this.music.stop();
+      }
+    }, this);
   }
 
   paintScreen(graphics) {

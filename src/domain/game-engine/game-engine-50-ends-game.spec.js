@@ -124,7 +124,6 @@ describe('50 - Game Engine ends', () => {
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    console.log(mockUi.waitForPlayers.mock.calls);
     expect(mockUi.waitForPlayers.mock.calls.length).toBe(2);
   });
 });

@@ -10,6 +10,7 @@ class EndingScene extends Phaser.Scene {
   init(data) {
     console.log('game data', data.game);
     this.game = data.game;
+    this.onRestart = data.onRestart;
   }
 
   create() {
@@ -41,8 +42,7 @@ class EndingScene extends Phaser.Scene {
 
     restart.setOrigin(0.5);
     restart.on('pointerup', () => {
-      this.music.stop();
-      this.scene.restart();
+      this.onRestart();
     });
   }
 }
