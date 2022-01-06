@@ -97,8 +97,7 @@ describe('30 - Game Engine waits for players', () => {
     db.setItem('uuid', 'uid1');
     repository.game.watch = jest.fn((room, cbk) => {
       cbk({
-        id: 'xxxx',
-        name: 'xxxx',
+        id: 'ROOM',
         players: {
           uid1: { name: 'n1', lastSeen: 1641321420891 },
           uid2: { name: 'n2', lastSeen: 1641321420891 - 11000 },

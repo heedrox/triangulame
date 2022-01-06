@@ -30,24 +30,16 @@ class GameEngine {
 
   async start() {
     this.ui.start();
+    this.playerId = this.getPlayerId();
+
     const { name, room } = await this.getNameAndRoom();
     this.game = await this.createGameIfNotExists(room);
-    const id = this.getPlayerId();
 
     this.repository.game.watch(room, (newGame) => {
-      const previousStatus = this.game.status;
-      this.game = new Game(newGame);
-      if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
-        && newGame.status === GAME_STATUS.PLAYING) {
-        this.ui.playGame(this.game.id);
-      } else if (this.game.canBeJoined()) {
-        const alivePlayers = removePlayersAgoSecs(id, newGame.players, 10);
-        this.ui.updatePlayers(alivePlayers, id);
-        this.repository.game.update(room, { players: alivePlayers });
-      }
+      this.handleGameUpdate(newGame);
     });
 
-    await this.addPlayerToGame(id, room, name);
+    await this.addPlayerToGame(this.playerId, room, name);
     await this.ui.waitForPlayers({ room });
     await this.startGame(room);
   }
@@ -87,6 +79,19 @@ class GameEngine {
       status: GAME_STATUS.PLAYING,
       rectangles,
     });
+  }
+
+  async handleGameUpdate(newGame) {
+    const previousStatus = this.game.status;
+    this.game = new Game(newGame);
+    if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
+      && newGame.status === GAME_STATUS.PLAYING) {
+      this.ui.playGame(this.game.id);
+    } else if (this.game.canBeJoined()) {
+      const alivePlayers = removePlayersAgoSecs(this.playerId, newGame.players, 10);
+      this.ui.updatePlayers(alivePlayers, this.playerId);
+      this.repository.game.update(newGame.id, { players: alivePlayers });
+    }
   }
 }
 
