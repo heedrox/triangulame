@@ -100,7 +100,7 @@ class GameEngine {
       this.repository.game.update(newGame.id, { players: alivePlayers });
     } else if (previousStatus === GAME_STATUS.PLAYING
       && this.game.status === GAME_STATUS.FINISHED) {
-      this.ui.endGame(this.game);
+      this.endGame();
     }
   }
 
@@ -110,6 +110,11 @@ class GameEngine {
       winner: this.playerId,
       winnerSecs: totalSecs,
     });
+  }
+
+  endGame() {
+    this.ui.endGame(this.game);
+    this.repository.game.unkeepPlayerAlive(this.game.id, this.playerId);
   }
 }
 

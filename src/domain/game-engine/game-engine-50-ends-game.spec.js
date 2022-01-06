@@ -77,4 +77,30 @@ describe('50 - Game Engine ends', () => {
 
     expect(mockUi.endGame.mock.calls.length).toBe(0);
   });
+
+  it('stops keeping player alive', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    mockUi.waitForPlayers = () => {};
+    repository.game.watch = ((_, fn) => {
+      fn({
+        id: 'ROOM',
+        status: GAME_STATUS.PLAYING,
+        players: {},
+      });
+      fn({
+        id: 'ROOM',
+        status: GAME_STATUS.FINISHED,
+        players: {},
+      });
+    });
+    const db = localDb();
+    db.setItem('uuid', 'PLAYER_ID');
+    const gameEngine = new GameEngine(mockUi, repository, db);
+    await gameEngine.start();
+
+    expect(repository.game.unkeepPlayerAlive.mock.calls.length).toBe(1);
+    expect(repository.game.unkeepPlayerAlive.mock.calls[0][0]).toBe('ROOM');
+    expect(repository.game.unkeepPlayerAlive.mock.calls[0][1]).toBe('PLAYER_ID');
+  });
 });

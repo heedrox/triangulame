@@ -209,7 +209,7 @@ class PlayingScene extends Phaser.Scene {
           this.goalId += 1;
           this.updateGoal();
           this.removeRectangle(graphics, polygon, this.texts[nr]);
-          this.checkEnd(graphics);
+          this.checkEnd();
         }
       }
     });
@@ -303,36 +303,9 @@ class PlayingScene extends Phaser.Scene {
     this.goalText.setText(this.goalId);
   }
 
-  checkEnd(graphics) {
+  checkEnd() {
     if (this.goalId > this.totalGoal) {
       this.onFinish(this.getTotalSeconds());
-      graphics.destroy();
-
-      const w = this.cameras.main.width;
-      const h = this.cameras.main.height;
-      this.loadingText = this.make.text({
-        x: w / 2,
-        y: h / 2 - 50,
-        text: `${this.getTotalSeconds()} segs.`,
-        style: {
-          font: '60px monospace',
-          fill: '#000000',
-          align: 'center',
-        },
-      });
-      this.loadingText.setOrigin(0.5, 0.5);
-      this.goalText.setText('');
-
-      const restart = this.add.text(w / 2, 3 / 4 * h, 'Reintentar', {
-        font: '60px monospace',
-        fill: '#444444',
-      }).setInteractive();
-
-      restart.setOrigin(0.5);
-      restart.on('pointerup', () => {
-        this.music.stop();
-        this.scene.restart();
-      });
     }
   }
 

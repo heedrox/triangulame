@@ -46,10 +46,16 @@ class GameRepository {
   }
 
   async keepPlayerAlive(roomId, id) {
-    setInterval(() => {
+    this.keepPlayerAliveInterval = setInterval(() => {
       const playerRef = ref(this.db, `games/${roomId}/players/${id}`);
       return update(playerRef, { lastSeen: serverTimestamp() });
     }, 1000);
+  }
+
+  unkeepPlayerAlive(roomId, id) {
+    if (this.keepPlayerAliveInterval) {
+      clearInterval(this.keepPlayerAliveInterval);
+    }
   }
 }
 
