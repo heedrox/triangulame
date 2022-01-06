@@ -35,8 +35,6 @@ class GameEngine {
     const id = this.getPlayerId();
 
     this.repository.game.watch(room, (newGame) => {
-      // this.updateGame(game);
-      // si antes estaba en otro estado y ahora en este, entonces voy y creo el juego
       const previousStatus = this.game.status;
       this.game = new Game(newGame);
       if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
