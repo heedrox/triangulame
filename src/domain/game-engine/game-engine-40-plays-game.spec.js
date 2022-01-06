@@ -87,7 +87,8 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
       await gameEngine.start();
 
       expect(mockUi.playGame.mock.calls.length).toBe(1);
-      expect(mockUi.playGame.mock.calls[0][0]).toBe('ROOM');
+      expect(mockUi.playGame.mock.calls[0][0].id).toBe('ROOM');
+      expect(typeof mockUi.playGame.mock.calls[0][0].players).toBe('object');
     });
   });
 });

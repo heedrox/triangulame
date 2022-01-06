@@ -39,10 +39,10 @@ class GameEngine {
 
     await this.addPlayerToGame(this.playerId, room, name);
 
-    await this.ui.waitForPlayers({
+    this.ui.waitForPlayers({
       room,
       onClickStart: () => {
-        this.startPlaying(room);
+        this.updateGameStatusToPlay(room);
       },
     });
   }
@@ -76,7 +76,7 @@ class GameEngine {
     return this.localDb.getItem('uuid');
   }
 
-  async startPlaying(room) {
+  async updateGameStatusToPlay(room) {
     const rectangles = new RectanglesCreator().build(GAME_GOAL);
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,
@@ -89,7 +89,7 @@ class GameEngine {
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
-      this.ui.playGame(this.game.id);
+      this.ui.playGame(this.game);
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.playerId, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.playerId);
