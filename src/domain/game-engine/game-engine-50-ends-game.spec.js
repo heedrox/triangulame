@@ -17,17 +17,15 @@ describe('50 - Game Engine ends', () => {
       status: GAME_STATUS.PLAYING,
       players: {},
     }));
-    const db = localDb();
-    db.setItem('uuid', 'PLAYER_ID');
     mockUi.playGame = (game, cbks) => cbks.onFinish(100);
 
-    const gameEngine = new GameEngine(mockUi, repository, db);
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
     expect(repository.game.update.mock.calls.length).toBe(1);
     expect(repository.game.update.mock.calls[0][0]).toBe('ROOM');
     expect(repository.game.update.mock.calls[0][1].status).toBe(GAME_STATUS.FINISHED);
-    expect(repository.game.update.mock.calls[0][1].winner).toBe('PLAYER_ID');
+    expect(repository.game.update.mock.calls[0][1].winner).toBe('NAME');
     expect(repository.game.update.mock.calls[0][1].winnerSecs).toBe(100);
   });
 
@@ -102,5 +100,31 @@ describe('50 - Game Engine ends', () => {
     expect(repository.game.unkeepPlayerAlive.mock.calls.length).toBe(1);
     expect(repository.game.unkeepPlayerAlive.mock.calls[0][0]).toBe('ROOM');
     expect(repository.game.unkeepPlayerAlive.mock.calls[0][1]).toBe('PLAYER_ID');
+  });
+
+  it('restarts game', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    mockUi.waitForPlayers = jest.fn();
+    repository.game.watch = jest.fn();
+    repository.game.watch.mockImplementationOnce((_, fn) => {
+      fn({
+        id: 'ROOM',
+        status: GAME_STATUS.PLAYING,
+        players: {},
+      });
+      fn({
+        id: 'ROOM',
+        status: GAME_STATUS.FINISHED,
+        players: {},
+      });
+    });
+    repository.game.watch.mockImplementationOnce(() => {});
+    mockUi.endGame = (_, cbk) => cbk.onRestart();
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
+    await gameEngine.start();
+
+    console.log(mockUi.waitForPlayers.mock.calls);
+    expect(mockUi.waitForPlayers.mock.calls.length).toBe(2);
   });
 });

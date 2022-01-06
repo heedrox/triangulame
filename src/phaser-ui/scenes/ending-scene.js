@@ -15,18 +15,24 @@ class EndingScene extends Phaser.Scene {
   create() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
-    this.loadingText = this.make.text({
+    const winnerText = this.make.text({
       x: w / 2,
-      y: h / 2 - 50,
-      text: `${this.game.winnerSecs} segs.`,
+      y: h / 3,
+      text: `${this.i18n.get('winner')}: ${this.game.winner}\n${this.game.winnerSecs} segs.`,
       style: {
         font: '60px monospace',
         fill: '#000000',
         align: 'center',
       },
+    }).setOrigin(0.5, 0.5)
+      .setScale(0);
+
+    this.add.tween({
+      targets: winnerText,
+      scale: 1,
+      duration: 500,
+      ease: 'Sine.easeInOut',
     });
-    this.loadingText.setOrigin(0.5, 0.5);
-    this.goalText.setText('');
 
     const restart = this.add.text(w / 2, 3 / 4 * h, 'Reintentar', {
       font: '60px monospace',

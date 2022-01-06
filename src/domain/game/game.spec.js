@@ -14,12 +14,16 @@ describe('Game', () => {
         id: 'ID',
         players: { id: { name: 'NAME' } },
         rectangles: [],
+        winner: 'WINNER',
+        winnerSecs: 100,
       });
 
       expect(game.status).toBe('STATUS');
       expect(game.id).toBe('ID');
       expect(game.players.id.name).toBe('NAME');
       expect(game.rectangles.length).toBe(0);
+      expect(game.winner).toBe('WINNER');
+      expect(game.winnerSecs).toBe(100);
     });
 
     it('a game created without status, creates with WAITING_FOR_PLAYERS', () => {

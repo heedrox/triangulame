@@ -74,10 +74,11 @@ class PhaserUi {
     });
   }
 
-  endGame(game) {
+  endGame(game, callbacks) {
     this.game.scene.stop(SCENE_KEYS.PLAYING_SCENE);
     this.game.scene.start(SCENE_KEYS.ENDING_SCENE, {
       game,
+      onRestart: () => callbacks.onRestart(),
     });
   }
 }

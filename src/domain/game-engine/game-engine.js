@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import GAME_STATUS from '../game-status';
 import Game from '../game/game';
 import RectanglesCreator from '../rectangles-creator/rectangles-creator';
+import Player from '../player/player';
 
 const GAME_GOAL = 6;
 
@@ -30,14 +31,17 @@ class GameEngine {
 
   async start() {
     this.ui.start();
-    this.playerId = this.getPlayerId();
 
     const { name, room } = await this.getNameAndRoom();
+    this.player = new Player(this.buildPlayerIdIfNotExists(), name);
     this.game = await this.createGameIfNotExists(room);
+    await this.startRoom(room);
+  }
 
+  async startRoom(room) {
     this.repository.game.watch(room, this.handleGameUpdate.bind(this));
 
-    await this.addPlayerToGame(this.playerId, room, name);
+    await this.addPlayerToGame(this.player.id, room, this.player.name);
 
     this.ui.waitForPlayers({
       room,
@@ -69,7 +73,7 @@ class GameEngine {
     await this.repository.game.keepPlayerAlive(room, id);
   }
 
-  getPlayerId() {
+  buildPlayerIdIfNotExists() {
     const id = this.localDb.getItem('uuid');
     if (id) return id;
     this.localDb.setItem('uuid', uuidv4());
@@ -95,8 +99,8 @@ class GameEngine {
         },
       });
     } else if (this.game.canBeJoined()) {
-      const alivePlayers = removePlayersAgoSecs(this.playerId, newGame.players, 10);
-      this.ui.updatePlayers(alivePlayers, this.playerId);
+      const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
+      this.ui.updatePlayers(alivePlayers, this.player.id);
       this.repository.game.update(newGame.id, { players: alivePlayers });
     } else if (previousStatus === GAME_STATUS.PLAYING
       && this.game.status === GAME_STATUS.FINISHED) {
@@ -107,14 +111,18 @@ class GameEngine {
   async updateGameStatusToEnd(totalSecs) {
     this.repository.game.update(this.game.id, {
       status: GAME_STATUS.FINISHED,
-      winner: this.playerId,
+      winner: this.player.name,
       winnerSecs: totalSecs,
     });
   }
 
   endGame() {
-    this.ui.endGame(this.game);
-    this.repository.game.unkeepPlayerAlive(this.game.id, this.playerId);
+    this.repository.game.unkeepPlayerAlive(this.game.id, this.player.id);
+    this.ui.endGame(this.game, {
+      onRestart: () => {
+        this.startRoom(this.game.id);
+      },
+    });
   }
 }
 
