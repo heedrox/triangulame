@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import RectanglesCreator from '../../domain/rectangles-creator/rectangles-creator';
 import ingameOgg from '../../assets/audio/ingame.ogg';
 import ingameMp3 from '../../assets/audio/ingame.mp3';
 import comboOgg from '../../assets/audio/combo.ogg';
 import comboMp3 from '../../assets/audio/combo.mp3';
 import SCENE_KEYS from './constants/scene-keys';
+import Rectangle from '../../domain/rectangle/rectangle';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
@@ -83,6 +83,12 @@ const getStretch = (textBounds, r, xf, yf) => {
   };
 };
 
+const buildRectangleWithId = (r) => {
+  const rect = new Rectangle(r.p0, r.p1, r.p2, r.p3);
+  rect.setId(r.id);
+  return rect;
+};
+
 class PlayingScene extends Phaser.Scene {
   constructor(i18n) {
     super({
@@ -91,12 +97,12 @@ class PlayingScene extends Phaser.Scene {
     this.i18n = i18n;
   }
 
-  init() {
-    this.totalGoal = 48;
+  init(data) {
     this.xFactor = this.game.canvas.width / 100;
     this.yFactor = (this.game.canvas.height * 0.85) / 100;
     this.goalId = 1;
-    this.rectangles = new RectanglesCreator().build(this.totalGoal);
+    this.rectangles = data.rectangles.map(buildRectangleWithId);
+    this.totalGoal = this.rectangles.length;
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,

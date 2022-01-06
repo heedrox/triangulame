@@ -62,8 +62,13 @@ class PhaserUi {
     this.eventsCenter.emit('players.updated', { players, myId });
   }
 
-  playGame(roomId) {
-    this.game.scene.start(SCENE_KEYS.PLAYING_SCENE, { room: roomId });
+  playGame(room) {
+    this.game.scene.stop(SCENE_KEYS.PLAYERS_SCENE);
+    this.game.scene.start(SCENE_KEYS.PLAYING_SCENE, {
+      room: room.id,
+      players: room.players,
+      rectangles: room.rectangles,
+    });
   }
 }
 
