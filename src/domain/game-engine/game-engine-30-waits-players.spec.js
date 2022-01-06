@@ -61,7 +61,7 @@ describe('30 - Game Engine waits for players', () => {
   it('notifies ui if new players exist', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
-    repository.game.watch = (room, path, fn) => fn(({ uid1: { name: 'n1' } }));
+    repository.game.watch = (room, fn) => fn(({ players: { uid1: { name: 'n1' } } }));
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
@@ -95,10 +95,14 @@ describe('30 - Game Engine waits for players', () => {
     const repository = MOCK_REPOSITORY();
     const db = localDb();
     db.setItem('uuid', 'uid1');
-    repository.game.watch = jest.fn((room, path, cbk) => {
+    repository.game.watch = jest.fn((room, cbk) => {
       cbk({
-        uid1: { name: 'n1', lastSeen: 1641321420891 },
-        uid2: { name: 'n2', lastSeen: 1641321420891 - 11000 },
+        id: 'xxxx',
+        name: 'xxxx',
+        players: {
+          uid1: { name: 'n1', lastSeen: 1641321420891 },
+          uid2: { name: 'n2', lastSeen: 1641321420891 - 11000 },
+        },
       });
     });
 

@@ -6,6 +6,7 @@ class Game {
       this.id = options.id;
       this.status = options.status ? options.status : GAME_STATUS.WAITING_FOR_PLAYERS;
       this.players = options.players ? options.players : {};
+      this.rectangles = options.rectangles;
     }
   }
 

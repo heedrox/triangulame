@@ -25,16 +25,30 @@ class GameEngine {
     this.ui = ui;
     this.repository = repository;
     this.localDb = localDb;
+    this.game = null;
   }
 
   async start() {
     this.ui.start();
     const { name, room } = await this.getNameAndRoom();
-    await this.createGameIfNotExists(room);
+    this.game = await this.createGameIfNotExists(room);
     const id = this.getPlayerId();
+
+    this.repository.game.watch(room, (newGame) => {
+      console.log('game changed', newGame.players);
+      // this.updateGame(game);
+      // si antes estaba en otro estado y ahora en este, entonces voy y creo el juego
+      this.game = new Game(newGame);
+      if (this.game.canBeJoined()) {
+        const alivePlayers = removePlayersAgoSecs(id, newGame.players, 10);
+        this.ui.updatePlayers(alivePlayers, id);
+        this.repository.game.update(room, { players: alivePlayers });
+      }
+    });
+
     await this.addPlayerToGame(id, room, name);
-    await this.waitForPlayers(id, room);
-    await this.playGame(room);
+    await this.ui.waitForPlayers({ room });
+    await this.startGame(room);
   }
 
   async getNameAndRoom() {
@@ -48,24 +62,15 @@ class GameEngine {
 
   async createGameIfNotExists(room) {
     const aGame = await this.repository.game.get(room);
-    if (!aGame) {
-      const newGame = new Game({ id: room });
-      await this.repository.game.create(newGame);
-    }
+    if (aGame) return aGame;
+    const newGame = new Game({ id: room });
+    await this.repository.game.create(newGame);
+    return newGame;
   }
 
   async addPlayerToGame(id, room, name) {
     await this.repository.game.addPlayer(room, { id, name });
     await this.repository.game.keepPlayerAlive(room, id);
-  }
-
-  async waitForPlayers(id, room) {
-    this.repository.game.watch(room, '/players', (players) => {
-      const alivePlayers = removePlayersAgoSecs(id, players, 10);
-      this.ui.updatePlayers(alivePlayers, id);
-      this.repository.game.update(room, { players: alivePlayers });
-    });
-    await this.ui.waitForPlayers({ room });
   }
 
   getPlayerId() {
@@ -75,7 +80,7 @@ class GameEngine {
     return this.localDb.getItem('uuid');
   }
 
-  async playGame(room) {
+  async startGame(room) {
     const rectangles = new RectanglesCreator().build(GAME_GOAL);
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,

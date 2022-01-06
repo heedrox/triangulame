@@ -25,8 +25,8 @@ class GameRepository {
     return update(gameRef, game);
   }
 
-  watch(room, path, callback) {
-    const pathRef = ref(this.db, `games/${room}/${path}`);
+  watch(room, callback) {
+    const pathRef = ref(this.db, `games/${room}`);
     onValue(pathRef, (snapshot) => callback(snapshot.val()));
   }
 
