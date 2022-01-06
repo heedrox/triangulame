@@ -35,11 +35,14 @@ class GameEngine {
     const id = this.getPlayerId();
 
     this.repository.game.watch(room, (newGame) => {
-      console.log('game changed', newGame.players);
       // this.updateGame(game);
       // si antes estaba en otro estado y ahora en este, entonces voy y creo el juego
+      const previousStatus = this.game.status;
       this.game = new Game(newGame);
-      if (this.game.canBeJoined()) {
+      if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
+        && newGame.status === GAME_STATUS.PLAYING) {
+        this.ui.playGame(this.game.id);
+      } else if (this.game.canBeJoined()) {
         const alivePlayers = removePlayersAgoSecs(id, newGame.players, 10);
         this.ui.updatePlayers(alivePlayers, id);
         this.repository.game.update(room, { players: alivePlayers });
