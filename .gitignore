@@ -19,3 +19,4 @@ coverage
 # Firease
 .firebaserc
 firebase-debug.log
+.firebase/*.cache
