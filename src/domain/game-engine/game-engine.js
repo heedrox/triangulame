@@ -9,7 +9,7 @@ const GAME_GOAL = 6;
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));
   const myPlayer = players[myId];
-  if (!myPlayer) return [myId];
+  if (!myPlayer) return players;
   const myLastSeen = myPlayer.lastSeen;
   Object.keys(players).forEach((id) => {
     if (players[id].lastSeen && players[id].lastSeen < myLastSeen - secs * 1000) {
@@ -41,14 +41,14 @@ class GameEngine {
   async startRoom(room) {
     this.repository.game.watch(room, this.handleGameUpdate.bind(this));
 
-    await this.addPlayerToGame(this.player.id, room, this.player.name);
-
     this.ui.waitForPlayers({
       room,
       onClickStart: () => {
         this.updateGameStatusToPlay(room);
       },
     });
+
+    await this.addPlayerToGame(this.player.id, room, this.player.name);
   }
 
   async getNameAndRoom() {
@@ -70,7 +70,7 @@ class GameEngine {
 
   async addPlayerToGame(id, room, name) {
     await this.repository.game.addPlayer(room, { id, name });
-    await this.repository.game.keepPlayerAlive(room, id);
+    await this.repository.game.keepPlayerAlive(room, this.player);
   }
 
   buildPlayerIdIfNotExists() {
@@ -89,10 +89,12 @@ class GameEngine {
   }
 
   async handleGameUpdate(newGame) {
+    console.log('game updaate', newGame);
     const previousStatus = this.game.status;
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
+      this.repository.game.unkeepPlayerAlive(this.game.id, this.player);
       this.ui.playGame(this.game, {
         onFinish: (totalSecs) => {
           this.updateGameStatusToEnd(totalSecs);
@@ -100,6 +102,7 @@ class GameEngine {
       });
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
+      console.log('updateando players', alivePlayers);
       this.ui.updatePlayers(alivePlayers, this.player.id);
       this.repository.game.update(newGame.id, { players: alivePlayers });
     } else if (previousStatus === GAME_STATUS.PLAYING
@@ -117,10 +120,13 @@ class GameEngine {
   }
 
   endGame() {
-    this.repository.game.unkeepPlayerAlive(this.game.id, this.player.id);
     this.ui.endGame(this.game, {
-      onRestart: () => {
-        this.startRoom(this.game.id);
+      onRestart: async () => {
+        await this.repository.game.update(this.game.id, {
+          status: GAME_STATUS.WAITING_FOR_PLAYERS,
+        });
+        await this.repository.game.addPlayer(this.game.id, this.player);
+        await this.startRoom(this.game.id);
       },
     });
   }

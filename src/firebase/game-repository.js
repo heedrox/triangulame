@@ -21,7 +21,6 @@ class GameRepository {
   }
 
   async update(roomId, game) {
-    console.log('updating game', game);
     const updates = {};
     Object.keys(game).forEach((key) => {
       updates[`games/${roomId}/${key}`] = game[key];
@@ -35,12 +34,11 @@ class GameRepository {
   }
 
   async addPlayer(room, player) {
-    const playersRef = ref(this.db, `games/${room}/players`);
+    const playersRef = ref(this.db, `games/${room}/players/${player.id}`);
     return update(playersRef, {
-      [player.id]: {
-        ...player,
-        lastSeen: serverTimestamp(),
-      },
+      id: player.id,
+      name: player.name,
+      lastSeen: serverTimestamp(),
     });
   }
 
@@ -49,15 +47,18 @@ class GameRepository {
     return remove(playerRef);
   }
 
-  async keepPlayerAlive(roomId, id) {
+  async keepPlayerAlive(roomId, player) {
     this.keepPlayerAliveInterval = setInterval(() => {
-      const playerRef = ref(this.db, `games/${roomId}/players/${id}`);
-      return update(playerRef, { lastSeen: serverTimestamp() });
-    }, 1000);
+      const playerRef = ref(this.db, `games/${roomId}/players/${player.id}`);
+      return update(playerRef, {
+        id: player.id,
+        name: player.name,
+        lastSeen: serverTimestamp(),
+      });
+    }, 5000);
   }
 
   unkeepPlayerAlive() {
-    console.log('unkeeping player alive', this.keepPlayerAliveInterval);
     if (this.keepPlayerAliveInterval) {
       clearInterval(this.keepPlayerAliveInterval);
     }

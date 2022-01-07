@@ -42,6 +42,7 @@ class EndingScene extends Phaser.Scene {
 
     restart.setOrigin(0.5);
     restart.on('pointerup', () => {
+      this.scene.stop();
       this.onRestart();
     });
   }

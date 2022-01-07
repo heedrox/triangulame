@@ -21,18 +21,17 @@ class PlayersScene extends Phaser.Scene {
   }
 
   init(data) {
+    console.log('escuchando evento');
+    const updatePlayersFn = (eventData) => this.updatePlayers(eventData.players, eventData.myId);
     this.room = data.room;
     this.onClickStart = data.onClickStart;
-  }
-
-  create() {
-    const updatePlayersFn = (data) => this.updatePlayers(data.players, data.myId);
     this.eventsCenter.on('players.updated', updatePlayersFn);
-
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.eventsCenter.off('players.updated', updatePlayersFn);
     });
+  }
 
+  create() {
     this.addRoomName();
     this.texts = this.createRectanglesForNames();
     this.addStartButton();
@@ -76,6 +75,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   updatePlayers(players, myId) {
+    console.log('received event');
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
     this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {

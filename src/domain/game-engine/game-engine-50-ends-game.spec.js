@@ -4,6 +4,7 @@ import MOCK_UI from '../../../tests/mock-ui';
 import MOCK_REPOSITORY from '../../../tests/mock-repository';
 import GAME_STATUS from '../game-status';
 import Game from '../game/game';
+import Player from '../player/player';
 
 const localDb = () => new LocalStorageMock();
 
@@ -99,7 +100,8 @@ describe('50 - Game Engine ends', () => {
 
     expect(repository.game.unkeepPlayerAlive.mock.calls.length).toBe(1);
     expect(repository.game.unkeepPlayerAlive.mock.calls[0][0]).toBe('ROOM');
-    expect(repository.game.unkeepPlayerAlive.mock.calls[0][1]).toBe('PLAYER_ID');
+    expect(repository.game.unkeepPlayerAlive.mock.calls[0][1]).toBeInstanceOf(Player);
+    expect(repository.game.unkeepPlayerAlive.mock.calls[0][1].id).toBe('PLAYER_ID');
   });
 
   it('restarts game', async () => {
