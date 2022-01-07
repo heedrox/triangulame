@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import GAME_STATUS from '../game-status';
 import Game from '../game/game';
 import RectanglesCreator from '../rectangles-creator/rectangles-creator';
@@ -33,7 +32,7 @@ class GameEngine {
     this.ui.start();
 
     const { name, room } = await this.getNameAndRoom();
-    this.player = new Player(this.buildPlayerIdIfNotExists(), name);
+    this.player = Player.fromCache(this.localDb, name);
     this.game = await this.createGameIfNotExists(room);
     await this.startRoom(room);
   }
@@ -73,18 +72,10 @@ class GameEngine {
     await this.repository.game.keepPlayerAlive(room, this.player);
   }
 
-  buildPlayerIdIfNotExists() {
-    const id = this.localDb.getItem('uuid');
-    if (id) return id;
-    this.localDb.setItem('uuid', uuidv4());
-    return this.localDb.getItem('uuid');
-  }
-
   async updateGameStatusToPlay(room) {
-    const rectangles = new RectanglesCreator().build(GAME_GOAL);
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,
-      rectangles,
+      rectangles: new RectanglesCreator().build(GAME_GOAL),
     });
   }
 
@@ -93,12 +84,7 @@ class GameEngine {
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
-      this.repository.game.unkeepPlayerAlive(this.game.id, this.player);
-      this.ui.playGame(this.game, {
-        onFinish: (totalSecs) => {
-          this.updateGameStatusToEnd(totalSecs);
-        },
-      });
+      this.playGame();
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.player.id);
@@ -109,11 +95,18 @@ class GameEngine {
     }
   }
 
-  async updateGameStatusToEnd(totalSecs) {
+  updateGameStatusToEnd(totalSecs) {
     this.repository.game.update(this.game.id, {
       status: GAME_STATUS.FINISHED,
       winner: this.player.name,
       winnerSecs: totalSecs,
+    });
+  }
+
+  playGame() {
+    this.repository.game.unkeepPlayerAlive(this.game.id, this.player);
+    this.ui.playGame(this.game, {
+      onFinish: this.updateGameStatusToEnd.bind(this),
     });
   }
 
