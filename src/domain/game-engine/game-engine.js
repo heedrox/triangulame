@@ -89,7 +89,6 @@ class GameEngine {
   }
 
   async handleGameUpdate(newGame) {
-    console.log('game updaate', newGame);
     const previousStatus = this.game.status;
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
@@ -102,7 +101,6 @@ class GameEngine {
       });
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
-      console.log('updateando players', alivePlayers);
       this.ui.updatePlayers(alivePlayers, this.player.id);
       this.repository.game.update(newGame.id, { players: alivePlayers });
     } else if (previousStatus === GAME_STATUS.PLAYING

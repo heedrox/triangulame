@@ -5,12 +5,12 @@ import comboOgg from '../../assets/audio/combo.ogg';
 import comboMp3 from '../../assets/audio/combo.mp3';
 import SCENE_KEYS from './constants/scene-keys';
 import Rectangle from '../../domain/rectangle/rectangle';
+import Combo from '../../domain/combo/combo';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
 const COMBO_THEME = 'COMBO_THEME';
 const COMBO_SECS = 1.5;
-const COMBO_MIN_LIMIT = 3;
 
 const getTextPosition = (r, xf, yf) => {
   const type = r.getType();
@@ -110,12 +110,12 @@ class PlayingScene extends Phaser.Scene {
       r.p2.x * this.xFactor, r.p2.y * this.yFactor,
     ]));
     this.texts = Array(this.rectangles.length).fill(null);
-    this.goalTimes = [];
-    this.setLastComboTimeNow();
     this.onFinish = data.onFinish;
+    this.combo = new Combo();
   }
 
   preload() {
+    this.showWaitingScreen();
     this.load.audio(INGAME_THEME, [
       ingameOgg,
       ingameMp3,
@@ -124,7 +124,22 @@ class PlayingScene extends Phaser.Scene {
       comboOgg,
       comboMp3,
     ]);
+  }
 
+  create() {
+    this.loadingText.destroy();
+    const graphics = this.buildGraphics();
+
+    this.paintScreen(graphics);
+
+    this.input.on('pointerdown', (pointer) => {
+      this.checkRectanglePressed(graphics, pointer);
+    });
+
+    this.playMusic();
+  }
+
+  showWaitingScreen() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     this.loadingText = this.make.text({
@@ -140,16 +155,7 @@ class PlayingScene extends Phaser.Scene {
     this.loadingText.setOrigin(0.5, 0.5);
   }
 
-  create() {
-    this.loadingText.destroy();
-    const graphics = this.buildGraphics();
-
-    this.paintScreen(graphics);
-
-    this.input.on('pointerdown', (pointer) => {
-      this.checkRectanglePressed(graphics, pointer);
-    });
-
+  playMusic() {
     this.music = this.sound.add(INGAME_THEME, {
       volume: 0.25,
       loop: true,
@@ -325,15 +331,9 @@ class PlayingScene extends Phaser.Scene {
   }
 
   checkCombo() {
-    const gotTime = new Date().getTime() / 1000;
-    if (gotTime - this.lastGoalTime <= COMBO_SECS) {
-      this.goalTimes.push(1);
-      if (this.goalTimes.length >= COMBO_MIN_LIMIT) {
-        this.showCombo(this.goalTimes.length);
-      }
-    } else {
-      this.goalTimes = [1];
-      this.lastGoalTime = gotTime;
+    const comboTimes = this.combo.checkCombo();
+    if (comboTimes > 0) {
+      this.showCombo(comboTimes);
     }
   }
 
@@ -358,10 +358,6 @@ class PlayingScene extends Phaser.Scene {
       volume: 1,
       loop: false,
     }).play();
-  }
-
-  setLastComboTimeNow() {
-    this.lastGoalTime = new Date().getTime() / 1000;
   }
 }
 
