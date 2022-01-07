@@ -3,9 +3,9 @@ const COMBO_MIN_LIMIT = 3;
 
 class Combo {
   constructor() {
-    this.lastGoalTime = null;
     this.goalTimes = [];
-    this.lastGoalTime = new Date().getTime() / 1000;
+    const date = new Date();
+    this.lastGoalTime = date.getTime() / 1000;
   }
 
   checkCombo() {
