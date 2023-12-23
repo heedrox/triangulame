@@ -16,8 +16,12 @@ describe('30 - Game Engine waits for players', () => {
 
     await gameEngine.start();
 
-    expect(mockUi.waitForPlayers.mock.calls.length).toBe(1);
-    expect(mockUi.waitForPlayers.mock.calls[0][0].room).toBe('ROOM');
+    expect(mockUi.waitForPlayers).toHaveBeenCalledWith({
+      room: 'ROOM',
+      numGame: 0,
+      onClickStart: expect.any(Function),
+        
+    })
   });
 
   it('adds itself as a player when users not first time', async () => {

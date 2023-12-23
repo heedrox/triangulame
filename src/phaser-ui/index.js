@@ -52,9 +52,10 @@ class PhaserUi {
     });
   }
 
-  waitForPlayers({ room, onClickStart }) {
+  waitForPlayers({ room, onClickStart, numGame }) {
     this.game.scene.start(SCENE_KEYS.PLAYERS_SCENE, {
       room,
+      numGame,
       onClickStart: () => onClickStart(),
     });
   }

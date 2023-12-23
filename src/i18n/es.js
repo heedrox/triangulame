@@ -8,6 +8,7 @@ const es = ({
     'room-not-available': 'Esta sala no está disponible.\nIntroduce otra, por favor.',
     'start-only-main-player': 'Esperando a que {{mainPlayer}}\ncomience la partida.',
     winner: 'GANADOR',
+    'game-number': 'Números: {{numRectangles}}',
   },
 });
 

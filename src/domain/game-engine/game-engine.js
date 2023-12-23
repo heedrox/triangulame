@@ -42,6 +42,7 @@ class GameEngine {
 
     this.ui.waitForPlayers({
       room,
+      numGame: this.game.numGame,
       onClickStart: () => {
         this.updateGameStatusToPlay(room);
       },

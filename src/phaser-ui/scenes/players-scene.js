@@ -25,6 +25,8 @@ class PlayersScene extends Phaser.Scene {
     const updatePlayersFn = (eventData) => this.updatePlayers(eventData.players, eventData.myId);
     this.room = data.room;
     this.onClickStart = data.onClickStart;
+    this.numGame = data.numGame;
+    console.log(data)
     this.eventsCenter.on('players.updated', updatePlayersFn);
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.eventsCenter.off('players.updated', updatePlayersFn);
@@ -35,6 +37,7 @@ class PlayersScene extends Phaser.Scene {
     this.addRoomName();
     this.texts = this.createRectanglesForNames();
     this.addStartButton();
+    this.addNumGame();
   }
 
   addRoomName() {
@@ -46,6 +49,16 @@ class PlayersScene extends Phaser.Scene {
       align: 'center',
     }).setShadow(2, 2, '#ffffff', 0, false, true)
       .setOrigin(0.5, 0.5);
+  }
+
+  addNumGame() {
+    const x = this.cameras.main.width / 2;
+    const y = this.cameras.main.height / 10 + (0.04 * this.cameras.main.height);
+    this.add.text(x, y, this.i18n.get('game-number', { numRectangles: this.numGame * 2 + 6 }), {
+      font: '4vw monospace',
+      fill: '#000',
+      align: 'center',
+    }).setOrigin(0.5, 0.5);
   }
 
   createRectanglesForNames() {
@@ -76,7 +89,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   updatePlayers(players, myId) {
-    console.log('received event');
+    console.log('received event', players, myId);
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
     this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {
