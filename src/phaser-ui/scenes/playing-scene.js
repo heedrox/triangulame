@@ -273,8 +273,9 @@ class PlayingScene extends Phaser.Scene {
   }
 
   paintBottom(graphics) {
-    const h = this.game.canvas.height;
-    const w = this.game.canvas.width;
+    const h = this.cameras.main.height;
+    console.log(h)
+    const w = this.cameras.main.width;
     const splitSizeX = h * 0.15;
     graphics.fillStyle(0x531D00, 1);
     graphics.fillRect(0, h * 0.85, w, h * 0.15);
@@ -287,8 +288,8 @@ class PlayingScene extends Phaser.Scene {
   }
 
   paintGoal() {
-    const h = this.game.canvas.height;
-    const w = this.game.canvas.width;
+    const h = this.cameras.main.height;
+    const w = this.cameras.main.width;
     const splitSizeX = h * 0.15;
     const circleX = w - splitSizeX / 2;
     const circleY = h * (0.925);
