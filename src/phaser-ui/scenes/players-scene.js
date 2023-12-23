@@ -119,7 +119,7 @@ class PlayersScene extends Phaser.Scene {
       .on('pointerdown', this.clickStart, this);
 
     this.warnText = this.add.text(w / 2, h - 200, this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }), {
-      font: '36px monospace',
+      font: '4vw monospace',
       fill: '#000',
       align: 'center',
     }).setVisible(false)

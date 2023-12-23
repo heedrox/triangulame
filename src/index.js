@@ -16,7 +16,7 @@ const gameEngine = new GameEngine(ui, repository, localDb);
 
 (async () => {
   // hack
-  await repository.game.update('sala2312a', { status: GAME_STATUS.WAITING_FOR_PLAYERS });
+  await repository.game.update('Galerna', { status: GAME_STATUS.WAITING_FOR_PLAYERS });
 
   await gameEngine.start();
 })();

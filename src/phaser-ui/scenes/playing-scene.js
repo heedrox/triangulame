@@ -182,7 +182,8 @@ class PlayingScene extends Phaser.Scene {
       x: 0,
       y: 0,
     });
-    graphics.lineStyle(12, 0xffffff, 1);
+    console.log(this.cameras.main.width)
+    graphics.lineStyle(Math.round(this.cameras.main.width/120), 0xffffff, 1);
     return graphics;
   }
 
@@ -200,7 +201,7 @@ class PlayingScene extends Phaser.Scene {
     const textPosition = getTextPosition(rectangle, this.xFactor, this.yFactor);
     const text = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
       fontFamily: 'Arial',
-      fontSize: '200px',
+      fontSize: '25vw',
       color: '#000000',
     });
     text.setOrigin(0.5);
