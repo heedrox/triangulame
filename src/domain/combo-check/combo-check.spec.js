@@ -1,21 +1,21 @@
-import Combo from './combo';
+import ComboCheck from './combo-check';
 
-describe('Combo', () => {
+describe('ComboCheck', () => {
   it('returns 0 when once called', () => {
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
   });
 
   it('returns 0 when twice called', () => {
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
     expect(combo.checkCombo()).toBe(0);
   });
 
   it('returns 3 (the combo number) when three times called', () => {
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
     expect(combo.checkCombo()).toBe(0);
@@ -23,7 +23,7 @@ describe('Combo', () => {
   });
 
   it('returns 4 (the combo number) when four times called', () => {
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
     expect(combo.checkCombo()).toBe(0);
@@ -32,7 +32,7 @@ describe('Combo', () => {
   });
 
   it('returns 5 (the combo number) when five times called', () => {
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
     expect(combo.checkCombo()).toBe(0);
@@ -55,7 +55,7 @@ describe('Combo', () => {
       .mockImplementationOnce(() => DATE_CHECK_3)
       .mockImplementationOnce(() => DATE_CHECK_4_1500_SECS_MORE);
 
-    const combo = new Combo();
+    const combo = new ComboCheck();
 
     expect(combo.checkCombo()).toBe(0);
     expect(combo.checkCombo()).toBe(0);

@@ -3,6 +3,8 @@ import {
 } from 'firebase/database';
 import Game from '../domain/game/game';
 
+const _clean = (obj) => JSON.parse(JSON.stringify(obj));
+
 class GameRepository {
   constructor(db) {
     this.db = db;
@@ -17,7 +19,7 @@ class GameRepository {
 
   async create(room) {
     const gameRef = ref(this.db, `games/${room.id}`);
-    return set(gameRef, room);
+    return set(gameRef, _clean(room));
   }
 
   async update(roomId, game) {

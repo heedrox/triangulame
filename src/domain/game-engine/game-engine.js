@@ -26,6 +26,7 @@ class GameEngine {
     this.repository = repository;
     this.localDb = localDb;
     this.game = null;
+    this.currentGoal = 1;
   }
 
   async start() {
@@ -105,9 +106,17 @@ class GameEngine {
 
   playGame() {
     this.repository.game.unkeepPlayerAlive(this.game.id, this.player);
+    this.currentGoal = 1;
     this.ui.playGame(this.game, {
       onFinish: this.updateGameStatusToEnd.bind(this),
+      onPress: this.checkRectangle.bind(this),
     });
+  }
+
+  checkRectangle(pressedId) {
+    if (this.currentGoal === pressedId) {
+      this.currentGoal += 1;
+    }
   }
 
   endGame() {

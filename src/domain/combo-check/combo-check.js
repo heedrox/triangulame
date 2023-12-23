@@ -1,7 +1,7 @@
 const COMBO_SECS = 1.5;
 const COMBO_MIN_LIMIT = 3;
 
-class Combo {
+class ComboCheck {
   constructor() {
     this.goalTimes = [];
     const date = new Date();
@@ -23,4 +23,4 @@ class Combo {
   }
 }
 
-export default Combo;
+export default ComboCheck;

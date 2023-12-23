@@ -5,7 +5,7 @@ import comboOgg from '../../assets/audio/combo.ogg';
 import comboMp3 from '../../assets/audio/combo.mp3';
 import SCENE_KEYS from './constants/scene-keys';
 import Rectangle from '../../domain/rectangle/rectangle';
-import Combo from '../../domain/combo/combo';
+import ComboCheck from '../../domain/combo-check/combo-check';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
@@ -111,7 +111,7 @@ class PlayingScene extends Phaser.Scene {
     ]));
     this.texts = Array(this.rectangles.length).fill(null);
     this.onFinish = data.onFinish;
-    this.combo = new Combo();
+    this.combo = new ComboCheck();
   }
 
   preload() {
