@@ -16,13 +16,13 @@ class PhaserUi {
 
   start() {
     const config = {
-      type: Phaser.CANVAS,
+      type: Phaser.AUTO,
       scale: {
         mode: Phaser.Scale.RESIZE,
       },
       backgroundColor: BACKGROUND_PIECE,
       autoCenter: 1,
-      parent: 'phaser-triangles',
+      parent: 'content',
       width: window.innerWidth * window.devicePixelRatio,
       height: window.innerHeight * window.devicePixelRatio,
       dom: {
@@ -30,8 +30,7 @@ class PhaserUi {
       },
       scene: [],
     };    
-    this.game = new Phaser.Game(config);
-    this.game.scale.setParentSize(window.innerWidth, window.innerHeight);
+    this.game = new Phaser.Game(config);    
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYERS_SCENE, new PlayersScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));

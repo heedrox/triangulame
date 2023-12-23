@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import SCENE_KEYS from './constants/scene-keys';
+import fullscreen from '../../assets/welcome/fullscreen.png';
 
 class WelcomeScene extends Phaser.Scene {
   constructor(i18n) {
@@ -17,9 +18,14 @@ class WelcomeScene extends Phaser.Scene {
     this.checkValidity = data.checkValidity;
   }
 
+  preload() {
+    this.load.image('fullscreen', fullscreen);
+  }
+
   create() {
     this.form = this.addForm();
     this.addStartButton();
+    // this.addFullScreenButton();
   }
 
   addForm() {
@@ -53,6 +59,39 @@ class WelcomeScene extends Phaser.Scene {
     return this.form;
   }
 
+  addFullScreenButton() {
+    if (!this.scale.isFullscreen) {
+      const w = this.cameras.main.width;
+      const h = this.cameras.main.height;
+      const image = this.add
+      .image(w - (w/15), (h/20), 'fullscreen')
+      .setDisplaySize(w/10, w/10)
+      .setInteractive()
+      .on('pointerdown', this.setFullScreen, this);
+  
+      this.add.tween({
+        targets: [image],
+        scale: image.scale + 0.1,
+        ease: 'Sine.easeInOut',
+        duration: 1000,
+        repeatDelay: 1000,
+        repeat: -1,
+        yoyo: true,
+      });
+    }
+  }
+
+  setFullScreen() {
+    if (!this.scale.isFullscreen) {
+      try {
+        this.scale.startFullscreen();
+        setTimeout(() => this.scene.restart(), 1000);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
   addStartButton() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
@@ -72,7 +111,7 @@ class WelcomeScene extends Phaser.Scene {
       .on('pointerdown', this.clickStart, this);
     this.add.tween({
       targets: [startButton, rectangle],
-      y: h -  (h/20) - startButton.height,
+      y: h -  (h/10) - startButton.height,
       duration: 1000,
       ease: 'Power2',
     });
