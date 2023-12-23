@@ -30,6 +30,14 @@ class GameRepository {
     return update(ref(this.db), updates);
   }
 
+  async addGameResult(roomId, { numGame, player }) {
+    const gameResultRef = ref(this.db, `games/${roomId}/results/${numGame}`);
+    return set(gameResultRef, {
+      player,
+    });
+
+  }
+
   watch(room, callback) {
     const pathRef = ref(this.db, `games/${room}`);
     onValue(pathRef, (snapshot) => callback(snapshot.val()));

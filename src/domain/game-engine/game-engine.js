@@ -3,7 +3,6 @@ import Game from '../game/game';
 import RectanglesCreator from '../rectangles-creator/rectangles-creator';
 import Player from '../player/player';
 
-const GAME_GOAL = 24;
 
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));
@@ -27,6 +26,7 @@ class GameEngine {
     this.localDb = localDb;
     this.game = null;
     this.currentGoal = 1;
+    this.numGame = 0;
   }
 
   async start() {
@@ -74,9 +74,10 @@ class GameEngine {
   }
 
   async updateGameStatusToPlay(room) {
+    const numberRectangles = this.numGame*2 + 6;
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,
-      rectangles: new RectanglesCreator().build(GAME_GOAL),
+      rectangles: new RectanglesCreator().build(numberRectangles)
     });
   }
 
@@ -97,10 +98,15 @@ class GameEngine {
   }
 
   updateGameStatusToEnd(totalSecs) {
+    this.repository.game.addGameResult(this.game.id, {
+      numGame: this.numGame,
+      player: this.player.name,
+    });
     this.repository.game.update(this.game.id, {
       status: GAME_STATUS.FINISHED,
       winner: this.player.name,
       winnerSecs: totalSecs,
+      numGame: this.numGame + 1
     });
   }
 

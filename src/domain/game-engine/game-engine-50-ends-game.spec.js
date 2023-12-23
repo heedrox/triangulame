@@ -30,6 +30,31 @@ describe('50 - Game Engine ends', () => {
     expect(repository.game.update.mock.calls[0][1].winnerSecs).toBe(100);
   });
 
+  it('adds result to game', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    mockUi.waitForPlayers = () => {};
+    repository.game.watch = ((_, fn) => fn({
+      id: 'ROOM',
+      status: GAME_STATUS.PLAYING,
+      players: {},
+    }));
+    mockUi.playGame = (game, cbks) => cbks.onFinish(100);
+
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
+    await gameEngine.start();
+
+    expect(repository.game.addGameResult).toHaveBeenCalledWith('ROOM',{
+      numGame: 0,
+      player: "NAME"
+    })
+    /*.mock.calls.length).toBe(1);
+    expect(repository.game.update.mock.calls[0][0]).toBe('ROOM');
+    expect(repository.game.update.mock.calls[0][1].status).toBe(GAME_STATUS.FINISHED);
+    expect(repository.game.update.mock.calls[0][1].winner).toBe('NAME');
+    expect(repository.game.update.mock.calls[0][1].winnerSecs).toBe(100);*/
+  });
+
   it('ends when game status FINISHED is received, and it was PLAYING', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
