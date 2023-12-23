@@ -47,7 +47,8 @@ describe('50 - Game Engine ends', () => {
 
     expect(repository.game.addGameResult).toHaveBeenCalledWith('ROOM',{
       numGame: 1,
-      player: "NAME"
+      player: "NAME",
+      secs: 100
     })   
   });
 

@@ -107,6 +107,7 @@ class GameEngine {
     this.repository.game.addGameResult(this.game.id, {
       numGame: this.game.numGame + 1,
       player: this.player.name,
+      secs: totalSecs,
     });
   }
 
