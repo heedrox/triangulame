@@ -24,6 +24,7 @@ class WelcomeScene extends Phaser.Scene {
 
   addForm() {
     const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
 
     const formHtml = `
         <div style="text-align: center">
@@ -43,7 +44,7 @@ class WelcomeScene extends Phaser.Scene {
     this.form.setOrigin(0.5, 1);
     this.add.tween({
       targets: this.form,
-      y: this.form.height + 200,
+      y: this.form.height + h/20,
       duration: 1500,
       ease: 'Power2',
     });
@@ -57,7 +58,7 @@ class WelcomeScene extends Phaser.Scene {
     const h = this.cameras.main.height;
 
     const startButton = this.add.text(w / 2, h, this.i18n.get('start'), {
-      font: '60px monospace',
+      font: '3vh monospace',
       fill: '#000',
       align: 'center',
       strokeThickness: 5,
@@ -71,7 +72,7 @@ class WelcomeScene extends Phaser.Scene {
       .on('pointerdown', this.clickStart, this);
     this.add.tween({
       targets: [startButton, rectangle],
-      y: h - 200 - startButton.height,
+      y: h -  (h/20) - startButton.height,
       duration: 1000,
       ease: 'Power2',
     });

@@ -3,7 +3,7 @@ import Game from '../game/game';
 import RectanglesCreator from '../rectangles-creator/rectangles-creator';
 import Player from '../player/player';
 
-const GAME_GOAL = 6;
+const GAME_GOAL = 24;
 
 const removePlayersAgoSecs = (myId, players, secs) => {
   const newPlayers = JSON.parse(JSON.stringify(players));

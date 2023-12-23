@@ -68,10 +68,11 @@ class PlayersScene extends Phaser.Scene {
       .setOrigin(0.5, 0.5);
 
     return this.add.text(x, y, '          ', {
-      font: '60px monospace',
+      font: '5vw monospace',
       fill: '#000',
       align: 'center',
-    }).setOrigin(0.5, 0.5);
+    }).setOrigin(0.5, 0.5)
+    .setDisplaySize(w-30,Math.round(2*h/4));
   }
 
   updatePlayers(players, myId) {

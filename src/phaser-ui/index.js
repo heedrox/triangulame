@@ -8,22 +8,6 @@ import EndingScene from './scenes/ending-scene';
 
 const BACKGROUND_PIECE = 0xcccc00;
 
-const config = {
-  type: Phaser.AUTO,
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-  },
-  backgroundColor: BACKGROUND_PIECE,
-  autoCenter: 1,
-  parent: 'phaser-triangles',
-  width: document.documentElement.clientWidth,
-  height: document.documentElement.clientHeight,
-  dom: {
-    createContainer: true,
-  },
-  scene: [],
-};
-
 class PhaserUi {
   constructor(i18n) {
     this.i18n = i18n;
@@ -31,7 +15,23 @@ class PhaserUi {
   }
 
   start() {
+    const config = {
+      type: Phaser.CANVAS,
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+      },
+      backgroundColor: BACKGROUND_PIECE,
+      autoCenter: 1,
+      parent: 'phaser-triangles',
+      width: window.innerWidth * window.devicePixelRatio,
+      height: window.innerHeight * window.devicePixelRatio,
+      dom: {
+        createContainer: true,
+      },
+      scene: [],
+    };    
     this.game = new Phaser.Game(config);
+    this.game.scale.setParentSize(window.innerWidth, window.innerHeight);
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYERS_SCENE, new PlayersScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));
