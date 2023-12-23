@@ -16,6 +16,10 @@ describe('Game', () => {
         rectangles: [],
         winner: 'WINNER',
         winnerSecs: 100,
+        results: [
+          { player: 'PLAYER1' },
+          { player: 'PLAYER2' }
+        ]
       });
 
       expect(game.status).toBe('STATUS');
@@ -24,6 +28,10 @@ describe('Game', () => {
       expect(game.rectangles.length).toBe(0);
       expect(game.winner).toBe('WINNER');
       expect(game.winnerSecs).toBe(100);
+      expect(game.results).toStrictEqual([
+        { player: 'PLAYER1' },
+        { player: 'PLAYER2' }
+      ])
     });
 
     it('a game created without status, creates with WAITING_FOR_PLAYERS', () => {

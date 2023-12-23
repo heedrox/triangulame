@@ -83,6 +83,7 @@ class GameEngine {
 
   async handleGameUpdate(newGame) {
     const previousStatus = this.game.status;
+    console.log(newGame);
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
