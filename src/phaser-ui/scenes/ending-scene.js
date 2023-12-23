@@ -35,7 +35,7 @@ class EndingScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    const restart = this.add.text(w / 2, 3 / 4 * h, 'Reintentar', {
+    const restart = this.add.text(w / 2, 3 / 4 * h, 'Continuar', {
       font: '4vh monospace',
       fill: '#444444',
     }).setInteractive();

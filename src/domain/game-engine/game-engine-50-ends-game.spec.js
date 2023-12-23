@@ -47,12 +47,7 @@ describe('50 - Game Engine ends', () => {
     expect(repository.game.addGameResult).toHaveBeenCalledWith('ROOM',{
       numGame: 0,
       player: "NAME"
-    })
-    /*.mock.calls.length).toBe(1);
-    expect(repository.game.update.mock.calls[0][0]).toBe('ROOM');
-    expect(repository.game.update.mock.calls[0][1].status).toBe(GAME_STATUS.FINISHED);
-    expect(repository.game.update.mock.calls[0][1].winner).toBe('NAME');
-    expect(repository.game.update.mock.calls[0][1].winnerSecs).toBe(100);*/
+    })   
   });
 
   it('ends when game status FINISHED is received, and it was PLAYING', async () => {

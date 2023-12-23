@@ -97,16 +97,16 @@ class GameEngine {
     }
   }
 
-  updateGameStatusToEnd(totalSecs) {
-    this.repository.game.addGameResult(this.game.id, {
-      numGame: this.numGame,
-      player: this.player.name,
-    });
+  updateGameStatusToEnd(totalSecs) {    
     this.repository.game.update(this.game.id, {
       status: GAME_STATUS.FINISHED,
       winner: this.player.name,
       winnerSecs: totalSecs,
       numGame: this.numGame + 1
+    });
+    this.repository.game.addGameResult(this.game.id, {
+      numGame: this.numGame,
+      player: this.player.name,
     });
   }
 
