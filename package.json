@@ -9,6 +9,7 @@
     "test": "jest",
     "tdd": "jest --watchAll --coverage=false",
     "lint": "eslint src/",
+    "predeploy": "npm run build",
     "deploy": "firebase deploy"
   },
   "author": "Jordi <heedrox@gmail.com>",
