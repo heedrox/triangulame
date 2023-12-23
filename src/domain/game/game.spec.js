@@ -34,6 +34,20 @@ describe('Game', () => {
       ])
     });
 
+    it('creates game with numGame reset', () => {
+      const game = new Game({
+        status: 'STATUS',
+        id: 'ID',
+        players: { id: { name: 'NAME' } },
+        rectangles: [],
+        winner: 'WINNER',
+        winnerSecs: 100,
+        results: []
+      });
+
+      expect(game.numGame).toBe(0);
+    });
+
     it('a game created without status, creates with WAITING_FOR_PLAYERS', () => {
       const game = new Game({
         id: 'ID',

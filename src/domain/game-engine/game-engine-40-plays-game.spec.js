@@ -20,15 +20,26 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
     expect(repository.game.update.mock.calls[0][1].status).toBe(GAME_STATUS.PLAYING);
   });
 
-  it('builds and saves rectangles', async () => {
+  it.each([
+    [0, 6],
+    [3, 12],
+    [6, 18]
+  ])('builds and saves rectangles based on numGame * 2 + 6 (%s)', async (numGame, expectedRectangles) => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
+    repository.game.watch = ((_, fn) => fn({
+      status: GAME_STATUS.PLAYING,
+      players: {},
+      numGame: numGame
+    }));
     mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
+
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    expect(repository.game.update.mock.calls[0][1].rectangles.length >= 4).toBeTruthy();
+    expect(repository.game.update).toHaveBeenCalledWith('ROOM',expect.anything());
+    expect(repository.game.update.mock.calls[0][1].rectangles.length).toBe(expectedRectangles);
   });
 
   describe('when status changes, handles start of game', () => {

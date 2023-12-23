@@ -9,7 +9,8 @@ class Game {
       this.rectangles = options.rectangles;
       this.winner = options.winner;
       this.winnerSecs = options.winnerSecs;
-      this.results = options.results?.map((result) => ({ player: result.player }));
+      this.numGame = options.numGame ? options.numGame : 0;
+      this.results = options.results ? options.results.map((result) => ({ player: result.player })) : []
     }
   }
 

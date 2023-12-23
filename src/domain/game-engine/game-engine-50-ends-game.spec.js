@@ -38,6 +38,7 @@ describe('50 - Game Engine ends', () => {
       id: 'ROOM',
       status: GAME_STATUS.PLAYING,
       players: {},
+      numGame: 0
     }));
     mockUi.playGame = (game, cbks) => cbks.onFinish(100);
 
@@ -45,7 +46,7 @@ describe('50 - Game Engine ends', () => {
     await gameEngine.start();
 
     expect(repository.game.addGameResult).toHaveBeenCalledWith('ROOM',{
-      numGame: 0,
+      numGame: 1,
       player: "NAME"
     })   
   });

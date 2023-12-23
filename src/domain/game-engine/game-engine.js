@@ -26,7 +26,6 @@ class GameEngine {
     this.localDb = localDb;
     this.game = null;
     this.currentGoal = 1;
-    this.numGame = 0;
   }
 
   async start() {
@@ -74,7 +73,7 @@ class GameEngine {
   }
 
   async updateGameStatusToPlay(room) {
-    const numberRectangles = this.numGame*2 + 6;
+    const numberRectangles = this.game.numGame*2 + 6;
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,
       rectangles: new RectanglesCreator().build(numberRectangles)
@@ -83,7 +82,6 @@ class GameEngine {
 
   async handleGameUpdate(newGame) {
     const previousStatus = this.game.status;
-    console.log(newGame);
     this.game = new Game(newGame);
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
@@ -103,10 +101,10 @@ class GameEngine {
       status: GAME_STATUS.FINISHED,
       winner: this.player.name,
       winnerSecs: totalSecs,
-      numGame: this.numGame + 1
+      numGame: this.game.numGame + 1
     });
     this.repository.game.addGameResult(this.game.id, {
-      numGame: this.numGame,
+      numGame: this.game.numGame + 1,
       player: this.player.name,
     });
   }
