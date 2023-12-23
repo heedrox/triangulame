@@ -147,7 +147,7 @@ class PlayingScene extends Phaser.Scene {
       y: h / 2 - 50,
       text: ['El show está a', 'punto de comenzar.', 'Por favor, espera ...'].join('\n'),
       style: {
-        font: '60px monospace',
+        font: '4vh monospace',
         fill: '#000000',
         align: 'center',
       },
@@ -339,7 +339,7 @@ class PlayingScene extends Phaser.Scene {
 
   showCombo(number) {
     const comboText = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, `COMBO\nx${number}`, {
-      font: '60px monospace',
+      font: '4vh monospace',
       fill: '#000000',
       align: 'center',
       stroke: '#ffffff',

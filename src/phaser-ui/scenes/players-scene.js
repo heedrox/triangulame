@@ -41,7 +41,7 @@ class PlayersScene extends Phaser.Scene {
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height / 10;
     this.add.text(x, y, this.room, {
-      font: 'bold 60px monospace',
+      font: 'bold 4vh monospace',
       fill: '#000',
       align: 'center',
     }).setShadow(2, 2, '#ffffff', 0, false, true)
@@ -94,7 +94,7 @@ class PlayersScene extends Phaser.Scene {
     const h = this.cameras.main.height;
 
     this.startButton = this.add.text(w / 2, h, this.i18n.get('start'), {
-      font: '60px monospace',
+      font: '4vh monospace',
       fill: '#000',
       align: 'center',
       strokeThickness: 5,

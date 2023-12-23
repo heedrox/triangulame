@@ -21,7 +21,7 @@ class EndingScene extends Phaser.Scene {
       y: h / 3,
       text: `${this.i18n.get('winner')}: ${this.game.winner}\n${this.game.winnerSecs} segs.`,
       style: {
-        font: '60px monospace',
+        font: '4vw monospace',
         fill: '#000000',
         align: 'center',
       },
@@ -36,7 +36,7 @@ class EndingScene extends Phaser.Scene {
     });
 
     const restart = this.add.text(w / 2, 3 / 4 * h, 'Reintentar', {
-      font: '60px monospace',
+      font: '4vh monospace',
       fill: '#444444',
     }).setInteractive();
 

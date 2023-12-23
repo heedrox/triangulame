@@ -100,7 +100,7 @@ class WelcomeScene extends Phaser.Scene {
     const h = this.cameras.main.height;
 
     const errorTxt = this.add.text(w / 2, h + 100, this.i18n.get('room-not-available'), {
-      font: '48px monospace',
+      font: '4vw monospace',
       fill: '#cc0000',
       align: 'center',
     }).setOrigin(0.5, 0.5);
