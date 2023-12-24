@@ -18,7 +18,7 @@ class EndingScene extends Phaser.Scene {
     const h = this.cameras.main.height;
     this.addWinner(w, h);
     this.addRestartButton(w, h);
-    this.addResultsTable(w, h);
+    this.addSummary(w, h);
   }
 
   addRestartButton(w, h) {
@@ -55,10 +55,29 @@ class EndingScene extends Phaser.Scene {
     });
   }
 
-  addResultsTable(w, h) {
-    //this.getResultsTable is an array
-    const resultsTable = this.game.getResultsTable();
+  addSummary(w, h) {
+    const summaryText = this.game.getSummary()
+      .map((s) => `${s.player}: ${s.secs} segs.`)
+      .join('\n');
+    
+    const summary = this.make.text({
+      x: w / 2,
+      y: h / 2,
+      text: summaryText,
+      style: {
+        font: '4vw monospace',
+        fill: '#000000',
+        align: 'center',
+      },
+    }).setOrigin(0.5, 0.5)
+      .setScale(0);
 
+    this.add.tween({
+      targets: summary,
+      scale: 1,
+      duration: 500,
+      ease: 'Sine.easeInOut',
+    });
   }
 }
 
