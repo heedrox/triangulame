@@ -182,7 +182,6 @@ class PlayingScene extends Phaser.Scene {
       x: 0,
       y: 0,
     });
-    console.log(this.cameras.main.width)
     graphics.lineStyle(Math.round(this.cameras.main.width/120), 0xffffff, 1);
     return graphics;
   }
@@ -274,7 +273,6 @@ class PlayingScene extends Phaser.Scene {
 
   paintBottom(graphics) {
     const h = this.cameras.main.height;
-    console.log(h)
     const w = this.cameras.main.width;
     const splitSizeX = h * 0.15;
     graphics.fillStyle(0x531D00, 1);

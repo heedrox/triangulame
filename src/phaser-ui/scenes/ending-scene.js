@@ -8,7 +8,6 @@ class EndingScene extends Phaser.Scene {
   }
 
   init(data) {
-    console.log('game data', data.game);
     this.game = data.game;
     this.onRestart = data.onRestart;
   }

@@ -19,7 +19,6 @@ class GameRepository {
 
   async create(room) {
     const gameRef = ref(this.db, `games/${room.id}`);
-    console.log(room)
     return set(gameRef, _clean(room));
   }
 
