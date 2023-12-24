@@ -16,6 +16,25 @@ class EndingScene extends Phaser.Scene {
   create() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
+    this.addWinner(w, h);
+    this.addRestartButton(w, h);
+    this.addResultsTable(w, h);
+  }
+
+  addRestartButton(w, h) {
+    const restart = this.add.text(w / 2, 3 / 4 * h, 'Continuar', {
+      font: '4vh monospace',
+      fill: '#444444',
+    }).setInteractive();
+
+    restart.setOrigin(0.5);
+    restart.on('pointerup', () => {
+      this.scene.stop();
+      this.onRestart();
+    });
+  }
+
+  addWinner(w, h) {
     const winnerText = this.make.text({
       x: w / 2,
       y: h / 3,
@@ -34,17 +53,12 @@ class EndingScene extends Phaser.Scene {
       duration: 500,
       ease: 'Sine.easeInOut',
     });
+  }
 
-    const restart = this.add.text(w / 2, 3 / 4 * h, 'Continuar', {
-      font: '4vh monospace',
-      fill: '#444444',
-    }).setInteractive();
+  addResultsTable(w, h) {
+    //this.getResultsTable is an array
+    const resultsTable = this.game.getResultsTable();
 
-    restart.setOrigin(0.5);
-    restart.on('pointerup', () => {
-      this.scene.stop();
-      this.onRestart();
-    });
   }
 }
 

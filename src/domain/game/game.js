@@ -18,12 +18,20 @@ class Game {
     return this.status === GAME_STATUS.WAITING_FOR_PLAYERS;
   }
 
-  getResultsTable() {
+  getSummary() {
     try {
-      return Object.keys(this.results).map((key) => ({
+      const getCleanResultsArray = (r) => Object.keys(this.results).map((key) => ({
         numGame: parseInt(key, 10),
         ...this.results[key]
       }));  
+      const uniquePlayers = (r) => [...new Set(r.map((result) => result.winner))];
+      const results = getCleanResultsArray(this.results)
+      const players = uniquePlayers(results)
+      const playerResults = players.map((player) => ({
+        player,
+        secs: results.filter((result) => result.winner === player).reduce((acc, result) => acc + result.secs, 0)
+      }));
+      return playerResults.sort((a, b) => b.secs - a.secs);
     } catch (error) {
       console.error(error)
       return []

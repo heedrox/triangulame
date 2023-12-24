@@ -71,17 +71,18 @@ describe('Game', () => {
     expect(game.canBeJoined()).toBe(true);
   });
 
-  it('gets results table', () => {
+  it('gets summary table', () => {
     const game = new Game({
       results: {
         0: { winner: 'PLAYER1', secs: 1 },
-        3: { winner: 'PLAYER2', secs: 2 }
+        3: { winner: 'PLAYER2', secs: 2 },
+        4: { winner: 'PLAYER2', secs: 5 },
       }
     });
 
-    expect(game.getResultsTable()).toStrictEqual([
-      { numGame: 0, winner: 'PLAYER1', secs: 1 },
-      { numGame: 3, winner: 'PLAYER2', secs: 2 }
+    expect(game.getSummary()).toStrictEqual([
+      { player: 'PLAYER2', secs: 7 },
+      { player: 'PLAYER1', secs: 1 },
     ]);
   });
 });
