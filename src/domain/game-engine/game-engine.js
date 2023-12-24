@@ -55,7 +55,9 @@ class GameEngine {
     return this.ui.getNameAndRoom({
       checkValidity: async (rName) => {
         const aGame = await this.repository.game.get(rName);
-        return !aGame || aGame.status === GAME_STATUS.WAITING_FOR_PLAYERS || !aGame.status;
+        return !aGame || aGame.status === GAME_STATUS.WAITING_FOR_PLAYERS || 
+        aGame.status === GAME_STATUS.FINISHED_ALL_GAMES ||
+        !aGame.status;
       },
     });
   }
@@ -135,8 +137,9 @@ class GameEngine {
         await this.startRoom(this.game.id);
       },
       onEnd: async () => {
-        await this.repository.game.update(this.game.id, {
+        return await this.repository.game.update(this.game.id, {
           status: GAME_STATUS.FINISHED_ALL_GAMES,
+          numGame: 0,
         });          
       }
     });

@@ -23,6 +23,7 @@ describe('20 - Game Engine asks for name and room', () => {
     ${null}                                        | ${true}
     ${new Game({ status: GAME_STATUS.WAITING_FOR_PLAYERS })} | ${true}
     ${new Game({ status: GAME_STATUS.FINISHED })}            | ${false}
+    ${new Game({ status: GAME_STATUS.FINISHED_ALL_GAMES })}  | ${true}
   `('when checking room is valid - #game', async ({ game, expected }) => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();

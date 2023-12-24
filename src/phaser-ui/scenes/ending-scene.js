@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import SCENE_KEYS from './constants/scene-keys';
 
-const ENDING_GAME_NUMBER = 6;
+const ENDING_GAME_NUMBER = 1;
 
 class EndingScene extends Phaser.Scene {
   constructor(i18n) {
