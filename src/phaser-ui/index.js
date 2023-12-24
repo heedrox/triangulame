@@ -79,6 +79,7 @@ class PhaserUi {
     this.game.scene.start(SCENE_KEYS.ENDING_SCENE, {
       game,
       onRestart: () => callbacks.onRestart(),
+      onEnd: () => callbacks.onEnd(),
     });
   }
 }

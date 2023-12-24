@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import SCENE_KEYS from './constants/scene-keys';
 
+const ENDING_GAME_NUMBER = 6;
+
 class EndingScene extends Phaser.Scene {
   constructor(i18n) {
     super(SCENE_KEYS.ENDING_SCENE);
@@ -10,14 +12,20 @@ class EndingScene extends Phaser.Scene {
   init(data) {
     this.game = data.game;
     this.onRestart = data.onRestart;
+    this.onEnd = data.onEnd;
   }
 
   create() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
-    this.addWinner(w, h);
-    this.addRestartButton(w, h);
+    this.addWinner(w, h);    
     this.addSummary(w, h);
+    if (this.game.numGame < ENDING_GAME_NUMBER) {
+      this.addRestartButton(w, h);
+    } else {
+      this.addEndButton(w, h);
+    }
+
   }
 
   addRestartButton(w, h) {
@@ -30,6 +38,20 @@ class EndingScene extends Phaser.Scene {
     restart.on('pointerup', () => {
       this.scene.stop();
       this.onRestart();
+    });
+  }
+
+  addEndButton(w, h) {
+    const end = this.add.text(w / 2, 3 / 4 * h, 'Terminar', {
+      font: '4vh monospace',
+      fill: '#990000',
+    }).setInteractive();
+
+    end.setOrigin(0.5);
+    end.on('pointerup', async () => {
+      this.scene.stop();
+      await this.onEnd();
+      window.location.reload();
     });
   }
 

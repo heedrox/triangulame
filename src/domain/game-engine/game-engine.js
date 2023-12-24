@@ -134,6 +134,11 @@ class GameEngine {
         await this.repository.game.addPlayer(this.game.id, this.player);
         await this.startRoom(this.game.id);
       },
+      onEnd: async () => {
+        await this.repository.game.update(this.game.id, {
+          status: GAME_STATUS.FINISHED_ALL_GAMES,
+        });          
+      }
     });
   }
 }
