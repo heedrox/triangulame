@@ -70,4 +70,18 @@ describe('Game', () => {
 
     expect(game.canBeJoined()).toBe(true);
   });
+
+  it('gets results table', () => {
+    const game = new Game({
+      results: {
+        0: { winner: 'PLAYER1', secs: 1 },
+        3: { winner: 'PLAYER2', secs: 2 }
+      }
+    });
+
+    expect(game.getResultsTable()).toStrictEqual([
+      { numGame: 0, winner: 'PLAYER1', secs: 1 },
+      { numGame: 3, winner: 'PLAYER2', secs: 2 }
+    ]);
+  });
 });

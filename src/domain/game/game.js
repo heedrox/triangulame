@@ -17,6 +17,19 @@ class Game {
   canBeJoined() {
     return this.status === GAME_STATUS.WAITING_FOR_PLAYERS;
   }
+
+  getResultsTable() {
+    try {
+      return Object.keys(this.results).map((key) => ({
+        numGame: parseInt(key, 10),
+        ...this.results[key]
+      }));  
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+
+  }
 }
 
 export default Game;
