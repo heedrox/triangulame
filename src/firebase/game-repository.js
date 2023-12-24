@@ -19,6 +19,7 @@ class GameRepository {
 
   async create(room) {
     const gameRef = ref(this.db, `games/${room.id}`);
+    console.log(room)
     return set(gameRef, _clean(room));
   }
 
@@ -30,10 +31,11 @@ class GameRepository {
     return update(ref(this.db), updates);
   }
 
-  async addGameResult(roomId, { numGame, player }) {
+  async addGameResult(roomId, { numGame, player, secs }) {
     const gameResultRef = ref(this.db, `games/${roomId}/results/${numGame}`);
     return set(gameResultRef, {
       player,
+      secs
     });
 
   }

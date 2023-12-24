@@ -9,7 +9,7 @@ import Player from '../player/player';
 const localDb = () => new LocalStorageMock();
 
 describe('50 - Game Engine ends', () => {
-  it('updates status to FINISHED when user finishes', async () => {
+  it('updates status to FINISHED when user finishes, adding results', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
     mockUi.waitForPlayers = () => {};
@@ -23,33 +23,16 @@ describe('50 - Game Engine ends', () => {
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    expect(repository.game.update.mock.calls.length).toBe(1);
-    expect(repository.game.update.mock.calls[0][0]).toBe('ROOM');
-    expect(repository.game.update.mock.calls[0][1].status).toBe(GAME_STATUS.FINISHED);
-    expect(repository.game.update.mock.calls[0][1].winner).toBe('NAME');
-    expect(repository.game.update.mock.calls[0][1].winnerSecs).toBe(100);
-  });
-
-  it('adds result to game', async () => {
-    const mockUi = MOCK_UI();
-    const repository = MOCK_REPOSITORY();
-    mockUi.waitForPlayers = () => {};
-    repository.game.watch = ((_, fn) => fn({
-      id: 'ROOM',
-      status: GAME_STATUS.PLAYING,
-      players: {},
-      numGame: 0
-    }));
-    mockUi.playGame = (game, cbks) => cbks.onFinish(100);
-
-    const gameEngine = new GameEngine(mockUi, repository, localDb());
-    await gameEngine.start();
-
-    expect(repository.game.addGameResult).toHaveBeenCalledWith('ROOM',{
+    expect(repository.game.update).toHaveBeenCalledWith('ROOM', {
+      status: GAME_STATUS.FINISHED,
+      winner: 'NAME',
+      winnerSecs: 100,
       numGame: 1,
-      player: "NAME",
-      secs: 100
-    })   
+      'results/0': {
+        winner: 'NAME',
+        secs: 100
+      }
+    });    
   });
 
   it('ends when game status FINISHED is received, and it was PLAYING', async () => {

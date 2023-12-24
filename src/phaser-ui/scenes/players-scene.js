@@ -89,7 +89,6 @@ class PlayersScene extends Phaser.Scene {
   }
 
   updatePlayers(players, myId) {
-    console.log('received event', players, myId);
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
     this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {

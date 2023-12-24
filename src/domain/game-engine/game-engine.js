@@ -102,12 +102,11 @@ class GameEngine {
       status: GAME_STATUS.FINISHED,
       winner: this.player.name,
       winnerSecs: totalSecs,
-      numGame: this.game.numGame + 1
-    });
-    this.repository.game.addGameResult(this.game.id, {
       numGame: this.game.numGame + 1,
-      player: this.player.name,
-      secs: totalSecs,
+      [`results/${this.game.numGame}`]: {
+        winner: this.player.name,
+        secs: totalSecs
+      }
     });
   }
 

@@ -17,8 +17,8 @@ describe('Game', () => {
         winner: 'WINNER',
         winnerSecs: 100,
         results: [
-          { player: 'PLAYER1' },
-          { player: 'PLAYER2' }
+          { player: 'PLAYER1', secs: 1 },
+          { player: 'PLAYER2', secs: 2 }
         ]
       });
 
@@ -29,8 +29,8 @@ describe('Game', () => {
       expect(game.winner).toBe('WINNER');
       expect(game.winnerSecs).toBe(100);
       expect(game.results).toStrictEqual([
-        { player: 'PLAYER1' },
-        { player: 'PLAYER2' }
+        { player: 'PLAYER1', secs: 1 },
+        { player: 'PLAYER2', secs: 2 }
       ])
     });
 
