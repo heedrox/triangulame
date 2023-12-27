@@ -89,6 +89,12 @@ class GameEngine {
     if (previousStatus === GAME_STATUS.WAITING_FOR_PLAYERS
       && newGame.status === GAME_STATUS.PLAYING) {
       this.playGame();
+    } else if (newGame.status === GAME_STATUS.PLAYING) {
+      this.ui.updateGameDuringPlay({
+        currentGoals: {
+          ...this.game.currentGoals
+        }
+      })
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.player.id);
@@ -105,6 +111,7 @@ class GameEngine {
       winner: this.player.name,
       winnerSecs: totalSecs,
       numGame: this.game.numGame + 1,
+      currentGoals: {},
       [`results/${this.game.numGame}`]: {
         winner: this.player.name,
         secs: totalSecs
@@ -118,6 +125,7 @@ class GameEngine {
     this.ui.playGame(this.game,  this.player, {
       onFinish: this.updateGameStatusToEnd.bind(this),
       onPress: this.checkRectangle.bind(this),
+      onGoalUpdate: this.onGoalUpdate.bind(this)
     });
   }
 
@@ -125,6 +133,15 @@ class GameEngine {
     if (this.currentGoal === pressedId) {
       this.currentGoal += 1;
     }
+  }
+
+  onGoalUpdate(currentGoal) {
+    console.log('sending updating goal', {
+      [`currentGoals/${this.player.id}`]: currentGoal
+    })
+    this.repository.game.update(this.game.id, {
+      [`currentGoals/${this.player.id}`]: currentGoal
+    });
   }
 
   endGame() {

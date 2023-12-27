@@ -28,6 +28,7 @@ describe('50 - Game Engine ends', () => {
       winner: 'NAME',
       winnerSecs: 100,
       numGame: 1,
+      currentGoals: {},
       'results/0': {
         winner: 'NAME',
         secs: 100

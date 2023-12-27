@@ -74,7 +74,12 @@ class PhaserUi {
       rectangles: game.rectangles,
       playerId: player.id,
       onFinish: (totalSecs) => callbacks.onFinish(totalSecs),
+      onGoalUpdate: (currentGoal) => callbacks.onGoalUpdate(currentGoal),
     });
+  }
+
+  updateGameDuringPlay(data) {
+    console.log(data)
   }
 
   endGame(game, callbacks) {

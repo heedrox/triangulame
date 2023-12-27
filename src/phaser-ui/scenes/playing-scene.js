@@ -98,15 +98,20 @@ class PlayingScene extends Phaser.Scene {
     this.i18n = i18n;
   }
 
-  init(data) {
+  init({ rectangles, playerId, players, onFinish, onGoalUpdate }) {
+    this.rectangles = rectangles.map(buildRectangleWithId);
+    this.playerId = playerId;
+    this.onFinish = onFinish;
+    const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
+    this.sortedPlayers = sortedPlayers;
+    this.onGoalUpdate = onGoalUpdate;
+
     this.xFactor = this.game.canvas.width / 100;
     this.yFactor = (this.game.canvas.height * 0.85) / 100;
     this.goalId = 1;
-    this.rectangles = data.rectangles.map(buildRectangleWithId);
+    
     this.totalGoal = this.rectangles.length;
-    const sortedPlayers = Object.values(data.players).sort((a, b) => a.id.localeCompare(b.id));
-    this.sortedPlayers = sortedPlayers;
-    this.playerId = data.playerId;
+    
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,
@@ -114,7 +119,7 @@ class PlayingScene extends Phaser.Scene {
       r.p2.x * this.xFactor, r.p2.y * this.yFactor,
     ]));
     this.texts = Array(this.rectangles.length).fill(null);
-    this.onFinish = data.onFinish;
+    
     this.combo = new ComboCheck();
   }
 
@@ -231,7 +236,10 @@ class PlayingScene extends Phaser.Scene {
             this.startTimer();
           }
           this.checkCombo();
-          this.goalId += 1;
+          this.goalId += 1;          
+          if (this.onGoalUpdate) {
+            this.onGoalUpdate(this.goalId);
+          }
           this.updateGoal();
           this.removeRectangle(polygon, this.texts[nr]);
           this.checkEnd();
@@ -337,7 +345,6 @@ class PlayingScene extends Phaser.Scene {
   }
 
   updateGoal() {
-
     this.goalText.setText(this.goalId);
     this.paintProgress()
   }

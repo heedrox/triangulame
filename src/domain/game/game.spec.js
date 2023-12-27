@@ -16,6 +16,10 @@ describe('Game', () => {
         rectangles: [],
         winner: 'WINNER',
         winnerSecs: 100,
+        currentGoals: {
+          id1: 1,
+          id2: 23
+        },
         results: [
           { player: 'PLAYER1', secs: 1 },
           { player: 'PLAYER2', secs: 2 }
@@ -32,6 +36,10 @@ describe('Game', () => {
         { player: 'PLAYER1', secs: 1 },
         { player: 'PLAYER2', secs: 2 }
       ])
+      expect(game.currentGoals).toStrictEqual({
+        id1: 1,
+        id2: 23
+      })
     });
 
     it('creates game with numGame reset', () => {

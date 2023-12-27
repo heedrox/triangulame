@@ -11,6 +11,7 @@ class Game {
       this.winnerSecs = options.winnerSecs;
       this.numGame = options.numGame ? options.numGame : 0;
       this.results = options.results
+      this.currentGoals = options.currentGoals ? options.currentGoals : {};
     }
   }
 

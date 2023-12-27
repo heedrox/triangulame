@@ -102,4 +102,30 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
       expect(typeof mockUi.playGame.mock.calls[0][0].players).toBe('object');
     });
   });
+
+  it('when status is PLAYING (from PLAYING), updates players', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
+    repository.game.watch = ((_, fn) => fn({
+      status: GAME_STATUS.PLAYING,
+      players: {},      
+    }) && fn({
+      status: GAME_STATUS.PLAYING,
+      players: {},
+      currentGoals: {
+        id1: 4,
+      }
+    }));
+    
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
+    await gameEngine.start();
+
+    expect(mockUi.updateGameDuringPlay).toHaveBeenCalledWith({
+      currentGoals: {
+        id1: 4
+      }
+    })
+  });
+
 });
