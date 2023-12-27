@@ -18,7 +18,7 @@ describe('50 - Game Engine ends', () => {
       status: GAME_STATUS.PLAYING,
       players: {},
     }));
-    mockUi.playGame = (game, cbks) => cbks.onFinish(100);
+    mockUi.playGame = (game, player, cbks) => cbks.onFinish(100);
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();

@@ -34,7 +34,7 @@ describe('43 - Game Engine handles clicks', () => {
       status: GAME_STATUS.PLAYING,
       players: {},
     }));
-    mockUi.playGame = (_, cbks) => cbks.onPress(keyPressed);
+    mockUi.playGame = (game, player, cbks) => cbks.onPress(keyPressed);
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();

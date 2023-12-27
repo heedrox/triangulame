@@ -66,12 +66,13 @@ class PhaserUi {
     this.eventsCenter.emit('players.updated', { players, myId });
   }
 
-  playGame(game, callbacks) {
+  playGame(game, player, callbacks) {
     this.game.scene.stop(SCENE_KEYS.PLAYERS_SCENE);
     this.game.scene.start(SCENE_KEYS.PLAYING_SCENE, {
       room: game.id,
       players: game.players,
       rectangles: game.rectangles,
+      playerId: player.id,
       onFinish: (totalSecs) => callbacks.onFinish(totalSecs),
     });
   }

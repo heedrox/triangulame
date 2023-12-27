@@ -2,13 +2,8 @@ import Phaser from 'phaser';
 import SCENE_KEYS from './constants/scene-keys';
 import eventsCenter from '../events-center';
 import shareButton from '../../assets/players/share.svg';
+import PLAYERS_COLORS from './constants/players-colors';
 
-const PLAYERS_COLORS = [
-  0xcc0000,
-  0x00cc00,
-  0x0000cc,
-  0xcc00cc,
-];
 const IMAGES = {
   SHARE: 'share',
 }
@@ -99,11 +94,15 @@ class PlayersScene extends Phaser.Scene {
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
     this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {
-      this.texts[idx].setText(player.name);
+      if (this.texts[idx]) {
+        this.texts[idx].setText(player.name);
+      }      
     });
     const restToEmpty = Array(4 - sortedPlayers.length).fill(null).map((_, idx) => 4 - idx - 1);
     restToEmpty.forEach((idxEmpty) => {
-      this.texts[idxEmpty].setText('');
+      if (this.texts[idxEmpty]) {
+        this.texts[idxEmpty].setText('');
+      }
     });
     this.updateStartOrWarnTextVisibility(myId);
   }

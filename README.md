@@ -9,7 +9,7 @@ This has been updated for Phaser 3.70.0 version and above.
 Loading images via JavaScript module `import` is also supported, although not recommended.
 
 ## Ideas
-- Share easily games
+- Share easily games [DONE]
 - Show progress of other users
 - Penalization if users touch wrong number
 - Combos provide you things to fail

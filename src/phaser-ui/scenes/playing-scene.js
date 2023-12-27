@@ -6,6 +6,7 @@ import comboMp3 from '../../assets/audio/combo.mp3';
 import SCENE_KEYS from './constants/scene-keys';
 import Rectangle from '../../domain/rectangle/rectangle';
 import ComboCheck from '../../domain/combo-check/combo-check';
+import PLAYERS_COLORS from './constants/players-colors';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
@@ -103,6 +104,9 @@ class PlayingScene extends Phaser.Scene {
     this.goalId = 1;
     this.rectangles = data.rectangles.map(buildRectangleWithId);
     this.totalGoal = this.rectangles.length;
+    const sortedPlayers = Object.values(data.players).sort((a, b) => a.id.localeCompare(b.id));
+    this.sortedPlayers = sortedPlayers;
+    this.playerId = data.playerId;
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,
@@ -128,12 +132,12 @@ class PlayingScene extends Phaser.Scene {
 
   create() {
     this.loadingText.destroy();
-    const graphics = this.buildGraphics();
+    this.graphics = this.buildGraphics();
 
-    this.paintScreen(graphics);
+    this.paintScreen();
 
     this.input.on('pointerdown', (pointer) => {
-      this.checkRectanglePressed(graphics, pointer);
+      this.checkRectanglePressed(pointer);
     });
 
     this.playMusic();
@@ -168,13 +172,13 @@ class PlayingScene extends Phaser.Scene {
     }, this);
   }
 
-  paintScreen(graphics) {
+  paintScreen() {
     this.rectangles.forEach((rectangle, nr) => {
-      this.addRectangle(graphics, rectangle);
+      this.addRectangle(rectangle);
       this.texts[nr] = this.addTextToRectangle(rectangle);
     });
 
-    this.paintBottom(graphics);
+    this.paintBottom();
   }
 
   buildGraphics() {
@@ -186,14 +190,14 @@ class PlayingScene extends Phaser.Scene {
     return graphics;
   }
 
-  addRectangle(graphics, rectangle) {
-    graphics.beginPath();
-    graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
-    graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
-    graphics.lineTo(rectangle.p3.x * this.xFactor, rectangle.p3.y * this.yFactor);
-    graphics.lineTo(rectangle.p2.x * this.xFactor, rectangle.p2.y * this.yFactor);
-    graphics.closePath();
-    graphics.strokePath();
+  addRectangle(rectangle) {
+    this.graphics.beginPath();
+    this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p3.x * this.xFactor, rectangle.p3.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p2.x * this.xFactor, rectangle.p2.y * this.yFactor);
+    this.graphics.closePath();
+    this.graphics.strokePath();
   }
 
   addTextToRectangle(rectangle) {
@@ -209,7 +213,17 @@ class PlayingScene extends Phaser.Scene {
     return text;
   }
 
-  checkRectanglePressed(graphics, pointer) {
+  currentColor() {
+    for (let i = 0; i < this.sortedPlayers.length; i++) {
+      const player = this.sortedPlayers[i];
+      if (player.id === this.playerId) {
+        return PLAYERS_COLORS[i];
+      }
+    }
+    return 0;    
+  }
+  
+  checkRectanglePressed(pointer) {
     this.polygons.forEach((polygon, nr) => {
       if (Phaser.Geom.Polygon.ContainsPoint(polygon, pointer)) {
         if (this.rectangles[nr].id === this.goalId) {
@@ -219,14 +233,14 @@ class PlayingScene extends Phaser.Scene {
           this.checkCombo();
           this.goalId += 1;
           this.updateGoal();
-          this.removeRectangle(graphics, polygon, this.texts[nr]);
+          this.removeRectangle(polygon, this.texts[nr]);
           this.checkEnd();
         }
       }
     });
   }
 
-  removeRectangle(graphics, polygon, text) {
+  removeRectangle(polygon, text) {
     const poly = new Phaser.GameObjects.Polygon(
       this,
       0,
@@ -258,8 +272,8 @@ class PlayingScene extends Phaser.Scene {
     newPoly.setX(newPoly.x + bounds2.width / 2);
     newPoly.setY(newPoly.y + bounds2.height / 2);
     this.add.existing(newPoly);
-    graphics.fillStyle(0x000000);
-    graphics.fillPoints(polygon.points, true);
+    this.graphics.fillStyle(0x000000);
+    this.graphics.fillPoints(polygon.points, true);
     text.setDepth(1);
     this.tweens.add({
       targets: [newPoly, text],
@@ -271,37 +285,36 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
-  paintBottom(graphics) {
+  paintBottom() {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
-    const splitSizeX = h * 0.15;
-    graphics.fillStyle(0x531D00, 1);
-    graphics.fillRect(0, h * 0.85, w, h * 0.15);
-    graphics.fillStyle(0x000000, 1);
-    graphics.fillRoundedRect(10, h * 0.85 + 15, w - splitSizeX - 20, h * 0.15 - 20, 32);
-    graphics.fillStyle(0x000000, 1);
-    graphics.fillRoundedRect(w - splitSizeX, h * 0.85 + 15, splitSizeX - 10, h * 0.15 - 20, 32);
-
+    const VH = h / 100;
+    this.graphics.fillStyle(0xFFFFFF, 1);
+    this.graphics.fillRect(0, h * 0.85, w, h * 0.15);
+    this.graphics.fillStyle(0x000000, 1);
+    this.graphics.fillRoundedRect(1* VH, h * 0.85 + 2*VH, w - 2*VH, h * 0.15 - 4*VH, 0);
+    this.graphics.fillStyle(0x000000, 1);
     this.paintGoal();
   }
 
   paintGoal() {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
-    const splitSizeX = h * 0.15;
-    const circleX = w - splitSizeX / 2;
-    const circleY = h * (0.925);
-    const whiteCircle = this.add.circle(circleX, circleY, splitSizeX * 0.2 + 10, 0xffffff);
-    const circle = this.add.circle(circleX, circleY, splitSizeX * 0.2, BACKGROUND_PIECE);
-    this.goalText = this.add.text(w - splitSizeX / 2, h * 0.925, this.goalId, {
+    const VH = h / 100;
+    const splitSizeX = w * 0.25;
+    const leftX = w - splitSizeX;
+    const topY = h * (0.925);
+    this.graphics.fillStyle(this.currentColor(), 1);
+    this.graphics.fillRect(leftX, topY, splitSizeX - 1*VH, h * 0.075 - 2*VH);
+    this.goalText = this.add.text(w - splitSizeX / 2, h * (0.955), this.goalId, {
       fontFamily: 'Arial',
       fontSize: splitSizeX * 0.2,
       color: '#000000',
-    });
+    }).setShadow(2, 2, '#ffffff', 2, false, true);
     this.goalText.setOrigin(0.5);
     this.add.tween({
-      targets: [circle, whiteCircle, this.goalText],
-      scale: 1.1,
+      targets: [this.goalText],
+      scale: 1.5,
       ease: 'Bounce.easeOut',
       duration: 1000,
       repeatDelay: 1000,
@@ -310,8 +323,23 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
+  paintProgress() {
+    const h = this.cameras.main.height;
+    const w = this.cameras.main.width;
+    const VH = h / 100;
+    const splitSizeX = w * 0.25;
+    const leftX = w - splitSizeX;
+    const topY = h * (0.85) + 2 * VH;
+    const height = (((0.925 - 0.85)*h) - 2*VH) / 4;
+    const currentProgress = this.goalId / this.totalGoal;
+    this.graphics.fillStyle(this.currentColor(), 1);
+    this.graphics.fillRect(leftX, topY, (splitSizeX - 1*VH) * currentProgress, height);
+  }
+
   updateGoal() {
+
     this.goalText.setText(this.goalId);
+    this.paintProgress()
   }
 
   checkEnd() {

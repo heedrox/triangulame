@@ -115,7 +115,7 @@ class GameEngine {
   playGame() {
     this.repository.game.unkeepPlayerAlive(this.game.id, this.player);
     this.currentGoal = 1;
-    this.ui.playGame(this.game, {
+    this.ui.playGame(this.game,  this.player, {
       onFinish: this.updateGameStatusToEnd.bind(this),
       onPress: this.checkRectangle.bind(this),
     });
