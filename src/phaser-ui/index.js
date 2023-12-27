@@ -39,6 +39,8 @@ class PhaserUi {
 
   getNameAndRoom({ checkValidity }) {
     return new Promise((resolve) => {
+      const gameParams = new URLSearchParams(window.location.search);
+      const room = gameParams.get('room');
       this.game.scene.start(SCENE_KEYS.WELCOME_SCENE, {
         checkValidity,
         oncomplete: ({ name, room }) => {
@@ -47,7 +49,7 @@ class PhaserUi {
           resolve({ name, room });
         },
         previousName: localStorage.getItem('previousName'),
-        previousRoom: localStorage.getItem('previousRoom'),
+        previousRoom: room ? room : localStorage.getItem('previousRoom'),
       });
     });
   }
