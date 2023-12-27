@@ -4,9 +4,14 @@ A game based on Phaser 3 Webpack Project Template
 
 A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Webpack 4](https://webpack.js.org/) that includes hot-reloading for development and production-ready builds.
 
-This has been updated for Phaser 3.50.0 version and above.
+This has been updated for Phaser 3.70.0 version and above.
 
 Loading images via JavaScript module `import` is also supported, although not recommended.
+
+## Roadmap
+- Fix user not being able to click "CONTINUE" if other player is not in room
+- Fix sometimes user does not show in room
+
 
 ## Requirements
 

@@ -52,7 +52,7 @@ class PlayersScene extends Phaser.Scene {
   addNumGame() {
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height / 10 + (0.04 * this.cameras.main.height);
-    this.add.text(x, y, this.i18n.get('game-number', { numRectangles: this.numGame * 2 + 6 }), {
+    this.add.text(x, y, this.i18n.get('game-number', { numRectangles: this.numGame * 2 + 12 }), {
       font: '4vw monospace',
       fill: '#000',
       align: 'center',
