@@ -13,6 +13,7 @@ Loading images via JavaScript module `import` is also supported, although not re
 - Show progress of other users
 - Penalization if users touch wrong number
 - Combos provide you things to fail
+- If you leave a game in half, the room is available
 - Fix user not being able to click "CONTINUE" if other player is not in room
 - Fix sometimes user does not show in room until time is passed
 

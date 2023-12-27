@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import SCENE_KEYS from './constants/scene-keys';
 import eventsCenter from '../events-center';
+import shareButton from '../../assets/players/share.svg';
 
 const PLAYERS_COLORS = [
   0xcc0000,
@@ -8,6 +9,9 @@ const PLAYERS_COLORS = [
   0x0000cc,
   0xcc00cc,
 ];
+const IMAGES = {
+  SHARE: 'share',
+}
 class PlayersScene extends Phaser.Scene {
   constructor(i18n) {
     super({
@@ -31,10 +35,15 @@ class PlayersScene extends Phaser.Scene {
     });
   }
 
+  preload() {
+    this.load.image(IMAGES.SHARE, shareButton);
+  }
+
   create() {
     this.addRoomName();
     this.texts = this.createRectanglesForNames();
     this.addStartButton();
+    this.addShareButton();
     this.addNumGame();
   }
 
@@ -138,6 +147,21 @@ class PlayersScene extends Phaser.Scene {
     this.updateStartOrWarnTextVisibility('');
   }
 
+  addShareButton() {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    this.add.image(w - 50, h - 50, IMAGES.SHARE)
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(50, 50)
+      .setInteractive()
+      .on('pointerdown', async () => {
+        const url = `${window.location.origin}?room=${this.room}`;
+        await navigator.clipboard.writeText(`Juega conmigo a Triangula.me. Abre el juego en: ${url}`);
+        alert(this.i18n.get('copied-to-clipboard'));
+      });
+  }
+    
   getMainPlayer() {
     if (this.sortedPlayers && this.sortedPlayers.length >= 1) {
       return this.sortedPlayers[0];

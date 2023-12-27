@@ -9,6 +9,7 @@ const es = ({
     'start-only-main-player': 'Esperando a que {{mainPlayer}}\ncomience la partida.',
     winner: 'GANADOR',
     'game-number': 'Números: {{numRectangles}}',
+    'copied-to-clipboard': 'La dirección de esta web se ha compartido en el portapapeles. Envíasela a tus amigos para que puedan jugar contigo.',
   },
 });
 
