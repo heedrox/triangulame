@@ -8,9 +8,13 @@ This has been updated for Phaser 3.70.0 version and above.
 
 Loading images via JavaScript module `import` is also supported, although not recommended.
 
-## Roadmap
+## Ideas
+- Share easily games
+- Show progress of other users
+- Penalization if users touch wrong number
+- Combos provide you things to fail
 - Fix user not being able to click "CONTINUE" if other player is not in room
-- Fix sometimes user does not show in room
+- Fix sometimes user does not show in room until time is passed
 
 
 ## Requirements
