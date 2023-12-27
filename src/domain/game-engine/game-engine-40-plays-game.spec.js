@@ -21,9 +21,9 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
   });
 
   it.each([
-    [0, 6],
-    [3, 12],
-    [6, 18]
+    [0, 12],
+    [3, 18],
+    [6, 24]
   ])('builds and saves rectangles based on numGame * 2 + 6 (%s)', async (numGame, expectedRectangles) => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();

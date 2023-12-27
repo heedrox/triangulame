@@ -76,7 +76,7 @@ class GameEngine {
   }
 
   async updateGameStatusToPlay(room) {
-    const numberRectangles = this.game.numGame*2 + 6;
+    const numberRectangles = Game.numberOfRectangles(this.game.numGame);
     await this.repository.game.update(room, {
       status: GAME_STATUS.PLAYING,
       rectangles: new RectanglesCreator().build(numberRectangles)

@@ -38,6 +38,10 @@ class Game {
     }
 
   }
+
+  static numberOfRectangles(numGame) {
+    return numGame * 2 + 12;
+  }
 }
 
 export default Game;
