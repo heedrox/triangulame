@@ -7,6 +7,7 @@ import SCENE_KEYS from './constants/scene-keys';
 import Rectangle from '../../domain/rectangle/rectangle';
 import ComboCheck from '../../domain/combo-check/combo-check';
 import PLAYERS_COLORS from './constants/players-colors';
+import eventsCenter from '../events-center';
 
 const BACKGROUND_PIECE = 0xcccc00;
 const INGAME_THEME = 'INGAME_THEME';
@@ -96,6 +97,7 @@ class PlayingScene extends Phaser.Scene {
       key: SCENE_KEYS.PLAYING_SCENE,
     });
     this.i18n = i18n;
+    this.eventsCenter = eventsCenter;
   }
 
   init({ rectangles, playerId, players, onFinish, onGoalUpdate }) {
@@ -121,6 +123,13 @@ class PlayingScene extends Phaser.Scene {
     this.texts = Array(this.rectangles.length).fill(null);
     
     this.combo = new ComboCheck();
+
+    const updateGoalsFn = ({goals}) => this.updateGoals({goals});
+    this.eventsCenter.on('goals.updated', updateGoalsFn);
+    this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.eventsCenter.off('goals.updated', updateGoalsFn);
+    });
+
   }
 
   preload() {
@@ -219,13 +228,17 @@ class PlayingScene extends Phaser.Scene {
   }
 
   currentColor() {
+    return this.colorOfPlayer(this.playerId);
+  }
+
+  colorOfPlayer(playerId) {
     for (let i = 0; i < this.sortedPlayers.length; i++) {
       const player = this.sortedPlayers[i];
-      if (player.id === this.playerId) {
+      if (player.id === playerId) {
         return PLAYERS_COLORS[i];
       }
     }
-    return 0;    
+    return 0;   
   }
   
   checkRectanglePressed(pointer) {
@@ -236,10 +249,10 @@ class PlayingScene extends Phaser.Scene {
             this.startTimer();
           }
           this.checkCombo();
-          this.goalId += 1;          
           if (this.onGoalUpdate) {
             this.onGoalUpdate(this.goalId);
           }
+          this.goalId += 1;                    
           this.updateGoal();
           this.removeRectangle(polygon, this.texts[nr]);
           this.checkEnd();
@@ -303,6 +316,7 @@ class PlayingScene extends Phaser.Scene {
     this.graphics.fillRoundedRect(1* VH, h * 0.85 + 2*VH, w - 2*VH, h * 0.15 - 4*VH, 0);
     this.graphics.fillStyle(0x000000, 1);
     this.paintGoal();
+    this.paintProgress();
   }
 
   paintGoal() {
@@ -331,17 +345,37 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
-  paintProgress() {
+  paintProgressForPlayer(numPlayer, playerGoal) {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
     const VH = h / 100;
     const splitSizeX = w * 0.25;
     const leftX = w - splitSizeX;
-    const topY = h * (0.85) + 2 * VH;
+    const topYAll = h * (0.85) + 2 * VH;
     const height = (((0.925 - 0.85)*h) - 2*VH) / 4;
-    const currentProgress = this.goalId / this.totalGoal;
-    this.graphics.fillStyle(this.currentColor(), 1);
-    this.graphics.fillRect(leftX, topY, (splitSizeX - 1*VH) * currentProgress, height);
+    const topYPlayer = topYAll + (height) * numPlayer;
+    this.graphics.fillStyle(0x000000, 1);
+    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH), height);  
+    this.graphics.fillStyle(PLAYERS_COLORS[numPlayer], 0.4);
+    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH), height);  
+
+    if (playerGoal) {
+      const currentProgress = playerGoal / this.totalGoal;
+      this.graphics.fillStyle(PLAYERS_COLORS[numPlayer], 1);
+      this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH) * currentProgress, height);  
+    }
+  }
+
+  paintProgress() {
+    for(let i = 0; i < 4; i++) {
+      const player = this.sortedPlayers[i];
+      this.paintProgressForPlayer(i, player && player.id && this.playersGoals ?  this.playersGoals[player.id] : null)          
+    }    
+  }
+
+  updateGoals({goals}) {
+    this.playersGoals = goals;    
+    this.paintProgress()
   }
 
   updateGoal() {

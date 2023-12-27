@@ -136,9 +136,6 @@ class GameEngine {
   }
 
   onGoalUpdate(currentGoal) {
-    console.log('sending updating goal', {
-      [`currentGoals/${this.player.id}`]: currentGoal
-    })
     this.repository.game.update(this.game.id, {
       [`currentGoals/${this.player.id}`]: currentGoal
     });

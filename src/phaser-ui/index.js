@@ -79,7 +79,8 @@ class PhaserUi {
   }
 
   updateGameDuringPlay(data) {
-    console.log(data)
+    const goals = data.currentGoals;
+    this.eventsCenter.emit('goals.updated', { goals });
   }
 
   endGame(game, callbacks) {
