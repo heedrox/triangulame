@@ -30,7 +30,6 @@
     "vite": "^6.3.6"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "firebase": "^9.6.1",
     "i18next": "^21.6.4",
     "phaser": "^3.90.0",

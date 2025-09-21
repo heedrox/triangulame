@@ -6,8 +6,18 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: '.',
     rollupOptions: {
-      input: 'index.html'
-    }
+      input: 'index.html',
+      output: {
+        manualChunks: {
+          // Separar Phaser en su propio chunk
+          phaser: ['phaser'],
+          // Separar otras librerías
+          vendor: ['uuid', 'i18next']
+        }
+      }
+    },
+    // Aumentar el límite de warning para chunks grandes (Phaser es pesado)
+    chunkSizeWarningLimit: 1000
   },
   server: {
     host: '0.0.0.0',

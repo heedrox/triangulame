@@ -2,9 +2,9 @@
 
 A game based on Phaser 3 Webpack Project Template
 
-A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Webpack 4](https://webpack.js.org/) that includes hot-reloading for development and production-ready builds.
+A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Vite 6](https://vite.dev/) that includes hot-reloading for development and production-ready builds.
 
-This has been updated for Phaser 3.70.0 version and above.
+This has been updated for Phaser 3.90.0 version and Node.js 20.
 
 Loading images via JavaScript module `import` is also supported, although not recommended.
 
@@ -20,15 +20,18 @@ Loading images via JavaScript module `import` is also supported, although not re
 
 ## Requirements
 
-[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
+[Node.js 20+](https://nodejs.org) is required to install dependencies and run scripts via `npm`. Use `nvm use` to automatically switch to the correct version.
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
 | `npm install` | Install project dependencies |
-| `npm start` | Build project and open web server running project |
-| `npm run build` | Builds code bundle with production settings (minification, uglification, etc..) |
+| `npm start` / `npm run dev` | Start development server with hot reload |
+| `npm run build` | Build project for production with optimizations |
+| `npm run preview` | Preview production build locally |
+| `npm test` | Run test suite with Jest |
+| `npm run lint` | Run ESLint code quality checks |
 
 ## Writing Code
 
@@ -50,13 +53,13 @@ You can write modern ES6+ JavaScript and Babel will transpile it to a version of
 ]
  ```
 
-### Webpack
+### Vite
 
-If you want to customize your build, such as adding a new webpack loader or plugin (i.e. for loading CSS or fonts), you can modify the `webpack/base.js` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json'.
+The project uses [Vite](https://vite.dev/) for fast development and optimized production builds. You can customize the build by modifying `vite.config.js`. Vite provides excellent ES module support, fast HMR, and optimized bundling out of the box.
 
 ## Deploying Code
 
-After you run the `npm run build` command, your code will be built into a single bundle located at `dist/bundle.min.js` along with any other assets you project depended. 
+After you run the `npm run build` command, your code will be built into optimized files in the `dist/` directory with automatic asset hashing for cache busting. 
 
 If you put the contents of the `dist` folder in a publicly-accessible location (say something like `http://mycoolserver.com`), you should be able to open `http://mycoolserver.com/index.html` and play your game.
 
