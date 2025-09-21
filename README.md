@@ -1,21 +1,44 @@
-# Triangles APP (pending better name)
+# Triangles - Juego de Números y Formas
 
-A game based on Phaser 3 Webpack Project Template
+**Un juego multijugador en tiempo real donde la velocidad y precisión son clave.**
 
-A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Vite 6](https://vite.dev/) that includes hot-reloading for development and production-ready builds.
+Triangles es un juego competitivo donde los jugadores deben hacer clic en formas geométricas (rectángulos y triángulos) en orden numérico secuencial lo más rápido posible. El tablero se genera dinámicamente dividiendo un rectángulo base en múltiples formas, cada una numerada del 1 al N, creando un desafío único en cada partida.
 
-This has been updated for Phaser 3.90.0 version and Node.js 20.
+## 🎮 Cómo se Juega
 
-Loading images via JavaScript module `import` is also supported, although not recommended.
+1. **Únete a una sala** con tu nombre y código de sala
+2. **Espera a otros jugadores** (multijugador en tiempo real)
+3. **Encuentra y haz clic** en las formas numeradas del 1 al N en orden
+4. **Compite por el mejor tiempo** - el jugador más rápido gana
+5. **Sistema de combos** - haz clic rápido (< 1.5s) para activar combos de 3+ números
 
-## Ideas
-- Share easily games [DONE]
-- Show progress of other users
-- Penalization if users touch wrong number
-- Combos provide you things to fail
-- If you leave a game in half, the room is available
-- Fix user not being able to click "CONTINUE" if other player is not in room
-- Fix sometimes user does not show in room until time is passed
+## ✨ Características
+
+- **Multijugador en tiempo real** con Firebase
+- **Generación procedural** de tableros únicos cada partida
+- **Sistema de combos** que recompensa la velocidad
+- **Múltiples rondas** con dificultad creciente
+- **Interfaz responsive** que funciona en móvil y escritorio
+- **Soporte PWA** para iOS y Android
+
+## 🛠 Tecnología
+
+Construido con tecnologías web modernas para máximo rendimiento:
+
+- **Phaser 3.90.0** - Motor de juegos 2D para renderizado y física
+- **Vite 6** - Build tool ultrarrápido con HMR
+- **Firebase 9** - Backend en tiempo real para multijugador
+- **Node.js 20** - Runtime moderno con ES modules
+- **Jest 29** - Testing framework con 96.4% cobertura
+
+## 🚀 Ideas Futuras
+- ✅ Share easily games [DONE]
+- 📊 Show progress of other users  
+- ❌ Penalization if users touch wrong number
+- 🎯 Combos provide you things to fail
+- 🔄 If you leave a game in half, the room is available
+- 🐛 Fix user not being able to click "CONTINUE" if other player is not in room
+- 🐛 Fix sometimes user does not show in room until time is passed
 
 
 ## Requirements
