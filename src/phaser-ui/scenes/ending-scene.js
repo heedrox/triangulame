@@ -660,7 +660,7 @@ class EndingScene extends Phaser.Scene {
             ${summary.map((s, index) => `
                 <div class="player-result color-${index % 8}">
                     <div class="player-name">${s.player.toUpperCase()}</div>
-                    <div class="player-time">${s.secs}s</div>
+                    <div class="player-time">${s.secs}</div>
                 </div>
             `).join('')}
         </div>`;
