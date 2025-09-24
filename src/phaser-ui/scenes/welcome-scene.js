@@ -130,7 +130,8 @@ class WelcomeScene extends Phaser.Scene {
   createFloatingParticles(w, h) {
     const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
     const particles = [];
-    const count = window.navigator.userAgent.match(/Mobile|Android|iPhone/i) ? 6 : 12;
+    const isMobile = !!window.navigator.userAgent.match(/Mobile|Android|iPhone/i);
+    const count = isMobile ? 6 : 12;
 
     for (let i = 0; i < count; i++) {
       const g = this.add.graphics();
@@ -144,7 +145,7 @@ class WelcomeScene extends Phaser.Scene {
       g.closePath();
       g.fillPath();
 
-      const speed = Phaser.Math.FloatBetween(20, 40); // px/s
+      const speed = Phaser.Math.FloatBetween(isMobile ? 30 : 40, isMobile ? 55 : 70); // px/s
       const rotationSpeed = Phaser.Math.FloatBetween(0.3, 0.6); // rad/s
       const startDelay = Phaser.Math.Between(0, 1500);
 

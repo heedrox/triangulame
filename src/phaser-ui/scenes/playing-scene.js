@@ -246,7 +246,7 @@ class PlayingScene extends Phaser.Scene {
     const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
     const isMobile = !!window.navigator.userAgent.match(/Mobile|Android|iPhone/i);
     const maxPerTick = isMobile ? 1 : 2;
-    const delayMs = isMobile ? 300 : 200;
+    const delayMs = isMobile ? 260 : 180;
     const spawnOne = () => {
       const x = Math.random() * w;
       const tint = colors[(Math.random() * colors.length) | 0];
@@ -254,8 +254,8 @@ class PlayingScene extends Phaser.Scene {
       sprite.setDepth(-5);
       sprite.setTint(tint);
       sprite.setAlpha(0.5);
-      const driftX = (Math.random() - 0.5) * (isMobile ? 12 : 20);
-      const duration = (isMobile ? 4500 : 5000) + Math.random() * (isMobile ? 2000 : 3000);
+      const driftX = (Math.random() - 0.5) * (isMobile ? 14 : 24);
+      const duration = (isMobile ? 3800 : 4400) + Math.random() * (isMobile ? 1800 : 2600);
       this.tweens.add({
         targets: sprite,
         x: x + driftX,
