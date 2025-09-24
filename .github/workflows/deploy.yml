@@ -21,7 +21,7 @@ jobs:
         run: echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > service-account-key.json
 
       - name: Deploy to Firebase
-        run: firebase deploy --only hosting --non-interactive
+        run: firebase deploy --only hosting --non-interactive --project triangles-app
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service-account-key.json
 
