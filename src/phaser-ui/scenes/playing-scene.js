@@ -255,7 +255,11 @@ class PlayingScene extends Phaser.Scene {
       sprite.setTint(tint);
       sprite.setAlpha(0.5);
       const driftX = (Math.random() - 0.5) * (isMobile ? 14 : 24);
-      const duration = (isMobile ? 3800 : 4400) + Math.random() * (isMobile ? 1800 : 2600);
+      // 30% rápidas (~1-1.4s), resto más largas
+      const fast = Math.random() < 0.3;
+      const duration = fast
+        ? (isMobile ? 1000 : 900) + Math.random() * (isMobile ? 500 : 500)
+        : (isMobile ? 3800 : 4400) + Math.random() * (isMobile ? 1800 : 2600);
       this.tweens.add({
         targets: sprite,
         x: x + driftX,

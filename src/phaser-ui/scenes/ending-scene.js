@@ -169,6 +169,16 @@ class EndingScene extends Phaser.Scene {
     p.node.y = h + 50;
     p.node.alpha = 0;
     p.node.rotation = 0;
+    const isMobile = !!window.navigator.userAgent.match(/Mobile|Android|iPhone/i);
+    const fastChance = 0.3;
+    let durationMs;
+    if (Math.random() < fastChance) {
+      durationMs = Phaser.Math.Between(isMobile ? 1000 : 900, isMobile ? 1500 : 1400);
+    } else {
+      durationMs = Phaser.Math.Between(isMobile ? 3200 : 2800, isMobile ? 7000 : 6000);
+    }
+    const distance = h + 100;
+    p.speed = distance / (durationMs / 1000);
     p.alive = true;
   }
 

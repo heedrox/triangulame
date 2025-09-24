@@ -725,10 +725,6 @@ To github.com:heedrox/triangulame.git
 
 ---
 
-
-
----
-
 _**User (2025-09-24 09:29Z)**_
 
 ¿puedes hacer que las particulas vayan algo mas rapido? antes iban mas y ahora van mas lentas. es por rendimiento?
@@ -769,6 +765,48 @@ Voy a subir ligeramente la velocidad de las partículas manteniendo el coste est
 ---
 
 
+
+---
+
+
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git add -A
+```
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git commit -m "refactor: acelera ligeramente las partículas en todas las escenas manteniendo el coste estable en móvil"
+```
+
+```
+[main 7a24452] refactor: acelera ligeramente las partículas en todas las escenas manteniendo el coste estable en móvil
+ 5 files changed, 89 insertions(+), 9 deletions(-)
+
+```
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git push origin main
+```
+
+```
+To github.com:heedrox/triangulame.git
+   2f4bb0f..7a24452  main -> main
+
+```
+
+---
+
+- He aumentado la velocidad de partículas en `welcome`, `ending` y `players` subiendo su rango de velocidad según dispositivo.
+- En `playing` he reducido la duración y aumentado el drift horizontal y la cadencia para que crucen la pantalla más rápido.
+- Sin tocar la cantidad total (en móvil sigue contenida), así que el coste debería mantenerse.
+
+¿Así te parece más vivo sin penalizar FPS?
 
 ---
 
