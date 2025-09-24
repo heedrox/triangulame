@@ -651,3 +651,113 @@ He hecho que el polígono rotatorio en `removeRectangle` use el mismo color neon
 
 ---
 
+_**User (2025-09-24 09:08Z)**_
+
+brutal. ¿puedes hacer que los triangulos / rectangulos "vibren" un poquito mientras estan en reposo esperando a que yo los encuentre? todos un poquitin, o algunos, lo que creas
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Implementing vibration animation**
+
+I’m thinking about how to implement a vibration idle animation. Currently, shapes are drawn with graphics, and individual game objects are limited to text. Tweening might let us animate a small jitter on numbers, but the polygons drawn with Graphics are static. I wonder if I could create a new Phaser.GameObjects.Polygon instance for display instead. Alternatively, applying slight scale oscillation to text could give a vibration effect. There might be other options, like creating an overlay polygon for subtle tweening, yet that could be heavy. Ideally, I might just jitter both fill and outline.
+**Creating camera vibration effect**
+
+I'm considering implementing a periodic small camera noise, but that would affect the whole scene. I think a better approach would be to create tiny highlight polygons for each rectangle at low alpha. By tweening their position and rotation slightly, I can simulate vibration while maintaining the base graphics. I’d store these polygons in an array per rectangle and create overlay polygons with neonColor. Implementing a function like addIdleVibration(rectangle, polygon) could work, but I need to ensure we manage the polygons persistently in the array.
+**Creating overlay polygons**
+
+I want to create GameObjects as overlays similar to what I did in removeRectangle. In addRectangle, after drawing, I'll compute bounds and shift points relative to minx/miny to create a new GameObjects.Polygon at the appropriate position with a neonColor and an alpha of around 0.12. I think I’ll set its origin to 0.5 and adjust its position accordingly to ensure it appears beneath the text. Adding a tween for slight rotation and scaling could enhance the effect. Plus, I'll need to store the overlay in an array for cleanup later.
+**Managing overlays during rectangle removal**
+
+It's not strictly necessary, but when I remove a rectangle, I can add a new polygon and fill the graphics with black while the overlay remains. I can track the overlay per index, and when I call removeRectangle, I can destroy it. Even though I don’t pass the index to addRectangle, I can still push the overlay into this.vibrateOverlays. Later, when checking for pressed rectangles, I can find the index through this.texts and destroy the overlay at that match. That keeps everything in sync!
+**Implementing overlay management**
+
+I need to set up this.vibrateOverlays as an empty array in the init function. When I add a rectangle, I'll create an overlay and set up the tween, then push that overlay into the array. In removeRectangle, before tweening, I need to find the index of the overlay and check if it exists. If it does, I'll call overlay.destroy() and remove it from the array. This will help keep everything organized and efficient. Let's implement it!</details></think>
+
+---
+
+Voy a añadir una vibración sutil por figura creando un polígono superpuesto con baja opacidad y aplicándole un tween de rotación/escala continuo. También limpiaré ese overlay al eliminar la figura. Ahora hago los edits en `playing-scene.js`.
+
+---
+
+
+
+---
+
+He añadido una vibración sutil en reposo: creo un overlay por figura con baja opacidad y le aplico un tween infinito de ligera rotación y micro-escala con tiempos y delays aleatorios; al eliminar la figura, destruyo su overlay correspondiente. Pruébalo y dime si modulamos amplitud o duración.
+
+---
+
+_**User (2025-09-24 09:08Z)**_
+
+no se ven
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Adjusting overlay visibility**
+
+I need to make the vibration overlay more visible. Right now, the depth is set to -1, which might be placing it behind other graphics. I could adjust the depth to 0.5 or even 0 to ensure it appears above. The overlay opacity of 0.12 might be too low, so I'll consider increasing it to 0.2 or 0.25. Additionally, I'll tweak the tween angle to +-2 degrees for better visibility and scale changes to 0.992-1.008 for more impact. Setting the blend mode to ADD might help amplify the overlay as well.
+**Modifying overlay settings**
+
+I'm adding the overlay after `addRectangle`, and later, I'm placing text with `addTextToRectangle`. The default depth might be 0, which would allow the text to appear above the overlay; that works for me. However, since both the overlay and fill are the same color with low alpha, I’ll increase the alpha to 0.25. I can also consider adding a stroke style or glow for better visibility. I'll set the fill alpha to 0.2, use `setBlendMode(ADD)`, and adjust the depth to 0.5 to ensure it's positioned correctly. Let's apply this patch!</details></think>
+
+---
+
+
+
+---
+
+He subido la opacidad del overlay a 0.2, lo he puesto por encima del fondo (depth 0.5), y le añadí blend mode ADD y un movimiento un poco mayor. Ahora debería notarse la vibración sutil. ¿Se percibe ya? Si no, aumento un poco más la escala o la opacidad.
+
+---
+
+_**User (2025-09-24 09:08Z)**_
+
+nada, deshacemos ese cambio, no veo que se perciba, y queda peor todo
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Reverting changes in code**
+
+I need to revert the vibration overlay changes. I’ll start by editing the playing-scene.js file to remove the overlay creation and destruction code. It’s important to get rid of any side effects related to depth and blend mode that we added, including this.vibrateOverlays initialization. I should also make sure to delete the references for pushing overlays and the destruction code in removeRectangle. Lastly, I’ll apply a patch to clean up those sections and keep everything concise.</details></think>
+
+---
+
+
+
+---
+
+He revertido la vibración y limpiado el código asociado. Volvemos al estado anterior estable. Si quieres más adelante probamos un efecto alternativo más sutil, como un very slow pulse de brillo en el borde.
+
+---
+
+_**User (2025-09-24 09:29Z)**_
+
+¿y un pulse solo de los numeros podemos probar?
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Implementing animations**
+
+I’m thinking about how to set random delays for pulses to avoid them synchronizing. After adjusting the removeRectangle function, I want to add a glow effect to the targets, positioning them behind the text. I’ll create a tween for the text scale, using a yoyo effect with relative values. Calculating scale factors will involve setting base scale values and adjusting the glow effect's size and alpha. I must ensure the glow text remains positioned correctly in the display order!
+**Modifying removeRectangle**
+
+I’m looking to update the removeRectangle function. First, I’ll retrieve the glow value from the text using `text.getData('glowText')`. Then, I want to check if a tween associated with `[newPoly, text, glow]` exists and remove that if found or destroy it if necessary. Next, I’ll proceed with the `apply_patch` to ensure everything works smoothly. It feels like I need to be thorough here to avoid any unintended issues!</details></think>
+
+---
+
+
+
+---
+
+He añadido un pulso sutil solo en los números: el número oscuro crece ~2% y su halo ~6% en un tween sinusoidal infinito con un pequeño desfase aleatorio por figura. Al eliminar, detengo ambos porque se incluyen en el tween de salida. ¿Qué tal así?
+
+---
+

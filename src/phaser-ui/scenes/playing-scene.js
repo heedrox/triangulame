@@ -361,6 +361,8 @@ class PlayingScene extends Phaser.Scene {
     this.graphics.lineTo(rectangle.p2.x * this.xFactor, rectangle.p2.y * this.yFactor);
     this.graphics.closePath();
     this.graphics.strokePath();
+
+    // (vibración desactivada)
   }
 
   addTextToRectangle (rectangle) {
@@ -393,6 +395,33 @@ class PlayingScene extends Phaser.Scene {
     const textStretch = getStretch(text.getBounds(), rectangle, this.xFactor, this.yFactor);
     text.setScale(textStretch.x, textStretch.y);
     glowText.setScale(textStretch.x * 1.02, textStretch.y * 1.02);
+
+    // Pulse effect for numbers (subtle)
+    const baseX = textStretch.x;
+    const baseY = textStretch.y;
+    const delay = Math.random() * 800;
+    this.add.tween({
+      targets: text,
+      scaleX: baseX * 1.02,
+      scaleY: baseY * 1.02,
+      duration: 1600,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+      delay,
+    });
+    this.add.tween({
+      targets: glowText,
+      scaleX: baseX * 1.06,
+      scaleY: baseY * 1.06,
+      alpha: 0.6,
+      duration: 1600,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+      delay,
+    });
+    text.setData('glowText', glowText);
     return text;
   }
 
@@ -470,8 +499,10 @@ class PlayingScene extends Phaser.Scene {
     this.graphics.fillStyle(0x000000);
     this.graphics.fillPoints(polygon.points, true);
     text.setDepth(1);
+    const glowText = text.getData && text.getData('glowText');
+    const targets = glowText ? [newPoly, text, glowText] : [newPoly, text];
     this.tweens.add({
-      targets: [newPoly, text],
+      targets,
       angle: 360 * 3 * COMBO_SECS,
       ease: 'Linear',
       duration: COMBO_SECS * 1000,
