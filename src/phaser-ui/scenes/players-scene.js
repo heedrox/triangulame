@@ -35,6 +35,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   create() {
+    this.createCyberBackground();
     this.addRoomName();
     this.texts = this.createRectanglesForNames();
     this.addStartButton();
@@ -42,52 +43,417 @@ class PlayersScene extends Phaser.Scene {
     this.addNumGame();
   }
 
+  createCyberBackground() {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    // Create base background with simulated gradient
+    this.createGradientBackground(w, h);
+
+    // Add radial gradient spots for neon effect
+    this.createRadialGlows(w, h);
+
+    // Create animated grid
+    this.createAnimatedGrid(w, h);
+
+    // Create floating particles
+    this.createFloatingParticles(w, h);
+  }
+
+  createGradientBackground(w, h) {
+    // Create a simpler gradient background using fillGradientStyle
+    const backgroundGraphics = this.add.graphics();
+    
+    // Use Phaser's built-in gradient support
+    backgroundGraphics.fillGradientStyle(0x0f0f23, 0x0f0f23, 0x16213e, 0x1a1a2e, 1);
+    backgroundGraphics.fillRect(0, 0, w, h);
+
+    // Add a second layer for more depth
+    const overlayGraphics = this.add.graphics();
+    overlayGraphics.fillGradientStyle(0x1a1a2e, 0x16213e, 0x0f0f23, 0x1a1a2e, 0.7);
+    overlayGraphics.fillRect(0, 0, w, h);
+    overlayGraphics.setBlendMode(Phaser.BlendModes.OVERLAY);
+  }
+
+  createRadialGlows(w, h) {
+    // Cyan triangle glow at 20% 50%
+    this.drawTriangleGlow(w * 0.2, h * 0.5, w * 0.2, 0, 0x00f5ff);
+
+    // Magenta triangle glow at 80% 20% (rotated)
+    this.drawTriangleGlow(w * 0.8, h * 0.2, w * 0.15, Math.PI / 3, 0xff0080);
+
+    // Green triangle glow at 40% 80% (different rotation)
+    this.drawTriangleGlow(w * 0.4, h * 0.8, w * 0.18, -Math.PI / 4, 0x39ff14);
+  }
+
+  drawTriangleGlow(centerX, centerY, size, rotation, color) {
+    // Create multiple triangle layers for glow effect
+    const numLayers = 6;
+    
+    for (let i = 0; i < numLayers; i++) {
+      const graphics = this.add.graphics();
+      const layerSize = size * (1 + i * 0.4);
+      const layerAlpha = 0.3 - (i * 0.04); // Start with higher alpha
+      
+      graphics.fillStyle(color, layerAlpha);
+      graphics.setBlendMode(Phaser.BlendModes.ADD);
+      
+      // Calculate triangle points
+      const angle1 = rotation;
+      const angle2 = rotation + (2 * Math.PI / 3);
+      const angle3 = rotation + (4 * Math.PI / 3);
+      
+      const x1 = centerX + Math.cos(angle1) * layerSize;
+      const y1 = centerY + Math.sin(angle1) * layerSize;
+      const x2 = centerX + Math.cos(angle2) * layerSize;
+      const y2 = centerY + Math.sin(angle2) * layerSize;
+      const x3 = centerX + Math.cos(angle3) * layerSize;
+      const y3 = centerY + Math.sin(angle3) * layerSize;
+      
+      // Draw triangle
+      graphics.beginPath();
+      graphics.moveTo(x1, y1);
+      graphics.lineTo(x2, y2);
+      graphics.lineTo(x3, y3);
+      graphics.closePath();
+      graphics.fillPath();
+    }
+  }
+
+  createAnimatedGrid(w, h) {
+    const gridSize = 50;
+    const gridGraphics = this.add.graphics();
+    gridGraphics.lineStyle(1, 0x00f5ff, 0.1);
+
+    // Create vertical lines
+    for (let x = 0; x <= w + gridSize; x += gridSize) {
+      gridGraphics.moveTo(x, 0);
+      gridGraphics.lineTo(x, h + gridSize);
+    }
+
+    // Create horizontal lines
+    for (let y = 0; y <= h + gridSize; y += gridSize) {
+      gridGraphics.moveTo(0, y);
+      gridGraphics.lineTo(w + gridSize, y);
+    }
+
+    gridGraphics.strokePath();
+
+    // Animate the grid
+    this.tweens.add({
+      targets: gridGraphics,
+      x: -gridSize,
+      y: -gridSize,
+      duration: 20000,
+      repeat: -1,
+      ease: 'Linear'
+    });
+  }
+
+  createFloatingParticles(w, h) {
+    const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
+    const particles = [];
+
+    // Create 12 triangle particles
+    for (let i = 0; i < 12; i++) {
+      const particle = this.add.graphics();
+      const color = colors[i % colors.length];
+      const size = Phaser.Math.Between(2, 4);
+      
+      particle.fillStyle(color, 0.8);
+      
+      // Draw small triangle
+      particle.beginPath();
+      particle.moveTo(0, -size);
+      particle.lineTo(-size, size);
+      particle.lineTo(size, size);
+      particle.closePath();
+      particle.fillPath();
+      
+      // Random starting position
+      particle.x = Phaser.Math.Between(0, w);
+      particle.y = h + 50;
+      
+      particles.push(particle);
+
+      // Animate particle floating up
+      const delay = Phaser.Math.Between(0, 6000);
+      const duration = Phaser.Math.Between(4000, 8000);
+
+      this.time.delayedCall(delay, () => {
+        this.animateParticle(particle, w, h, duration);
+      });
+    }
+
+    this.particles = particles;
+  }
+
+  animateParticle(particle, w, h, duration) {
+    // Reset particle position
+    particle.x = Phaser.Math.Between(0, w);
+    particle.y = h + 50;
+    particle.alpha = 0;
+
+    // Create floating animation
+    this.tweens.add({
+      targets: particle,
+      y: -50,
+      alpha: 1,
+      duration: duration,
+      ease: 'Sine.easeInOut',
+      onComplete: () => {
+        // Restart animation
+        const newDuration = Phaser.Math.Between(4000, 8000);
+        this.animateParticle(particle, w, h, newDuration);
+      }
+    });
+
+    // Add rotation
+    this.tweens.add({
+      targets: particle,
+      rotation: Math.PI * 2,
+      duration: duration,
+      ease: 'Linear'
+    });
+
+    // Add fade out at the end
+    this.tweens.add({
+      targets: particle,
+      alpha: 0,
+      duration: 1000,
+      delay: duration - 1000,
+      ease: 'Sine.easeIn'
+    });
+
+    // Add fade in at the beginning
+    this.tweens.add({
+      targets: particle,
+      alpha: 1,
+      duration: 1000,
+      delay: 500,
+      ease: 'Sine.easeOut'
+    });
+  }
+
   addRoomName() {
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height / 10;
-    this.add.text(x, y, this.room, {
-      font: 'bold 4vh monospace',
-      fill: '#000',
-      align: 'center',
-    }).setShadow(2, 2, '#ffffff', 0, false, true)
-      .setOrigin(0.5, 0.5);
+    
+    // Create cyberpunk room name using DOM element
+    const roomHtml = `
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        .cyber-room-name {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 6vw;
+            font-weight: 900;
+            color: #ffff00;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 2vh;
+            text-shadow: 
+                0 0 5px #000,
+                0 0 10px #000,
+                0 0 15px #000,
+                0 0 20px #000,
+                0 0 10px #ffff00,
+                0 0 20px #ffff00,
+                0 0 30px #ffff00,
+                0 0 40px #ffff00;
+            animation: roomNameGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes roomNameGlow {
+            0% { 
+                text-shadow: 
+                    0 0 5px #000,
+                    0 0 10px #000,
+                    0 0 15px #000,
+                    0 0 20px #000,
+                    0 0 10px #ffff00,
+                    0 0 20px #ffff00,
+                    0 0 30px #ffff00,
+                    0 0 40px #ffff00;
+            }
+            100% { 
+                text-shadow: 
+                    0 0 8px #000,
+                    0 0 15px #000,
+                    0 0 20px #000,
+                    0 0 25px #000,
+                    0 0 15px #ffff00,
+                    0 0 25px #ffff00,
+                    0 0 35px #ffff00,
+                    0 0 45px #ffff00,
+                    0 0 55px #ffff00;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-room-name { font-size: 10vw; }
+        }
+        </style>
+        
+        <div class="cyber-room-name">${this.room}</div>`;
+
+    const roomElement = this.add.dom(x, y).createFromHTML(roomHtml);
+    roomElement.setOrigin(0.5, 0.5);
+    roomElement.setDepth(10);
   }
 
   addNumGame() {
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height / 10 + (0.04 * this.cameras.main.height);
-    this.add.text(x, y, this.i18n.get('game-number', { numRectangles: this.numGame * 2 + 12 }), {
-      font: '4vw monospace',
-      fill: '#000',
-      align: 'center',
-    }).setOrigin(0.5, 0.5);
+    
+    // Create cyberpunk game info using DOM element
+    const gameInfoHtml = `
+        <style>
+        .cyber-game-info {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 3.5vw;
+            font-weight: 700;
+            color: #39ff14;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 3vh;
+            text-shadow: 
+                0 0 3px #000,
+                0 0 6px #000,
+                0 0 10px #000,
+                0 0 15px #000,
+                0 0 5px #39ff14,
+                0 0 10px #39ff14,
+                0 0 15px #39ff14,
+                0 0 20px #39ff14;
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-game-info { font-size: 5vw; }
+        }
+        </style>
+        
+        <div class="cyber-game-info">${this.i18n.get('game-number', { numRectangles: this.numGame * 2 + 12 })}</div>`;
+
+    const gameInfoElement = this.add.dom(x, y).createFromHTML(gameInfoHtml);
+    gameInfoElement.setOrigin(0.5, 0.5);
+    gameInfoElement.setDepth(10);
   }
 
   createRectanglesForNames() {
     const texts = [];
-    const x = this.cameras.main.width / 4;
-    const y = this.cameras.main.height / 4;
-    const w = x * 1.5;
-    const h = y * 0.3;
-    texts.push(this.createRectangle(x, y, w, h, 0));
-    texts.push(this.createRectangle(3 * x, y, w, h, 1));
-    texts.push(this.createRectangle(x, 2 * y, w, h, 2));
-    texts.push(this.createRectangle(3 * x, 2 * y, w, h, 3));
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    
+    // Layout en filas (uno por fila)
+    const cardWidth = w * 0.8;
+    const cardHeight = h * 0.08;
+    const startY = h * 0.25;
+    const spacing = h * 0.12;
+    
+    texts.push(this.createRectangle(w / 2, startY, cardWidth, cardHeight, 0));
+    texts.push(this.createRectangle(w / 2, startY + spacing, cardWidth, cardHeight, 1));
+    texts.push(this.createRectangle(w / 2, startY + spacing * 2, cardWidth, cardHeight, 2));
+    texts.push(this.createRectangle(w / 2, startY + spacing * 3, cardWidth, cardHeight, 3));
+    
     return texts;
   }
 
   createRectangle(x, y, w, h, n) {
-    this.add
-      .rectangle(x, y, w, h, PLAYERS_COLORS[n], 1)
-      .setStrokeStyle(10, 0xffffff)
-      .setOrigin(0.5, 0.5);
+    // Create cyberpunk player card using DOM element
+    const cardHtml = `
+        <style>
+        .cyber-player-card {
+            position: relative;
+            width: ${w}px;
+            height: ${h}px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 4vw;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-weight: 700;
+            min-height: ${h}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+            border: 2px solid;
+            box-sizing: border-box;
+            text-shadow: 
+                0 0 2px #000,
+                0 0 4px #000;
+            margin: 0 auto;
+        }
 
-    return this.add.text(x, y, '          ', {
-      font: '5vw monospace',
-      fill: '#000',
-      align: 'center',
-    }).setOrigin(0.5, 0.5)
-    .setDisplaySize(w-30,Math.round(2*h/4));
+        .cyber-player-card.player-0 {
+            background: linear-gradient(135deg, #00f5ff, #0099cc);
+            border-color: #00f5ff;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+        }
+
+        .cyber-player-card.player-1 {
+            background: linear-gradient(135deg, #ff0080, #cc0066);
+            border-color: #ff0080;
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.3);
+        }
+
+        .cyber-player-card.player-2 {
+            background: linear-gradient(135deg, #39ff14, #2ecc40);
+            border-color: #39ff14;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+        }
+
+        .cyber-player-card.player-3 {
+            background: linear-gradient(135deg, #ffff00, #cccc00);
+            border-color: #ffff00;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.3);
+        }
+
+        .cyber-player-card:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .cyber-player-card.empty {
+            opacity: 0.3;
+            color: #666;
+            background: linear-gradient(135deg, #333, #555);
+            border-color: #666;
+            box-shadow: 0 0 10px rgba(102, 102, 102, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-player-card { font-size: 6vw; }
+        }
+        </style>
+        
+        <div class="cyber-player-card player-${n}" id="player-card-${n}">
+            ESPERANDO...
+        </div>`;
+
+    const cardElement = this.add.dom(x, y).createFromHTML(cardHtml);
+    cardElement.setOrigin(0.5, 0.5);
+    cardElement.setDepth(5);
+
+    return {
+      setText: (text) => {
+        const cardDiv = cardElement.node.querySelector(`#player-card-${n}`);
+        if (cardDiv) {
+          if (text === '') {
+            cardDiv.textContent = 'ESPERANDO...';
+            cardDiv.classList.add('empty');
+          } else {
+            cardDiv.textContent = text.toUpperCase();
+            cardDiv.classList.remove('empty');
+          }
+        }
+      }
+    };
   }
 
   updatePlayers(players, myId) {
@@ -111,37 +477,124 @@ class PlayersScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
-    this.startButton = this.add.text(w / 2, h, this.i18n.get('start'), {
-      font: '4vh monospace',
-      fill: '#000',
-      align: 'center',
-      strokeThickness: 5,
-    }).setOrigin(0.5, 0.5)
-      .setVisible(false);
+    // Create cyberpunk start button as footer
+    const startButtonHtml = `
+        <style>
+        .cyber-start-button {
+            background: linear-gradient(45deg, #ff0080, #00f5ff);
+            border: none;
+            padding: 20px;
+            font-size: 5vw;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 
+                0 0 30px rgba(0, 245, 255, 0.5),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90vw;
+            max-width: 500px;
+        }
+        
+        .cyber-start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .cyber-start-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-start-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 
+                0 0 50px rgba(0, 245, 255, 0.8),
+                0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cyber-start-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-start-button {
+                font-size: 6vw;
+                padding: 18px;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .cyber-start-button {
+                font-size: 4vw;
+                padding: 15px;
+            }
+        }
+        </style>
+        
+        <button class="cyber-start-button" id="cyberStartButton">
+            INICIAR MATCH
+        </button>`;
 
-    this.startButton.setY(h - 200 - this.startButton.height);
+    this.startButtonElement = this.add.dom(w / 2, h - 60).createFromHTML(startButtonHtml);
+    this.startButtonElement.setOrigin(0.5, 0.5);
+    this.startButtonElement.setDepth(100);
+    this.startButtonElement.setVisible(false);
 
-    this.rectangle = this.add
-      .rectangle(
-        w / 2,
-        h - 200 - this.startButton.height,
-        this.startButton.width + 50,
-        this.startButton.height + 25,
-        0x000000,
-        0.1,
-      )
-      .setStrokeStyle(10, 0xffffff)
-      .setOrigin(0.5, 0.5)
-      .setVisible(false)
-      .setInteractive()
-      .on('pointerdown', this.clickStart, this);
+    // Add click event
+    this.startButtonElement.addListener('click');
+    this.startButtonElement.on('click', (event) => {
+      if (event.target.id === 'cyberStartButton') {
+        this.clickStart();
+      }
+    });
 
-    this.warnText = this.add.text(w / 2, h - 200, this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }), {
-      font: '4vw monospace',
-      fill: '#000',
-      align: 'center',
-    }).setVisible(false)
-      .setOrigin(0.5, 0.5);
+    // Create cyberpunk warning text
+    const warnTextHtml = `
+        <style>
+        .cyber-warn-text {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 4vw;
+            font-weight: 700;
+            color: #39ff14;
+            text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 
+                0 0 3px #000,
+                0 0 6px #000,
+                0 0 10px #000,
+                0 0 15px #000,
+                0 0 5px #39ff14,
+                0 0 10px #39ff14,
+                0 0 15px #39ff14,
+                0 0 20px #39ff14;
+            line-height: 1.2;
+            margin-bottom: 2vh;
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-warn-text { font-size: 5vw; }
+        }
+        </style>
+        
+        <div class="cyber-warn-text" id="cyberWarnText">
+            ${this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name })}
+        </div>`;
+
+    this.warnTextElement = this.add.dom(w / 2, h - 120).createFromHTML(warnTextHtml);
+    this.warnTextElement.setOrigin(0.5, 0.5);
+    this.warnTextElement.setDepth(100);
+    this.warnTextElement.setVisible(false);
 
     this.updateStartOrWarnTextVisibility('');
   }
@@ -150,15 +603,56 @@ class PlayersScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
-    this.add.image(w - 50, h - 50, IMAGES.SHARE)
-      .setOrigin(0.5, 0.5)
-      .setDisplaySize(50, 50)
-      .setInteractive()
-      .on('pointerdown', async () => {
+    // Create cyberpunk share button using DOM element
+    const shareButtonHtml = `
+        <style>
+        .cyber-share-button {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #39ff14;
+            color: #39ff14;
+            padding: 15px 30px;
+            font-size: 4vw;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+        
+        .cyber-share-button:hover {
+            background: rgba(57, 255, 20, 0.1);
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .cyber-share-button {
+                font-size: 3.5vw;
+                padding: 12px 24px;
+            }
+        }
+        </style>
+        
+        <button class="cyber-share-button" id="cyberShareButton">
+            🎯 INVITAR JUGADORES
+        </button>`;
+
+    const shareButtonElement = this.add.dom(w / 2, h - 100).createFromHTML(shareButtonHtml);
+    shareButtonElement.setOrigin(0.5, 0.5);
+    shareButtonElement.setDepth(10);
+
+    // Add click event
+    shareButtonElement.addListener('click');
+    shareButtonElement.on('click', async (event) => {
+      if (event.target.id === 'cyberShareButton') {
         const url = `${window.location.origin}?room=${this.room}`;
-        await navigator.clipboard.writeText(`Juega conmigo a Triangula.me. Abre el juego en: ${url}`);
+        await navigator.clipboard.writeText(`Únete a mi match: ${url}`);
         alert(this.i18n.get('copied-to-clipboard'));
-      });
+      }
+    });
   }
     
   getMainPlayer() {
@@ -169,13 +663,20 @@ class PlayersScene extends Phaser.Scene {
   }
 
   updateStartOrWarnTextVisibility(myId) {
-    if (this.warnText) {
+    if (this.warnTextElement && this.startButtonElement) {
       const wVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id !== myId;
       const bVisible = this.sortedPlayers.length >= 2 && this.sortedPlayers[0].id === myId;
-      this.warnText.setVisible(wVisible);
-      this.startButton.setVisible(bVisible);
-      this.rectangle.setVisible(bVisible);  
-      this.warnText.setText(this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name }));
+      
+      this.warnTextElement.setVisible(wVisible);
+      this.startButtonElement.setVisible(bVisible);
+      
+      // Update warning text content
+      if (wVisible) {
+        const warnDiv = this.warnTextElement.node.querySelector('#cyberWarnText');
+        if (warnDiv) {
+          warnDiv.textContent = this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name });
+        }
+      }
     }
   }
 

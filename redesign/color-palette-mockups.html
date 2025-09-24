@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangles - Propuestas de Paletas de Colores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+            font-size: 2.5em;
+        }
+
+        .palette-section {
+            margin-bottom: 60px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .palette-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .screens-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .screen {
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen-title {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.9);
+            font-weight: bold;
+        }
+
+        /* LOGIN SCREEN STYLES */
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: rgba(0,0,0,0.8);
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 80%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+            border: 3px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.8);
+            background: white;
+            transform: scale(1.02);
+        }
+
+        .form-info {
+            font-size: 0.9em;
+            font-style: italic;
+            color: rgba(0,0,0,0.7);
+            margin-top: 10px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .start-button {
+            background: rgba(255,255,255,0.2);
+            border: 3px solid rgba(255,255,255,0.8);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        /* WAITING SCREEN STYLES */
+        .room-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .room-name {
+            font-size: 2em;
+            font-weight: bold;
+            color: rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+        }
+
+        .game-info {
+            font-size: 1em;
+            color: rgba(0,0,0,0.7);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .player-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+            border: 3px solid rgba(255,255,255,0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .share-button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.6);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* PALETTE 1: Ocean Depths */
+        .palette-1 .palette-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .palette-1 .screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .palette-1 .player-card:nth-child(1) { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .palette-1 .player-card:nth-child(2) { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .palette-1 .player-card:nth-child(3) { background: linear-gradient(135deg, #45b7d1, #2980b9); }
+        .palette-1 .player-card:nth-child(4) { background: linear-gradient(135deg, #f093fb, #f5576c); }
+
+        /* PALETTE 2: Sunset Vibes */
+        .palette-2 .palette-title {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #333 !important;
+        }
+        .palette-2 .screen {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        .palette-2 .form-label, .palette-2 .room-name, .palette-2 .game-info {
+            color: #333 !important;
+        }
+        .palette-2 .screen-title {
+            color: rgba(51,51,51,0.9) !important;
+        }
+        .palette-2 .player-card:nth-child(1) { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .palette-2 .player-card:nth-child(2) { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .palette-2 .player-card:nth-child(3) { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .palette-2 .player-card:nth-child(4) { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+
+        /* PALETTE 3: Forest Green */
+        .palette-3 .palette-title {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+        }
+        .palette-3 .screen {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+        }
+        .palette-3 .player-card:nth-child(1) { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .palette-3 .player-card:nth-child(2) { background: linear-gradient(135deg, #feca57, #ff9ff3); }
+        .palette-3 .player-card:nth-child(3) { background: linear-gradient(135deg, #48dbfb, #0abde3); }
+        .palette-3 .player-card:nth-child(4) { background: linear-gradient(135deg, #ff9ff3, #f368e0); }
+
+        /* PALETTE 4: Dark Mode */
+        .palette-4 .palette-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        .palette-4 .screen {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        .palette-4 .player-card:nth-child(1) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .palette-4 .player-card:nth-child(2) { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .palette-4 .player-card:nth-child(3) { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .palette-4 .player-card:nth-child(4) { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+        /* PALETTE 5: Neon Cyber */
+        .palette-5 .palette-title {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+        .palette-5 .screen {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+        .palette-5 .player-card:nth-child(1) { background: linear-gradient(135deg, #00f5ff, #0099cc); border: 2px solid #00f5ff; }
+        .palette-5 .player-card:nth-child(2) { background: linear-gradient(135deg, #ff0080, #cc0066); border: 2px solid #ff0080; }
+        .palette-5 .player-card:nth-child(3) { background: linear-gradient(135deg, #39ff14, #2ecc40); border: 2px solid #39ff14; }
+        .palette-5 .player-card:nth-child(4) { background: linear-gradient(135deg, #ffff00, #cccc00); border: 2px solid #ffff00; }
+
+        /* PALETTE 6: Warm Earth */
+        .palette-6 .palette-title {
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+        }
+        .palette-6 .screen {
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+        }
+        .palette-6 .player-card:nth-child(1) { background: linear-gradient(135deg, #ff6347, #ff4500); }
+        .palette-6 .player-card:nth-child(2) { background: linear-gradient(135deg, #32cd32, #228b22); }
+        .palette-6 .player-card:nth-child(3) { background: linear-gradient(135deg, #4169e1, #0000cd); }
+        .palette-6 .player-card:nth-child(4) { background: linear-gradient(135deg, #daa520, #b8860b); }
+
+        @media (max-width: 768px) {
+            .screens-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Propuestas de Paletas para Triangles</h1>
+
+        <!-- PALETTE 1: Ocean Depths -->
+        <div class="palette-section palette-1">
+            <div class="palette-title">🌊 Paleta 1: Ocean Depths (Profundidades del Océano)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PALETTE 2: Sunset Vibes -->
+        <div class="palette-section palette-2">
+            <div class="palette-title">🌅 Paleta 2: Sunset Vibes (Vibras de Atardecer)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PALETTE 3: Forest Green -->
+        <div class="palette-section palette-3">
+            <div class="palette-title">🌲 Paleta 3: Forest Green (Verde Bosque)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PALETTE 4: Dark Mode -->
+        <div class="palette-section palette-4">
+            <div class="palette-title">🌙 Paleta 4: Dark Mode (Modo Oscuro)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PALETTE 5: Neon Cyber -->
+        <div class="palette-section palette-5">
+            <div class="palette-title">⚡ Paleta 5: Neon Cyber (Neón Cibernético)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PALETTE 6: Warm Earth -->
+        <div class="palette-section palette-6">
+            <div class="palette-title">🍂 Paleta 6: Warm Earth (Tierra Cálida)</div>
+            <div class="screens-container">
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Login</div>
+                    <div class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Tu nombre:</label>
+                            <input type="text" class="form-input" placeholder="jordi" value="jordi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Una sala:</label>
+                            <input type="text" class="form-input" placeholder="jordi2" value="jordi2">
+                            <div class="form-info">* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala</div>
+                        </div>
+                        <button class="start-button">Comenzar</button>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div class="screen-title">Pantalla de Espera</div>
+                    <div class="room-info">
+                        <div class="room-name">jordi2</div>
+                        <div class="game-info">Números: 16</div>
+                    </div>
+                    <div class="players-grid">
+                        <div class="player-card">jordi</div>
+                        <div class="player-card">ana</div>
+                        <div class="player-card">carlos</div>
+                        <div class="player-card"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="start-button">Comenzar</button>
+                        <button class="share-button">📤 Compartir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #666;">
+            <p>💡 Haz scroll para ver todas las opciones. Cada paleta muestra cómo se verían ambas pantallas.</p>
+            <p>🎨 ¿Cuál te gusta más? ¡Podemos ajustar colores o crear variaciones!</p>
+        </div>
+    </div>
+</body>
+</html>

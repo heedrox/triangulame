@@ -1,15 +1,15 @@
 const es = ({
   translation: {
     key: 'hello world',
-    start: 'Comenzar',
-    name: 'Tu nombre',
-    room: 'Sala común',
-    'room-info': '* Todos los jugadores que quieran jugar la misma partida deben introducir el mismo nombre de sala (distingue mayúsc. / minúsc.)',
+    start: 'UNIRSE AL MATCH',
+    name: 'Gamertag',
+    room: 'Sala de batalla',
+    'room-info': '* Todos los jugadores deben usar el mismo código de sala para unirse al match',
     'room-not-available': 'Esta sala no está disponible.\nIntroduce otra, por favor.',
-    'start-only-main-player': 'Esperando a que {{mainPlayer}}\ncomience la partida.',
+    'start-only-main-player': 'Esperando a que {{mainPlayer}}\ninicie el match.',
     winner: 'GANADOR',
     'game-number': 'Números: {{numRectangles}}',
-    'copied-to-clipboard': 'La dirección de esta web se ha compartido en el portapapeles. Envíasela a tus amigos para que puedan jugar contigo.',
+    'copied-to-clipboard': 'Invitación copiada al portapapeles. Envíasela a tus amigos para que se unan al match.',
   },
 });
 
