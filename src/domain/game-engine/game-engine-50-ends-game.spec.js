@@ -60,7 +60,7 @@ describe('50 - Game Engine ends', () => {
     expect(mockUi.endGame.mock.calls[0][0]).toBeInstanceOf(Game);
   });
 
-  it('does not end game again when game status FINISHED is received, but it was not playing', async () => {
+  it('ends as well when FINISHED is received and it was not playing (joining finished room)', async () => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
     mockUi.waitForPlayers = () => {};
@@ -80,7 +80,22 @@ describe('50 - Game Engine ends', () => {
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    expect(mockUi.endGame.mock.calls.length).toBe(0);
+    expect(mockUi.endGame.mock.calls.length).toBe(1);
+  });
+
+  it('shows ending when joining a room already in FINISHED', async () => {
+    const mockUi = MOCK_UI();
+    const repository = MOCK_REPOSITORY();
+    mockUi.waitForPlayers = () => {};
+    // The room already exists and is FINISHED when we join
+    repository.game.get = jest.fn(() => Promise.resolve(new Game({ id: 'ROOM', status: GAME_STATUS.FINISHED, players: {} })));
+    repository.game.watch = ((_, fn) => fn({ id: 'ROOM', status: GAME_STATUS.FINISHED, players: {} }));
+
+    const gameEngine = new GameEngine(mockUi, repository, localDb());
+    await gameEngine.start();
+
+    expect(mockUi.endGame).toHaveBeenCalledTimes(1);
+    expect(mockUi.endGame.mock.calls[0][0]).toBeInstanceOf(Game);
   });
 
   it('stops keeping player alive', async () => {

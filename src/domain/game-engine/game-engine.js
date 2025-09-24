@@ -95,6 +95,9 @@ class GameEngine {
           ...this.game.currentGoals,
         },
       });
+    } else if (newGame.status === GAME_STATUS.FINISHED && previousStatus !== GAME_STATUS.PLAYING) {
+      // If we join a room already finished, go directly to ending
+      this.endGame();
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.player.id);
