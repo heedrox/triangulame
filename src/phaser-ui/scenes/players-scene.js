@@ -346,16 +346,22 @@ class PlayersScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     
-    // Layout en filas (uno por fila)
+    // Layout en filas (uno por fila) - expandido a 8 jugadores
     const cardWidth = w * 0.8;
-    const cardHeight = h * 0.08;
-    const startY = h * 0.25;
-    const spacing = h * 0.12;
+    const cardHeight = h * 0.06; // Reducido ligeramente para acomodar más jugadores
+    const startY = h * 0.22; // Iniciar un poco más arriba
+    const spacing = h * 0.08; // Reducido el espaciado para 8 jugadores
     
-    texts.push(this.createRectangle(w / 2, startY, cardWidth, cardHeight, 0));
-    texts.push(this.createRectangle(w / 2, startY + spacing, cardWidth, cardHeight, 1));
-    texts.push(this.createRectangle(w / 2, startY + spacing * 2, cardWidth, cardHeight, 2));
-    texts.push(this.createRectangle(w / 2, startY + spacing * 3, cardWidth, cardHeight, 3));
+    // Guardar dimensiones y posición del slot 8 (índice 7) para el botón INVITAR
+    this.cardWidthPx = cardWidth;
+    this.cardHeightPx = cardHeight;
+    this.inviteSlotX = w / 2;
+    this.inviteSlotY = startY + spacing * 7;
+
+    // Crear 8 slots de jugadores
+    for (let i = 0; i < 8; i++) {
+      texts.push(this.createRectangle(w / 2, startY + spacing * i, cardWidth, cardHeight, i));
+    }
     
     return texts;
   }
@@ -371,7 +377,7 @@ class PlayersScene extends Phaser.Scene {
             padding: 15px 25px;
             border-radius: 12px;
             text-align: center;
-            font-size: 4vw;
+            font-size: 3.5vw;
             font-family: 'Orbitron', 'Courier New', monospace;
             font-weight: 700;
             min-height: ${h}px;
@@ -415,6 +421,30 @@ class PlayersScene extends Phaser.Scene {
             box-shadow: 0 0 30px rgba(255, 255, 0, 0.3);
         }
 
+        .cyber-player-card.player-4 {
+            background: linear-gradient(135deg, #ff6600, #cc5500);
+            border-color: #ff6600;
+            box-shadow: 0 0 30px rgba(255, 102, 0, 0.3);
+        }
+
+        .cyber-player-card.player-5 {
+            background: linear-gradient(135deg, #00cccc, #00aaaa);
+            border-color: #00cccc;
+            box-shadow: 0 0 30px rgba(0, 204, 204, 0.3);
+        }
+
+        .cyber-player-card.player-6 {
+            background: linear-gradient(135deg, #6600cc, #5500aa);
+            border-color: #6600cc;
+            box-shadow: 0 0 30px rgba(102, 0, 204, 0.3);
+        }
+
+        .cyber-player-card.player-7 {
+            background: linear-gradient(135deg, #cccc00, #aaaa00);
+            border-color: #cccc00;
+            box-shadow: 0 0 30px rgba(204, 204, 0, 0.3);
+        }
+
         .cyber-player-card:hover {
             transform: translateY(-5px) scale(1.05);
         }
@@ -428,7 +458,7 @@ class PlayersScene extends Phaser.Scene {
         }
         
         @media (max-width: 768px) {
-            .cyber-player-card { font-size: 6vw; }
+            .cyber-player-card { font-size: 5vw; }
         }
         </style>
         
@@ -457,20 +487,34 @@ class PlayersScene extends Phaser.Scene {
   }
 
   updatePlayers (players, myId) {
-    const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
-    this.sortedPlayers = sortedPlayers;
-    sortedPlayers.forEach((player, idx) => {
-      if (this.texts[idx]) {
-        this.texts[idx].setText(player.name);
+     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
+     this.sortedPlayers = sortedPlayers;
+     sortedPlayers.forEach((player, idx) => {
+       if (this.texts[idx]) {
+         this.texts[idx].setText(player.name);
+       }
+     });
+     // Actualizar slots vacíos para 8 jugadores
+     const restToEmpty = Array(8 - sortedPlayers.length).fill(null).map((_, idx) => 8 - idx - 1);
+     restToEmpty.forEach((idxEmpty) => {
+       if (this.texts[idxEmpty]) {
+         this.texts[idxEmpty].setText('');
+       }
+     });
+     this.updateStartOrWarnTextVisibility(myId);
+
+    // Mostrar/ocultar y anclar botón INVITAR al slot 8
+    if (this.shareButtonElement) {
+      const hasEightPlayers = sortedPlayers.length === 8;
+      if (hasEightPlayers) {
+        this.shareButtonElement.setVisible(false);
+      } else {
+        this.shareButtonElement.setVisible(true);
+        if (this.inviteSlotX && this.inviteSlotY) {
+          this.shareButtonElement.setPosition(this.inviteSlotX, this.inviteSlotY);
+        }
       }
-    });
-    const restToEmpty = Array(4 - sortedPlayers.length).fill(null).map((_, idx) => 4 - idx - 1);
-    restToEmpty.forEach((idxEmpty) => {
-      if (this.texts[idxEmpty]) {
-        this.texts[idxEmpty].setText('');
-      }
-    });
-    this.updateStartOrWarnTextVisibility(myId);
+    }
   }
 
   addStartButton () {
@@ -559,31 +603,29 @@ class PlayersScene extends Phaser.Scene {
       }
     });
 
-    // Create cyberpunk warning text
+    // Create footer waiting text (shown to non-host players)
     const warnTextHtml = `
         <style>
         .cyber-warn-text {
             font-family: 'Orbitron', 'Courier New', monospace;
-            font-size: 4vw;
+            font-size: 3.5vw;
             font-weight: 700;
             color: #39ff14;
             text-align: center;
             letter-spacing: 1px;
-            text-shadow: 
-                0 0 3px #000,
-                0 0 6px #000,
-                0 0 10px #000,
-                0 0 15px #000,
-                0 0 5px #39ff14,
-                0 0 10px #39ff14,
-                0 0 15px #39ff14,
-                0 0 20px #39ff14;
-            line-height: 1.2;
-            margin-bottom: 2vh;
+            line-height: 1.3;
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2vh;
+            border-radius: 8px;
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+            width: 90vw;
+            max-width: 500px;
         }
         
         @media (max-width: 768px) {
-            .cyber-warn-text { font-size: 5vw; }
+            .cyber-warn-text { font-size: 4.5vw; }
         }
         </style>
         
@@ -591,7 +633,7 @@ class PlayersScene extends Phaser.Scene {
             ${this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name })}
         </div>`;
 
-    this.warnTextElement = this.add.dom(w / 2, h - 120).createFromHTML(warnTextHtml);
+    this.warnTextElement = this.add.dom(w / 2, h - 60).createFromHTML(warnTextHtml);
     this.warnTextElement.setOrigin(0.5, 0.5);
     this.warnTextElement.setDepth(100);
     this.warnTextElement.setVisible(false);
@@ -600,38 +642,40 @@ class PlayersScene extends Phaser.Scene {
   }
 
   addShareButton () {
-    const w = this.cameras.main.width;
-    const h = this.cameras.main.height;
-
-    // Create cyberpunk share button using DOM element
-    const shareButtonHtml = `
-        <style>
-        .cyber-share-button {
-            background: rgba(0, 0, 0, 0.8);
+     const w = this.cameras.main.width;
+     const h = this.cameras.main.height;
+ 
+     // Create cyberpunk share button using DOM element
+     const shareButtonHtml = `
+         <style>
+         .cyber-share-button {
+            background: rgba(0, 0, 0, 0.85);
             border: 2px solid #39ff14;
             color: #39ff14;
-            padding: 15px 30px;
-            font-size: 4vw;
+            font-size: 3.5vw;
             font-family: 'Orbitron', monospace;
             font-weight: 700;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: ${this.cardWidthPx || w * 0.8}px;
+            height: ${this.cardHeightPx || h * 0.06}px;
         }
         
         .cyber-share-button:hover {
             background: rgba(57, 255, 20, 0.1);
             box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
-            transform: scale(1.05);
         }
         
         @media (max-width: 768px) {
             .cyber-share-button {
-                font-size: 3.5vw;
-                padding: 12px 24px;
+                font-size: 5vw;
             }
         }
         </style>
@@ -639,20 +683,24 @@ class PlayersScene extends Phaser.Scene {
         <button class="cyber-share-button" id="cyberShareButton">
             🎯 INVITAR JUGADORES
         </button>`;
-
-    const shareButtonElement = this.add.dom(w / 2, h - 100).createFromHTML(shareButtonHtml);
-    shareButtonElement.setOrigin(0.5, 0.5);
-    shareButtonElement.setDepth(10);
-
+ 
+    this.shareButtonElement = this.add.dom(this.inviteSlotX || (w / 2), this.inviteSlotY || (h - 100)).createFromHTML(shareButtonHtml);
+    this.shareButtonElement.setOrigin(0.5, 0.5);
+    this.shareButtonElement.setDepth(6);
+ 
     // Add click event
-    shareButtonElement.addListener('click');
-    shareButtonElement.on('click', async (event) => {
+    this.shareButtonElement.addListener('click');
+    this.shareButtonElement.on('click', async (event) => {
       if (event.target.id === 'cyberShareButton') {
         const url = `${window.location.origin}?room=${this.room}`;
         await navigator.clipboard.writeText(`Únete a mi match: ${url}`);
         alert(this.i18n.get('copied-to-clipboard'));
       }
     });
+
+    // Visibilidad inicial según número de jugadores
+    const hasEightPlayers = (this.sortedPlayers || []).length === 8;
+    this.shareButtonElement.setVisible(!hasEightPlayers);
   }
 
   getMainPlayer () {
