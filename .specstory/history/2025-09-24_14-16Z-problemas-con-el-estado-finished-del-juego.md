@@ -587,3 +587,77 @@ He ejecutado los tests y todo sigue pasando.
 
 ---
 
+_**User (2025-09-24 09:29Z)**_
+
+/commit !
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Committing changes**
+
+I need to commit the current changes by composing a single-line message. I'll start with "feat" or "bugfix" and continue in the present tense in Spanish without using the phrase "este commit hace que." Once I have that ready, I’ll run the git add, commit, and push commands. Okay, let’s get this done!</details></think>
+
+---
+
+```bash
+git add -A && git commit -m "bugfix: al entrar en partida FINISHED se detiene la escena de jugadores y se muestra una sola vez la pantalla final evitando solapamientos y parpadeos" && git push origin main
+```
+
+```
+[main 37043b6] bugfix: al entrar en partida FINISHED se detiene la escena de jugadores y se muestra una sola vez la pantalla final evitando solapamientos y parpadeos
+ 3 files changed, 120 insertions(+), 2 deletions(-)
+To github.com:heedrox/triangulame.git
+   486e084..37043b6  main -> main
+
+```
+
+---
+
+Hecho: commit y push a main con el fix de escenas y el control para evitar parpadeos.
+
+---
+
+_**User (2025-09-24 09:29Z)**_
+
+ahora dime que ocurre si alguien intenta unirse con el status = FINISHED_ALL_GAMES
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+- En FINISHED_ALL_GAMES ahora mismo se permite entrar (validación lo acepta), se abre `PLAYERS_SCENE` y te añade como jugador, pero no hay ninguna transición: no se muestra `ENDING_SCENE` ni se actualiza la lista de jugadores (porque `canBeJoined()` solo es true en WAITING_FOR_PLAYERS). Resultado: te quedas en la pantalla de “Esperando…”, sin poder iniciar nada.
+
+---
+
+_**User (2025-09-24 09:29Z)**_
+
+podrias hacer que validacion no lo acepte?
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Updating validation checks**
+
+I need to adjust the validation in the getNameAndRoom function so that it doesn't accept FINISHED_ALL_GAMES. Right now, it’s accepting both FINISHED and FINISHED_ALL_GAMES, but that needs to change. I'll also have to update any tests that rely on this. There's a test in game-engine-20-asks-name.spec.js that expects true for FINISHED_ALL_GAMES, so it will need to be modified too. I'll open it now to make those changes.</details></think>
+
+---
+
+Voy a actualizar la validación para que no acepte `FINISHED_ALL_GAMES` y ajustar el test correspondiente para reflejarlo. Luego ejecuto los tests.
+
+---
+
+Read file: undefined
+
+---
+
+
+
+---
+

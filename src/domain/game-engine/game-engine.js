@@ -57,7 +57,6 @@ class GameEngine {
         const aGame = await this.repository.game.get(rName);
         return !aGame || aGame.status === GAME_STATUS.WAITING_FOR_PLAYERS
         || aGame.status === GAME_STATUS.FINISHED
-        || aGame.status === GAME_STATUS.FINISHED_ALL_GAMES
         || !aGame.status;
       },
     });
