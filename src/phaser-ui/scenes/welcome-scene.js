@@ -108,117 +108,95 @@ class WelcomeScene extends Phaser.Scene {
 
   createAnimatedGrid(w, h) {
     const gridSize = 50;
-    const gridGraphics = this.add.graphics();
-    gridGraphics.lineStyle(1, 0x00f5ff, 0.1);
-
-    // Create vertical lines
-    for (let x = 0; x <= w + gridSize; x += gridSize) {
-      gridGraphics.moveTo(x, 0);
-      gridGraphics.lineTo(x, h + gridSize);
+    const texKey = `grid-${gridSize}`;
+    if (!this.textures.exists(texKey)) {
+      const gfx = this.make.graphics({ x: 0, y: 0, add: false });
+      const tile = 256; // tamaño razonable de patrón
+      gfx.clear();
+      gfx.lineStyle(1, 0x00f5ff, 0.1);
+      for (let x = 0; x <= tile; x += gridSize) {
+        gfx.lineBetween(x, 0, x, tile);
+      }
+      for (let y = 0; y <= tile; y += gridSize) {
+        gfx.lineBetween(0, y, tile, y);
+      }
+      gfx.generateTexture(texKey, tile, tile);
+      gfx.destroy();
     }
-
-    // Create horizontal lines
-    for (let y = 0; y <= h + gridSize; y += gridSize) {
-      gridGraphics.moveTo(0, y);
-      gridGraphics.lineTo(w + gridSize, y);
-    }
-
-    gridGraphics.strokePath();
-
-    // Animate the grid
-    this.tweens.add({
-      targets: gridGraphics,
-      x: -gridSize,
-      y: -gridSize,
-      duration: 20000,
-      repeat: -1,
-      ease: 'Linear'
-    });
+    const tileSprite = this.add.tileSprite(0, 0, w + gridSize, h + gridSize, texKey).setOrigin(0, 0);
+    this.gridTileSprite = tileSprite;
   }
 
   createFloatingParticles(w, h) {
     const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
     const particles = [];
+    const count = window.navigator.userAgent.match(/Mobile|Android|iPhone/i) ? 6 : 12;
 
-    // Create 12 triangle particles
-    for (let i = 0; i < 12; i++) {
-      const particle = this.add.graphics();
+    for (let i = 0; i < count; i++) {
+      const g = this.add.graphics();
       const color = colors[i % colors.length];
       const size = Phaser.Math.Between(2, 4);
-      
-      particle.fillStyle(color, 0.8);
-      
-      // Draw small triangle
-      particle.beginPath();
-      particle.moveTo(0, -size);
-      particle.lineTo(-size, size);
-      particle.lineTo(size, size);
-      particle.closePath();
-      particle.fillPath();
-      
-      // Random starting position
-      particle.x = Phaser.Math.Between(0, w);
-      particle.y = h + 50;
-      
+      g.fillStyle(color, 0.8);
+      g.beginPath();
+      g.moveTo(0, -size);
+      g.lineTo(-size, size);
+      g.lineTo(size, size);
+      g.closePath();
+      g.fillPath();
+
+      const speed = Phaser.Math.FloatBetween(20, 40); // px/s
+      const rotationSpeed = Phaser.Math.FloatBetween(0.3, 0.6); // rad/s
+      const startDelay = Phaser.Math.Between(0, 1500);
+
+      const particle = {
+        node: g,
+        speed,
+        rotationSpeed,
+        alive: false,
+        startDelay,
+      };
       particles.push(particle);
-
-      // Animate particle floating up
-      const delay = Phaser.Math.Between(0, 6000);
-      const duration = Phaser.Math.Between(4000, 8000);
-
-      this.time.delayedCall(delay, () => {
-        this.animateParticle(particle, w, h, duration);
-      });
     }
 
     this.particles = particles;
+
+    // Kickoff after delay per particle
+    this.particles.forEach((p) => {
+      this.time.delayedCall(p.startDelay, () => {
+        this.resetParticle(p, w, h);
+      });
+    });
   }
 
-  animateParticle(particle, w, h, duration) {
-    // Reset particle position
-    particle.x = Phaser.Math.Between(0, w);
-    particle.y = h + 50;
-    particle.alpha = 0;
+  resetParticle(p, w, h) {
+    p.node.x = Phaser.Math.Between(0, w);
+    p.node.y = h + 50;
+    p.node.alpha = 0;
+    p.node.rotation = 0;
+    p.alive = true;
+  }
 
-    // Create floating animation
-    this.tweens.add({
-      targets: particle,
-      y: -50,
-      alpha: 1,
-      duration: duration,
-      ease: 'Sine.easeInOut',
-      onComplete: () => {
-        // Restart animation
-        const newDuration = Phaser.Math.Between(4000, 8000);
-        this.animateParticle(particle, w, h, newDuration);
-      }
-    });
-
-    // Add rotation
-    this.tweens.add({
-      targets: particle,
-      rotation: Math.PI * 2,
-      duration: duration,
-      ease: 'Linear'
-    });
-
-    // Add fade out at the end
-    this.tweens.add({
-      targets: particle,
-      alpha: 0,
-      duration: 1000,
-      delay: duration - 1000,
-      ease: 'Sine.easeIn'
-    });
-
-    // Add fade in at the beginning
-    this.tweens.add({
-      targets: particle,
-      alpha: 1,
-      duration: 1000,
-      delay: 500,
-      ease: 'Sine.easeOut'
-    });
+  update(time, delta) {
+    if (this.gridTileSprite) {
+      const shift = (delta || 16) * 0.02;
+      this.gridTileSprite.tilePositionX += shift;
+      this.gridTileSprite.tilePositionY += shift;
+    }
+    if (this.particles && this.particles.length) {
+      const h = this.cameras.main.height;
+      this.particles.forEach((p) => {
+        if (!p.alive) return;
+        const dy = (p.speed * (delta || 16)) / 1000;
+        p.node.y -= dy;
+        if (p.node.alpha < 1) {
+          p.node.alpha = Math.min(1, p.node.alpha + 0.02);
+        }
+        p.node.rotation += p.rotationSpeed * ((delta || 16) / 1000);
+        if (p.node.y < -50) {
+          this.resetParticle(p, this.cameras.main.width, h);
+        }
+      });
+    }
   }
 
   addForm() {

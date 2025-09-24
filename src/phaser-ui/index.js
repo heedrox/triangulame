@@ -15,16 +15,23 @@ class PhaserUi {
   }
 
   start () {
+    const effectiveResolution = Math.min(window.devicePixelRatio || 1, 1.5);
     const config = {
-      type: Phaser.AUTO,
+      type: Phaser.WEBGL,
       scale: {
         mode: Phaser.Scale.RESIZE,
+      },
+      render: {
+        antialias: false,
+        powerPreference: 'high-performance',
+        roundPixels: true,
       },
       backgroundColor: BACKGROUND_PIECE,
       autoCenter: 1,
       parent: 'content',
-      width: window.innerWidth * window.devicePixelRatio,
-      height: window.innerHeight * window.devicePixelRatio,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      resolution: effectiveResolution,
       dom: {
         createContainer: true,
       },
