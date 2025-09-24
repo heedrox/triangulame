@@ -6,7 +6,7 @@ import SCENE_KEYS from './scenes/constants/scene-keys';
 import eventsCenter from './events-center';
 import EndingScene from './scenes/ending-scene';
 
-const BACKGROUND_PIECE = 0xcccc00;
+const BACKGROUND_PIECE = 0x000000;
 
 class PhaserUi {
   constructor (i18n) {
