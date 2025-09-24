@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Build project
+        run: npm run build
+
       - name: Add config file
         run: echo '${{ secrets.FIREBASE_WEB_CONFIG }}' > ./src/firebase/config.js
 

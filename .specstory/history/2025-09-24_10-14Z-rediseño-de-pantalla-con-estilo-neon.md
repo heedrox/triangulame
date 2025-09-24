@@ -761,3 +761,35 @@ He añadido un pulso sutil solo en los números: el número oscuro crece ~2% y s
 
 ---
 
+_**User (2025-09-24 09:29Z)**_
+
+/commit 
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git add -A && git commit -m "feat: los números pulsan con halo neón, los polígonos usan relleno 0.7 y borde neón, el sprite giratorio matchea color y se elimina la vibración de overlays" && git push
+```
+
+```
+[main 31c50c2] feat: los números pulsan con halo neón, los polígonos usan relleno 0.7 y borde neón, el sprite giratorio matchea color y se elimina la vibración de overlays
+ 2 files changed, 142 insertions(+), 1 deletion(-)
+To github.com:heedrox/triangulame.git
+   33356bd..31c50c2  main -> main
+
+```
+
+---
+
+Commit y push hechos.
+
+- feat: los números pulsan con halo neón, polígonos con relleno 0.7 y borde neón, sprite rotatorio matchea color, y se elimina la vibración de overlays.
+
+---
+
