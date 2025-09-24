@@ -23,22 +23,21 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
   it.each([
     [0, 12],
     [3, 18],
-    [6, 24]
+    [6, 24],
   ])('builds and saves rectangles based on numGame * 2 + 6 (%s)', async (numGame, expectedRectangles) => {
     const mockUi = MOCK_UI();
     const repository = MOCK_REPOSITORY();
     repository.game.watch = ((_, fn) => fn({
       status: GAME_STATUS.PLAYING,
       players: {},
-      numGame: numGame
+      numGame,
     }));
     mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
-
 
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
-    expect(repository.game.update).toHaveBeenCalledWith('ROOM',expect.anything());
+    expect(repository.game.update).toHaveBeenCalledWith('ROOM', expect.anything());
     expect(repository.game.update.mock.calls[0][1].rectangles.length).toBe(expectedRectangles);
   });
 
@@ -109,23 +108,22 @@ describe('40 - Game Engine starts game itself - when players ready', () => {
     mockUi.waitForPlayers = ({ _, onClickStart }) => onClickStart();
     repository.game.watch = ((_, fn) => fn({
       status: GAME_STATUS.PLAYING,
-      players: {},      
+      players: {},
     }) && fn({
       status: GAME_STATUS.PLAYING,
       players: {},
       currentGoals: {
         id1: 4,
-      }
+      },
     }));
-    
+
     const gameEngine = new GameEngine(mockUi, repository, localDb());
     await gameEngine.start();
 
     expect(mockUi.updateGameDuringPlay).toHaveBeenCalledWith({
       currentGoals: {
-        id1: 4
-      }
-    })
+        id1: 4,
+      },
+    });
   });
-
 });

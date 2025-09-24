@@ -6,9 +6,9 @@ import PLAYERS_COLORS from './constants/players-colors';
 
 const IMAGES = {
   SHARE: 'share',
-}
+};
 class PlayersScene extends Phaser.Scene {
-  constructor(i18n) {
+  constructor (i18n) {
     super({
       key: SCENE_KEYS.PLAYERS_SCENE,
     });
@@ -19,7 +19,7 @@ class PlayersScene extends Phaser.Scene {
     this.onClickStart = null;
   }
 
-  init(data) {
+  init (data) {
     const updatePlayersFn = (eventData) => this.updatePlayers(eventData.players, eventData.myId);
     this.room = data.room;
     this.onClickStart = data.onClickStart;
@@ -30,7 +30,7 @@ class PlayersScene extends Phaser.Scene {
     });
   }
 
-  preload() {
+  preload () {
     this.load.image(IMAGES.SHARE, shareButton);
   }
 
@@ -303,7 +303,7 @@ class PlayersScene extends Phaser.Scene {
     roomElement.setDepth(10);
   }
 
-  addNumGame() {
+  addNumGame () {
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height / 10 + (0.04 * this.cameras.main.height);
     
@@ -341,7 +341,7 @@ class PlayersScene extends Phaser.Scene {
     gameInfoElement.setDepth(10);
   }
 
-  createRectanglesForNames() {
+  createRectanglesForNames () {
     const texts = [];
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
@@ -456,13 +456,13 @@ class PlayersScene extends Phaser.Scene {
     };
   }
 
-  updatePlayers(players, myId) {
+  updatePlayers (players, myId) {
     const sortedPlayers = Object.values(players).sort((a, b) => a.id.localeCompare(b.id));
     this.sortedPlayers = sortedPlayers;
     sortedPlayers.forEach((player, idx) => {
       if (this.texts[idx]) {
         this.texts[idx].setText(player.name);
-      }      
+      }
     });
     const restToEmpty = Array(4 - sortedPlayers.length).fill(null).map((_, idx) => 4 - idx - 1);
     restToEmpty.forEach((idxEmpty) => {
@@ -473,7 +473,7 @@ class PlayersScene extends Phaser.Scene {
     this.updateStartOrWarnTextVisibility(myId);
   }
 
-  addStartButton() {
+  addStartButton () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
@@ -599,7 +599,7 @@ class PlayersScene extends Phaser.Scene {
     this.updateStartOrWarnTextVisibility('');
   }
 
-  addShareButton() {
+  addShareButton () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
@@ -654,8 +654,8 @@ class PlayersScene extends Phaser.Scene {
       }
     });
   }
-    
-  getMainPlayer() {
+
+  getMainPlayer () {
     if (this.sortedPlayers && this.sortedPlayers.length >= 1) {
       return this.sortedPlayers[0];
     }
@@ -680,7 +680,7 @@ class PlayersScene extends Phaser.Scene {
     }
   }
 
-  clickStart() {
+  clickStart () {
     this.onClickStart();
   }
 }

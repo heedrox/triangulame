@@ -20,8 +20,8 @@ describe('30 - Game Engine waits for players', () => {
       room: 'ROOM',
       numGame: 0,
       onClickStart: expect.any(Function),
-        
-    })
+
+    });
   });
 
   it('adds itself as a player when users not first time', async () => {

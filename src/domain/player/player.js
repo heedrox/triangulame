@@ -8,12 +8,12 @@ const buildPlayerIdIfNotExists = (localDb) => {
 };
 
 class Player {
-  constructor(id, name) {
+  constructor (id, name) {
     this.id = id;
     this.name = name;
   }
 
-  static fromCache(localDb, name) {
+  static fromCache (localDb, name) {
     const id = buildPlayerIdIfNotExists(localDb);
     return new Player(id, name);
   }

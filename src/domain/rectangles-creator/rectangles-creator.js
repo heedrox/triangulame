@@ -24,7 +24,7 @@ const assignRandomIds = (rectangles) => {
 };
 
 export default class RectanglesCreator {
-  constructor(
+  constructor (
     randomIndexProvider = Math.random,
     randomOperationProvider = defaultOperationProvider,
   ) {
@@ -34,7 +34,7 @@ export default class RectanglesCreator {
     this.randomOperationProvider = randomOperationProvider;
   }
 
-  build(numberElements) {
+  build (numberElements) {
     const rectangles = [buildRectangle(0, 0, this.width, this.height)];
     for (let i = 1; i < numberElements; i += 1) {
       const { operation, index } = this.findPossibleOperationAndIndex(rectangles);
@@ -44,7 +44,7 @@ export default class RectanglesCreator {
     return assignRandomIds(rectangles);
   }
 
-  findPossibleOperationAndIndex(rectangles) {
+  findPossibleOperationAndIndex (rectangles) {
     let k = 0;
     while (k < 100) {
       try {
@@ -58,7 +58,7 @@ export default class RectanglesCreator {
     throw new Error('Could not find a valid operation');
   }
 
-  findIndexToSplit(rectangles, operation) {
+  findIndexToSplit (rectangles, operation) {
     let index = Math.floor(this.randomIndexProvider() * rectangles.length);
     let k = 0;
     while (!rectangles[index].canBeSplit(operation)) {

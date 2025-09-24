@@ -10,7 +10,7 @@ const shuffleArray = (array) => {
     currentIndex--;
 
     // And swap it with the current element.
-    // eslint-disable-next-line no-param-reassign
+
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex], array[currentIndex]];
   }

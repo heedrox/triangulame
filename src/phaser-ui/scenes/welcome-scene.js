@@ -3,7 +3,7 @@ import SCENE_KEYS from './constants/scene-keys';
 import fullscreen from '../../assets/welcome/fullscreen.png';
 
 class WelcomeScene extends Phaser.Scene {
-  constructor(i18n) {
+  constructor (i18n) {
     super({
       key: SCENE_KEYS.WELCOME_SCENE,
     });
@@ -11,14 +11,14 @@ class WelcomeScene extends Phaser.Scene {
     this.form = null;
   }
 
-  init(data) {
+  init (data) {
     this.oncomplete = data.oncomplete;
     this.previousName = data.previousName;
     this.previousRoom = data.previousRoom;
     this.checkValidity = data.checkValidity;
   }
 
-  preload() {
+  preload () {
     this.load.image('fullscreen', fullscreen);
   }
 
@@ -450,16 +450,16 @@ class WelcomeScene extends Phaser.Scene {
     return this.form;
   }
 
-  addFullScreenButton() {
+  addFullScreenButton () {
     if (!this.scale.isFullscreen) {
       const w = this.cameras.main.width;
       const h = this.cameras.main.height;
       const image = this.add
-      .image(w - (w/15), (h/20), 'fullscreen')
-      .setDisplaySize(w/10, w/10)
-      .setInteractive()
-      .on('pointerdown', this.setFullScreen, this);
-  
+        .image(w - (w / 15), (h / 20), 'fullscreen')
+        .setDisplaySize(w / 10, w / 10)
+        .setInteractive()
+        .on('pointerdown', this.setFullScreen, this);
+
       this.add.tween({
         targets: [image],
         scale: image.scale + 0.1,
@@ -472,7 +472,7 @@ class WelcomeScene extends Phaser.Scene {
     }
   }
 
-  setFullScreen() {
+  setFullScreen () {
     if (!this.scale.isFullscreen) {
       try {
         this.scale.startFullscreen();
@@ -483,7 +483,7 @@ class WelcomeScene extends Phaser.Scene {
     }
   }
 
-  addStartButton() {
+  addStartButton () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 
@@ -570,7 +570,7 @@ class WelcomeScene extends Phaser.Scene {
     });
   }
 
-  async clickStart() {
+  async clickStart () {
     const name = this.form.getChildByID('name').value.trim();
     const room = this.form.getChildByID('room').value.trim();
     if (name !== '' && room !== '') {
@@ -587,7 +587,7 @@ class WelcomeScene extends Phaser.Scene {
     }
   }
 
-  showRoomNotAvailable() {
+  showRoomNotAvailable () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
 

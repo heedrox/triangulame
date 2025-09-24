@@ -18,12 +18,12 @@ describe('Game', () => {
         winnerSecs: 100,
         currentGoals: {
           id1: 1,
-          id2: 23
+          id2: 23,
         },
         results: [
           { player: 'PLAYER1', secs: 1 },
-          { player: 'PLAYER2', secs: 2 }
-        ]
+          { player: 'PLAYER2', secs: 2 },
+        ],
       });
 
       expect(game.status).toBe('STATUS');
@@ -34,12 +34,12 @@ describe('Game', () => {
       expect(game.winnerSecs).toBe(100);
       expect(game.results).toStrictEqual([
         { player: 'PLAYER1', secs: 1 },
-        { player: 'PLAYER2', secs: 2 }
-      ])
+        { player: 'PLAYER2', secs: 2 },
+      ]);
       expect(game.currentGoals).toStrictEqual({
         id1: 1,
-        id2: 23
-      })
+        id2: 23,
+      });
     });
 
     it('creates game with numGame reset', () => {
@@ -50,7 +50,7 @@ describe('Game', () => {
         rectangles: [],
         winner: 'WINNER',
         winnerSecs: 100,
-        results: []
+        results: [],
       });
 
       expect(game.numGame).toBe(0);
@@ -85,7 +85,7 @@ describe('Game', () => {
         0: { winner: 'PLAYER1', secs: 1 },
         3: { winner: 'PLAYER2', secs: 2 },
         4: { winner: 'PLAYER2', secs: 5 },
-      }
+      },
     });
 
     expect(game.getSummary()).toStrictEqual([

@@ -2,7 +2,7 @@ import GameRepository from './game-repository';
 import { db } from './app';
 
 class FirebaseRepository {
-  constructor() {
+  constructor () {
     this.game = new GameRepository(db);
   }
 }

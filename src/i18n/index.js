@@ -2,11 +2,11 @@ import i18next from 'i18next';
 import es from './es';
 
 class I18n {
-  constructor() {
+  constructor () {
     this.i18next = i18next;
   }
 
-  init() {
+  init () {
     this.i18next.init({
       lng: navigator.language,
       fallbackLng: 'es',
@@ -19,7 +19,7 @@ class I18n {
     });
   }
 
-  get(...data) {
+  get (...data) {
     return this.i18next.t(...data);
   }
 }

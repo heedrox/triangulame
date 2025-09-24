@@ -4,31 +4,30 @@ import SCENE_KEYS from './constants/scene-keys';
 const ENDING_GAME_NUMBER = 10;
 
 class EndingScene extends Phaser.Scene {
-  constructor(i18n) {
+  constructor (i18n) {
     super(SCENE_KEYS.ENDING_SCENE);
     this.i18n = i18n;
   }
 
-  init(data) {
+  init (data) {
     this.game = data.game;
     this.onRestart = data.onRestart;
     this.onEnd = data.onEnd;
   }
 
-  create() {
+  create () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
-    this.addWinner(w, h);    
+    this.addWinner(w, h);
     this.addSummary(w, h);
     if (this.game.numGame < ENDING_GAME_NUMBER) {
       this.addRestartButton(w, h);
     } else {
       this.addEndButton(w, h);
     }
-
   }
 
-  addRestartButton(w, h) {
+  addRestartButton (w, h) {
     const restart = this.add.text(w / 2, 3 / 4 * h, 'Continuar', {
       font: '4vh monospace',
       fill: '#444444',
@@ -41,7 +40,7 @@ class EndingScene extends Phaser.Scene {
     });
   }
 
-  addEndButton(w, h) {
+  addEndButton (w, h) {
     const end = this.add.text(w / 2, 3 / 4 * h, 'Terminar', {
       font: '4vh monospace',
       fill: '#990000',
@@ -55,7 +54,7 @@ class EndingScene extends Phaser.Scene {
     });
   }
 
-  addWinner(w, h) {
+  addWinner (w, h) {
     const winnerText = this.make.text({
       x: w / 2,
       y: h / 3,
@@ -76,11 +75,11 @@ class EndingScene extends Phaser.Scene {
     });
   }
 
-  addSummary(w, h) {
+  addSummary (w, h) {
     const summaryText = this.game.getSummary()
       .map((s) => `${s.player}: ${s.secs} segs.`)
       .join('\n');
-    
+
     const summary = this.make.text({
       x: w / 2,
       y: h / 2,

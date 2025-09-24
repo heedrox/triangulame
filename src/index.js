@@ -15,17 +15,16 @@ const localDb = localStorage;
 const gameEngine = new GameEngine(ui, repository, localDb);
 
 (async () => {
-  const isStandalone = () => (("standalone" in window.navigator) && (window.navigator.standalone));
+  const isStandalone = () => (('standalone' in window.navigator) && (window.navigator.standalone));
   const isIos = () => !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-  const isSafari = () => (navigator.userAgent.toLowerCase().indexOf('safari/') > -1) &&
-  (navigator.userAgent.toLowerCase().indexOf('chrome') === -1);
+  const isSafari = () => (navigator.userAgent.toLowerCase().indexOf('safari/') > -1)
+  && (navigator.userAgent.toLowerCase().indexOf('chrome') === -1);
 
   if (!isStandalone() && isIos() && isSafari()) {
     showIosNotice();
   } else {
   // hack
-  await repository.game.update('Galerna', { status: GAME_STATUS.WAITING_FOR_PLAYERS });
-  await gameEngine.start();
+    await repository.game.update('Galerna', { status: GAME_STATUS.WAITING_FOR_PLAYERS });
+    await gameEngine.start();
   }
-
 })();

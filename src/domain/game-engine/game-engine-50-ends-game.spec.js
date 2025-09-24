@@ -31,9 +31,9 @@ describe('50 - Game Engine ends', () => {
       currentGoals: {},
       'results/0': {
         winner: 'NAME',
-        secs: 100
-      }
-    });    
+        secs: 100,
+      },
+    });
   });
 
   it('ends when game status FINISHED is received, and it was PLAYING', async () => {

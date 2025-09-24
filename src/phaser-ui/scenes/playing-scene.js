@@ -92,7 +92,7 @@ const buildRectangleWithId = (r) => {
 };
 
 class PlayingScene extends Phaser.Scene {
-  constructor(i18n) {
+  constructor (i18n) {
     super({
       key: SCENE_KEYS.PLAYING_SCENE,
     });
@@ -100,7 +100,9 @@ class PlayingScene extends Phaser.Scene {
     this.eventsCenter = eventsCenter;
   }
 
-  init({ rectangles, playerId, players, onFinish, onGoalUpdate }) {
+  init ({
+    rectangles, playerId, players, onFinish, onGoalUpdate,
+  }) {
     this.rectangles = rectangles.map(buildRectangleWithId);
     this.playerId = playerId;
     this.onFinish = onFinish;
@@ -111,9 +113,9 @@ class PlayingScene extends Phaser.Scene {
     this.xFactor = this.game.canvas.width / 100;
     this.yFactor = (this.game.canvas.height * 0.85) / 100;
     this.goalId = 1;
-    
+
     this.totalGoal = this.rectangles.length;
-    
+
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,
@@ -121,18 +123,17 @@ class PlayingScene extends Phaser.Scene {
       r.p2.x * this.xFactor, r.p2.y * this.yFactor,
     ]));
     this.texts = Array(this.rectangles.length).fill(null);
-    
+
     this.combo = new ComboCheck();
 
-    const updateGoalsFn = ({goals}) => this.updateGoals({goals});
+    const updateGoalsFn = ({ goals }) => this.updateGoals({ goals });
     this.eventsCenter.on('goals.updated', updateGoalsFn);
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.eventsCenter.off('goals.updated', updateGoalsFn);
     });
-
   }
 
-  preload() {
+  preload () {
     this.showWaitingScreen();
     this.load.audio(INGAME_THEME, [
       ingameOgg,
@@ -144,7 +145,7 @@ class PlayingScene extends Phaser.Scene {
     ]);
   }
 
-  create() {
+  create () {
     this.loadingText.destroy();
     this.graphics = this.buildGraphics();
 
@@ -157,7 +158,7 @@ class PlayingScene extends Phaser.Scene {
     this.playMusic();
   }
 
-  showWaitingScreen() {
+  showWaitingScreen () {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     this.loadingText = this.make.text({
@@ -173,7 +174,7 @@ class PlayingScene extends Phaser.Scene {
     this.loadingText.setOrigin(0.5, 0.5);
   }
 
-  playMusic() {
+  playMusic () {
     this.music = this.sound.add(INGAME_THEME, {
       volume: 0.25,
       loop: true,
@@ -186,7 +187,7 @@ class PlayingScene extends Phaser.Scene {
     }, this);
   }
 
-  paintScreen() {
+  paintScreen () {
     this.rectangles.forEach((rectangle, nr) => {
       this.addRectangle(rectangle);
       this.texts[nr] = this.addTextToRectangle(rectangle);
@@ -195,16 +196,16 @@ class PlayingScene extends Phaser.Scene {
     this.paintBottom();
   }
 
-  buildGraphics() {
+  buildGraphics () {
     const graphics = this.add.graphics({
       x: 0,
       y: 0,
     });
-    graphics.lineStyle(Math.round(this.cameras.main.width/120), 0xffffff, 1);
+    graphics.lineStyle(Math.round(this.cameras.main.width / 120), 0xffffff, 1);
     return graphics;
   }
 
-  addRectangle(rectangle) {
+  addRectangle (rectangle) {
     this.graphics.beginPath();
     this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
     this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
@@ -214,7 +215,7 @@ class PlayingScene extends Phaser.Scene {
     this.graphics.strokePath();
   }
 
-  addTextToRectangle(rectangle) {
+  addTextToRectangle (rectangle) {
     const textPosition = getTextPosition(rectangle, this.xFactor, this.yFactor);
     const text = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
       fontFamily: 'Arial',
@@ -227,21 +228,21 @@ class PlayingScene extends Phaser.Scene {
     return text;
   }
 
-  currentColor() {
+  currentColor () {
     return this.colorOfPlayer(this.playerId);
   }
 
-  colorOfPlayer(playerId) {
+  colorOfPlayer (playerId) {
     for (let i = 0; i < this.sortedPlayers.length; i++) {
       const player = this.sortedPlayers[i];
       if (player.id === playerId) {
         return PLAYERS_COLORS[i];
       }
     }
-    return 0;   
+    return 0;
   }
-  
-  checkRectanglePressed(pointer) {
+
+  checkRectanglePressed (pointer) {
     this.polygons.forEach((polygon, nr) => {
       if (Phaser.Geom.Polygon.ContainsPoint(polygon, pointer)) {
         if (this.rectangles[nr].id === this.goalId) {
@@ -252,7 +253,7 @@ class PlayingScene extends Phaser.Scene {
           if (this.onGoalUpdate) {
             this.onGoalUpdate(this.goalId);
           }
-          this.goalId += 1;                    
+          this.goalId += 1;
           this.updateGoal();
           this.removeRectangle(polygon, this.texts[nr]);
           this.checkEnd();
@@ -261,7 +262,7 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
-  removeRectangle(polygon, text) {
+  removeRectangle (polygon, text) {
     const poly = new Phaser.GameObjects.Polygon(
       this,
       0,
@@ -306,20 +307,20 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
-  paintBottom() {
+  paintBottom () {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
     const VH = h / 100;
     this.graphics.fillStyle(0xFFFFFF, 1);
     this.graphics.fillRect(0, h * 0.85, w, h * 0.15);
     this.graphics.fillStyle(0x000000, 1);
-    this.graphics.fillRoundedRect(1* VH, h * 0.85 + 2*VH, w - 2*VH, h * 0.15 - 4*VH, 0);
+    this.graphics.fillRoundedRect(1 * VH, h * 0.85 + 2 * VH, w - 2 * VH, h * 0.15 - 4 * VH, 0);
     this.graphics.fillStyle(0x000000, 1);
     this.paintGoal();
     this.paintProgress();
   }
 
-  paintGoal() {
+  paintGoal () {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
     const VH = h / 100;
@@ -327,7 +328,7 @@ class PlayingScene extends Phaser.Scene {
     const leftX = w - splitSizeX;
     const topY = h * (0.925);
     this.graphics.fillStyle(this.currentColor(), 1);
-    this.graphics.fillRect(leftX, topY, splitSizeX - 1*VH, h * 0.075 - 2*VH);
+    this.graphics.fillRect(leftX, topY, splitSizeX - 1 * VH, h * 0.075 - 2 * VH);
     this.goalText = this.add.text(w - splitSizeX / 2, h * (0.955), this.goalId, {
       fontFamily: 'Arial',
       fontSize: splitSizeX * 0.2,
@@ -345,68 +346,68 @@ class PlayingScene extends Phaser.Scene {
     });
   }
 
-  paintProgressForPlayer(numPlayer, playerGoal) {
+  paintProgressForPlayer (numPlayer, playerGoal) {
     const h = this.cameras.main.height;
     const w = this.cameras.main.width;
     const VH = h / 100;
     const splitSizeX = w * 0.25;
     const leftX = w - splitSizeX;
     const topYAll = h * (0.85) + 2 * VH;
-    const height = (((0.925 - 0.85)*h) - 2*VH) / 4;
+    const height = (((0.925 - 0.85) * h) - 2 * VH) / 4;
     const topYPlayer = topYAll + (height) * numPlayer;
     this.graphics.fillStyle(0x000000, 1);
-    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH), height);  
+    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1 * VH), height);
     this.graphics.fillStyle(PLAYERS_COLORS[numPlayer], 0.4);
-    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH), height);  
+    this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1 * VH), height);
 
     if (playerGoal) {
       const currentProgress = playerGoal / this.totalGoal;
       this.graphics.fillStyle(PLAYERS_COLORS[numPlayer], 1);
-      this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1*VH) * currentProgress, height);  
+      this.graphics.fillRect(leftX, topYPlayer, (splitSizeX - 1 * VH) * currentProgress, height);
     }
   }
 
-  paintProgress() {
-    for(let i = 0; i < 4; i++) {
+  paintProgress () {
+    for (let i = 0; i < 4; i++) {
       const player = this.sortedPlayers[i];
-      this.paintProgressForPlayer(i, player && player.id && this.playersGoals ?  this.playersGoals[player.id] : null)          
-    }    
+      this.paintProgressForPlayer(i, player && player.id && this.playersGoals ? this.playersGoals[player.id] : null);
+    }
   }
 
-  updateGoals({goals}) {
-    this.playersGoals = goals;    
-    this.paintProgress()
+  updateGoals ({ goals }) {
+    this.playersGoals = goals;
+    this.paintProgress();
   }
 
-  updateGoal() {
+  updateGoal () {
     this.goalText.setText(this.goalId);
-    this.paintProgress()
+    this.paintProgress();
   }
 
-  checkEnd() {
+  checkEnd () {
     if (this.goalId > this.totalGoal) {
       this.onFinish(this.getTotalSeconds());
     }
   }
 
-  startTimer() {
+  startTimer () {
     this.startDate = new Date();
   }
 
-  getTotalSeconds() {
+  getTotalSeconds () {
     const endDate = new Date();
     const diff = endDate.getTime() - this.startDate.getTime();
     return Math.round(diff / 1000);
   }
 
-  checkCombo() {
+  checkCombo () {
     const comboTimes = this.combo.checkCombo();
     if (comboTimes > 0) {
       this.showCombo(comboTimes);
     }
   }
 
-  showCombo(number) {
+  showCombo (number) {
     const comboText = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, `COMBO\nx${number}`, {
       font: '4vh monospace',
       fill: '#000000',
