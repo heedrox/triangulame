@@ -423,3 +423,54 @@ Acabo de ejecutar la suite: todos los tests pasan.
 
 ---
 
+_**User (2025-09-24 09:29Z)**_
+
+/commit 
+
+--- Cursor Command: commit.md ---
+Haz commit y push directamente.
+
+Para obtener el mensaje, revisa las diferencias existentes en los ficheros (puedes hacer un git diff --cached, tras hacer add de todos los ficheros), y complementa lo que se ha hecho (el what) con la intención (el why) a través de la conversación actual.
+
+El mensaje debe ser la continuación de la siguiente frase: "este commit hace que...", y usa verbo presente, por ejemplo "el asesino puede lanzar bombas"; pero no debe incluir la frase "este commit hace que".
+
+Solo usa una frase. 
+
+Utiliza también "feat:" o "bugfix" o "refactor" al principio del mensaje.
+
+El commit debe ser una única linea.
+--- End Command ---
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+Voy a crear el commit y hacer push. Primero añado todos los cambios, compongo el mensaje siguiendo tu formato, y subo a origin/main.
+
+---
+
+```bash
+git add -A && git commit -m "feat: al unirse a una partida en FINISHED se muestre la pantalla de resultados y no la de espera, añadiendo test que cubre el caso y ajustando el motor para invocar endGame también cuando el estado inicial es FINISHED" && git push origin main
+```
+
+```
+[main 0cbed71] feat: al unirse a una partida en FINISHED se muestre la pantalla de resultados y no la de espera, añadiendo test que cubre el caso y ajustando el motor para invocar endGame también cuando el estado inicial es FINISHED
+ 4 files changed, 547 insertions(+), 2 deletions(-)
+ create mode 100644 .specstory/history/2025-09-24_14-16Z-problemas-con-el-estado-finished-del-juego.md
+To github.com:heedrox/triangulame.git
+   6289ff1..0cbed71  main -> main
+
+```
+
+---
+
+He hecho commit y push a main.
+
+- feat: al unirse a una partida en FINISHED se muestre la pantalla de resultados y no la de espera, añadiendo test que cubre el caso y ajustando el motor para invocar endGame también cuando el estado inicial es FINISHED
+
+---
+

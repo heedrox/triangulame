@@ -198,10 +198,10 @@ class EndingScene extends Phaser.Scene {
   }
 
   addRestartButton (w, h) {
-    // Create cyberpunk restart button using DOM element
+    // Botón estilo "footer" igual que en la pantalla de bienvenida
     const restartButtonHtml = `
         <style>
-        .cyber-restart-button {
+        .cyber-footer-button {
             background: linear-gradient(45deg, #ff0080, #00f5ff);
             border: none;
             padding: 20px;
@@ -220,10 +220,9 @@ class EndingScene extends Phaser.Scene {
                 0 5px 15px rgba(0, 0, 0, 0.3);
             width: 90vw;
             max-width: 500px;
-            position: relative;
         }
         
-        .cyber-restart-button::before {
+        .cyber-footer-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -234,41 +233,34 @@ class EndingScene extends Phaser.Scene {
             transition: left 0.5s;
         }
         
-        .cyber-restart-button:hover::before {
+        .cyber-footer-button:hover::before {
             left: 100%;
         }
         
-        .cyber-restart-button:hover {
+        .cyber-footer-button:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 
                 0 0 50px rgba(0, 245, 255, 0.8),
                 0 10px 25px rgba(0, 0, 0, 0.5);
         }
         
-        .cyber-restart-button:active {
+        .cyber-footer-button:active {
             transform: translateY(0) scale(0.98);
         }
         
         @media (max-width: 768px) {
-            .cyber-restart-button {
-                font-size: 6vw;
-                padding: 18px;
-            }
+            .cyber-footer-button { font-size: 6vw; padding: 18px; }
         }
-        
         @media (max-height: 600px) {
-            .cyber-restart-button {
-                font-size: 4vw;
-                padding: 15px;
-            }
+            .cyber-footer-button { font-size: 4vw; padding: 15px; }
         }
         </style>
         
-        <button class="cyber-restart-button" id="cyberRestartButton">
-            🔄 CONTINUAR MATCH
+        <button class="cyber-footer-button" id="cyberRestartButton">
+            CONTINUAR
         </button>`;
 
-    const restartButtonElement = this.add.dom(w / 2, 3 / 4 * h).createFromHTML(restartButtonHtml);
+    const restartButtonElement = this.add.dom(w / 2, h - 60).createFromHTML(restartButtonHtml);
     restartButtonElement.setOrigin(0.5, 0.5);
     restartButtonElement.setDepth(100);
     restartButtonElement.setAlpha(0);
@@ -393,100 +385,63 @@ class EndingScene extends Phaser.Scene {
   }
 
   addWinner (w, h) {
-    // Create cyberpunk winner text using DOM element
+    // Bloque del ganador compacto para ganar espacio al ranking
     const winnerHtml = `
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
         .cyber-winner {
             font-family: 'Orbitron', 'Courier New', monospace;
-            font-size: 6vw;
+            font-size: 4.8vw;
             font-weight: 900;
             color: #ffff00;
-            text-align: center;
-            text-transform: uppercase;
+            text-align: center;            
             letter-spacing: 3px;
-            line-height: 1.2;
+            line-height: 1.1;
             text-shadow: 
                 0 0 5px #000,
                 0 0 10px #000,
                 0 0 15px #000,
                 0 0 20px #000,
-                0 0 10px #ffff00,
-                0 0 20px #ffff00,
-                0 0 30px #ffff00,
-                0 0 40px #ffff00;
-            animation: winnerGlow 2s ease-in-out infinite alternate;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 3vh;
-            border-radius: 12px;
+                0 0 12px #ffff00,
+                0 0 22px #ffff00;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2vh 2vw;
+            border-radius: 10px;
             border: 2px solid #ffff00;
-            box-shadow: 
-                0 0 30px rgba(255, 255, 0, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.7);
-        }
-        
-        @keyframes winnerGlow {
-            0% { 
-                text-shadow: 
-                    0 0 5px #000,
-                    0 0 10px #000,
-                    0 0 15px #000,
-                    0 0 20px #000,
-                    0 0 10px #ffff00,
-                    0 0 20px #ffff00,
-                    0 0 30px #ffff00,
-                    0 0 40px #ffff00;
-                box-shadow: 
-                    0 0 30px rgba(255, 255, 0, 0.3),
-                    inset 0 0 20px rgba(0, 0, 0, 0.7);
-            }
-            100% { 
-                text-shadow: 
-                    0 0 8px #000,
-                    0 0 15px #000,
-                    0 0 20px #000,
-                    0 0 25px #000,
-                    0 0 15px #ffff00,
-                    0 0 25px #ffff00,
-                    0 0 35px #ffff00,
-                    0 0 45px #ffff00,
-                    0 0 55px #ffff00;
-                box-shadow: 
-                    0 0 40px rgba(255, 255, 0, 0.6),
-                    inset 0 0 20px rgba(0, 0, 0, 0.7);
-            }
         }
         
         .winner-name {
             color: #00f5ff;
-            font-size: 1.2em;
-            margin-top: 1vh;
+            font-size: 1.1em;
+            margin-top: 0.3vh;
         }
         
         .winner-time {
             color: #39ff14;
-            font-size: 0.8em;
-            margin-top: 0.5vh;
+            font-size: 0.7em;
+            margin-top: 0.3vh;
             font-weight: 700;
         }
         
         @media (max-width: 768px) {
-            .cyber-winner { font-size: 8vw; padding: 2vh; }
+            .cyber-winner { font-size: 6.5vw; padding: 1.5vh; }
         }
         </style>
         
         <div class="cyber-winner">
-            🏆 GANADOR
-            <div class="winner-name">${this.game.winner.toUpperCase()}</div>
-            <div class="winner-time">⏱️ TIEMPO: ${this.game.winnerSecs} s.</div>
+            🏆 ${this.game.winner.toUpperCase()}
+            <div class="winner-time">⏱️ ${this.game.winnerSecs} s.</div>
         </div>`;
 
-    const winnerElement = this.add.dom(w / 2, h / 3).createFromHTML(winnerHtml);
+    const winnerElement = this.add.dom(w / 2, h * 0.10).createFromHTML(winnerHtml);
     winnerElement.setOrigin(0.5, 0.5);
     winnerElement.setDepth(10);
     winnerElement.setAlpha(0);
     winnerElement.setScale(0.8);
+
+    // Guardar referencia para cálculos posteriores (p.ej., posicionar ranking bajo su altura)
+    this.winnerElement = winnerElement;
 
     // Animate entrance
     this.add.tween({
@@ -636,11 +591,23 @@ class EndingScene extends Phaser.Scene {
             `).join('')}
         </div>`;
 
-    const summaryElement = this.add.dom(w / 2, h / 2 + 50).createFromHTML(summaryHtml);
+    // Posición base (5vh debajo del top relativo) y luego ajustamos con la altura real del ganador
+    const baseY = h * 0.29;
+    const summaryElement = this.add.dom(w / 2, baseY).createFromHTML(summaryHtml);
     summaryElement.setOrigin(0.5, 0.5);
     summaryElement.setDepth(10);
     summaryElement.setAlpha(0);
     summaryElement.setScale(0.9);
+
+    // Ajuste en el siguiente frame para asegurar que el layout del ganador esté medido
+    this.time.delayedCall(0, () => {
+      try {
+        const winnerHeight = this.winnerElement && this.winnerElement.node
+          ? (this.winnerElement.node.getBoundingClientRect().height || 0)
+          : 0;
+        summaryElement.y = baseY + winnerHeight;
+      } catch (_) { /* noop */ }
+    });
 
     // Animate entrance with staggered effect for each player
     this.add.tween({
