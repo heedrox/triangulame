@@ -40,16 +40,18 @@ class PhaserUi {
   getNameAndRoom ({ checkValidity }) {
     return new Promise((resolve) => {
       const gameParams = new URLSearchParams(window.location.search);
-      const room = gameParams.get('room');
+      const sanitizeRoom = (value) => (value || '').toString().toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 12);
+      const room = sanitizeRoom(gameParams.get('room'));
       this.game.scene.start(SCENE_KEYS.WELCOME_SCENE, {
         checkValidity,
         oncomplete: ({ name, room }) => {
+          const cleanRoom = sanitizeRoom(room);
           localStorage.setItem('previousName', name);
-          localStorage.setItem('previousRoom', room);
-          resolve({ name, room });
+          localStorage.setItem('previousRoom', cleanRoom);
+          resolve({ name, room: cleanRoom });
         },
         previousName: localStorage.getItem('previousName'),
-        previousRoom: room || localStorage.getItem('previousRoom'),
+        previousRoom: room || sanitizeRoom(localStorage.getItem('previousRoom')),
       });
     });
   }

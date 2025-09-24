@@ -424,7 +424,7 @@ class WelcomeScene extends Phaser.Scene {
             <div class="form-group">
                 <label class="form-label">Sala de batalla:</label>
                 <div class="input-container">
-                    <input type="text" class="cyber-input" autocomplete="off" placeholder="${this.i18n.get('room')}" id="room">
+                    <input type="text" class="cyber-input" autocomplete="off" placeholder="${this.i18n.get('room')}" id="room" maxlength="12">
                 </div>
                 <div class="form-info">
                     ${this.i18n.get('room-info')}
@@ -447,6 +447,26 @@ class WelcomeScene extends Phaser.Scene {
     });
     if (this.previousName) this.form.getChildByID('name').value = this.previousName;
     if (this.previousRoom) this.form.getChildByID('room').value = this.previousRoom;
+
+    // Sanitiza en vivo el input de sala: solo [0-9A-Z] y mayúsculas
+    const roomInput = this.form.getChildByID('room');
+    if (roomInput) {
+      const sanitize = (value) => value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 12);
+      // Inicial: limpia el valor precargado
+      roomInput.value = sanitize(roomInput.value || '');
+      roomInput.addEventListener('input', (e) => {
+        const target = e.target;
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        const before = target.value;
+        const after = sanitize(before);
+        if (before !== after) {
+          target.value = after;
+          const newPos = Math.min(after.length, (start || after.length));
+          try { target.setSelectionRange(newPos, newPos); } catch (_) { /* noop */ }
+        }
+      });
+    }
     return this.form;
   }
 
@@ -572,7 +592,7 @@ class WelcomeScene extends Phaser.Scene {
 
   async clickStart () {
     const name = this.form.getChildByID('name').value.trim();
-    const room = this.form.getChildByID('room').value.trim();
+    const room = this.form.getChildByID('room').value.trim().toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 12);
     if (name !== '' && room !== '') {
       const isValid = await this.checkValidity(room);
       if (isValid) {

@@ -498,9 +498,15 @@ class PlayingScene extends Phaser.Scene {
     this.add.existing(newPoly);
     this.graphics.fillStyle(0x000000);
     this.graphics.fillPoints(polygon.points, true);
-    text.setDepth(1);
+    // Asegurar que no queden tweens de "pulso" activos sobre los textos
     const glowText = text.getData && text.getData('glowText');
+    this.tweens.killTweensOf(text);
+    if (glowText) this.tweens.killTweensOf(glowText);
+
+    text.setDepth(1);
     const targets = glowText ? [newPoly, text, glowText] : [newPoly, text];
+
+    // Animación de salida y destrucción segura de los objetos
     this.tweens.add({
       targets,
       angle: 360 * 3 * COMBO_SECS,
@@ -508,6 +514,12 @@ class PlayingScene extends Phaser.Scene {
       duration: COMBO_SECS * 1000,
       repeat: 0,
       scale: 0,
+      onComplete: () => {
+        // Destruir objetos para evitar restos visuales y consumo innecesario
+        if (glowText && glowText.destroy) glowText.destroy();
+        if (text && text.destroy) text.destroy();
+        if (newPoly && newPoly.destroy) newPoly.destroy();
+      },
     });
   }
 
