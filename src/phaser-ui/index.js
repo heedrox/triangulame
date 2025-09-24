@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import WelcomeScene from './scenes/welcome-scene';
+import JoinScene from './scenes/join-scene';
 import PlayersScene from './scenes/players-scene';
 import PlayingScene from './scenes/playing-scene';
 import SCENE_KEYS from './scenes/constants/scene-keys';
@@ -39,6 +40,7 @@ class PhaserUi {
     };
     this.game = new Phaser.Game(config);
     this.game.scene.add(SCENE_KEYS.WELCOME_SCENE, new WelcomeScene(this.i18n));
+    this.game.scene.add(SCENE_KEYS.JOIN_SCENE, new JoinScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYERS_SCENE, new PlayersScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.PLAYING_SCENE, new PlayingScene(this.i18n));
     this.game.scene.add(SCENE_KEYS.ENDING_SCENE, new EndingScene(this.i18n));
@@ -58,7 +60,8 @@ class PhaserUi {
           resolve({ name, room: cleanRoom });
         },
         previousName: localStorage.getItem('previousName'),
-        previousRoom: room || sanitizeRoom(localStorage.getItem('previousRoom')),
+        previousRoom: sanitizeRoom(localStorage.getItem('previousRoom')),
+        previousRoomFromUrl: room || '',
       });
     });
   }

@@ -2,6 +2,9 @@ const es = ({
   translation: {
     key: 'hello world',
     start: 'UNIRSE AL MATCH',
+    'join-room': 'UNIRTE A SALA',
+    'create-room': 'CREAR SALA',
+    'coming-soon': 'Próximamente',
     name: 'Gamertag',
     room: 'Sala de batalla',
     'room-info': '* Todos los jugadores deben usar el mismo código de sala para unirse al match',

@@ -9,6 +9,10 @@ class WelcomeScene extends Phaser.Scene {
     });
     this.i18n = i18n;
     this.form = null;
+    this.oncomplete = null;
+    this.previousName = null;
+    this.previousRoom = null;
+    this.checkValidity = null;
   }
 
   init (data) {
@@ -16,6 +20,7 @@ class WelcomeScene extends Phaser.Scene {
     this.previousName = data.previousName;
     this.previousRoom = data.previousRoom;
     this.checkValidity = data.checkValidity;
+    this.urlRoom = data.previousRoomFromUrl; // opcional
   }
 
   preload () {
@@ -24,9 +29,11 @@ class WelcomeScene extends Phaser.Scene {
 
   create() {
     this.createCyberBackground();
-    this.form = this.addForm();
-    this.addStartButton();
-    // this.addFullScreenButton();
+    this.addMenuButtons();
+    // Redirección opcional si viene room por URL
+    if (this.urlRoom) {
+      this.goToJoin();
+    }
   }
 
   createCyberBackground() {
@@ -207,253 +214,54 @@ class WelcomeScene extends Phaser.Scene {
     }
   }
 
-  addForm() {
+  // Nueva UI: dos botones en el menú principal
+  addMenuButtons() {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
-
-    const formHtml = `
-        <style>
+    const html = `
+      <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
-        .cyber-form {
-            font-family: 'Orbitron', 'Courier New', monospace;
-            text-align: center;
-            position: relative;
-            height: 100%;
-            overflow-y: auto;
-            padding-bottom: 120px; /* Espacio para el footer */
-        }
-        
-        /* Scrollbar personalizado para el tema cyber */
-        .cyber-form::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .cyber-form::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 4px;
-        }
-        
-        .cyber-form::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #00f5ff, #ff0080);
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
-        }
-        
-        .cyber-form::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #ff0080, #39ff14);
-            box-shadow: 0 0 15px rgba(255, 0, 128, 0.7);
-        }
-        
-        .cyber-title {
-            font-size: 6vw;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 4vh;
-            margin-top: 2vh;
-            color: #00f5ff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 
-                0 0 5px #000,
-                0 0 10px #000,
-                0 0 15px #000,
-                0 0 20px #000,
-                0 0 10px #00f5ff,
-                0 0 20px #00f5ff,
-                0 0 30px #00f5ff,
-                0 0 40px #00f5ff;
-            animation: titlePulse 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes titlePulse {
-            0% { 
-                text-shadow: 
-                    0 0 5px #000,
-                    0 0 10px #000,
-                    0 0 15px #000,
-                    0 0 20px #000,
-                    0 0 10px #00f5ff,
-                    0 0 20px #00f5ff,
-                    0 0 30px #00f5ff,
-                    0 0 40px #00f5ff;
-            }
-            100% { 
-                text-shadow: 
-                    0 0 8px #000,
-                    0 0 15px #000,
-                    0 0 20px #000,
-                    0 0 25px #000,
-                    0 0 15px #00f5ff,
-                    0 0 25px #00f5ff,
-                    0 0 35px #00f5ff,
-                    0 0 45px #00f5ff,
-                    0 0 55px #00f5ff;
-            }
-        }
-        
-        .form-group {
-            margin-bottom: 3vh;
-            position: relative;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 4.5vw;
-            font-weight: 700;
-            margin-bottom: 2vh;
-            color: #39ff14;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 
-                0 0 3px #000,
-                0 0 6px #000,
-                0 0 10px #000,
-                0 0 15px #000,
-                0 0 5px #39ff14,
-                0 0 10px #39ff14,
-                0 0 15px #39ff14,
-                0 0 20px #39ff14;
-        }
-        
-        .input-container {
-            position: relative;
-            background: linear-gradient(45deg, #00f5ff, #ff0080, #39ff14, #ffff00);
-            padding: 3px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
-            animation: inputGlow 3s ease-in-out infinite alternate;
-            margin: 0 auto;
-            width: 70%;
-        }
-        
-        @keyframes inputGlow {
-            0% { 
-                box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
-            }
-            50% { 
-                box-shadow: 0 0 25px rgba(255, 0, 128, 0.4);
-            }
-            100% { 
-                box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-            }
-        }
-        
-        .cyber-input {
-            width: 100%;
-            padding: 3vw;
-            font-size: 5vw;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 40, 0.95));
-            border: none;
-            border-radius: 9px;
-            color: #00f5ff;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 0 25px rgba(0, 245, 255, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.7);
-            box-sizing: border-box;
-        }
-        
-        .cyber-input:focus {
-            outline: none;
-            color: #ff0080;
-            box-shadow: 
-                0 0 40px rgba(255, 0, 128, 0.6),
-                inset 0 0 30px rgba(0, 0, 0, 0.7);
-            transform: scale(1.03);
-            text-shadow: 0 0 10px #ff0080;
-        }
-        
-        .cyber-input::placeholder {
-            color: rgba(0, 245, 255, 0.5);
-        }
-        
-        .form-info {
-            font-size: 3vw;
-            color: #39ff14;
-            margin-top: 3vh;
-            text-align: center;
-            font-style: italic;
-            line-height: 1.4;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 2vh;
-            border-radius: 8px;
-            border: 1px solid rgba(57, 255, 20, 0.2);
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
-            width: 85%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .cyber-title { font-size: 8vw; margin-bottom: 3vh; margin-top: 1vh; }
-            .form-label { font-size: 5.5vw; }
-            .cyber-input { font-size: 6vw; padding: 4vw; }
-            .form-info { font-size: 3.5vw; }
-            .form-group { margin-bottom: 2.5vh; }
-        }
-        </style>
-        
-        <div class="cyber-form">
-            <h1 class="cyber-title">TRIANGLES</h1>
-            
-            <div class="form-group">
-                <label class="form-label">Gamertag:</label>
-                <div class="input-container">
-                    <input type="text" class="cyber-input" autocomplete="off" placeholder="${this.i18n.get('name')}" id="name">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Sala de batalla:</label>
-                <div class="input-container">
-                    <input type="text" class="cyber-input" autocomplete="off" placeholder="${this.i18n.get('room')}" id="room" maxlength="12">
-                </div>
-                <div class="form-info">
-                    ${this.i18n.get('room-info')}
-                </div>
-            </div>
-        </div>`;
-
-    this.form = this.add.dom(w / 2, h / 2 - 40).createFromHTML(formHtml, 'form');
-    this.form.setVisible(true);
-    this.form.setDepth(1);
-    this.form.setOrigin(0.5, 0.5);
-    
-    // Animación de entrada más sutil
-    this.form.setAlpha(0);
-    this.add.tween({
-      targets: this.form,
-      alpha: 1,
-      duration: 1000,
-      ease: 'Power2',
+        .menu-wrap { font-family: 'Orbitron', 'Courier New', monospace; text-align: center; }
+        .title { font-size: 8vw; font-weight: 900; color: #00f5ff; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 5px #000,0 0 10px #000,0 0 15px #000,0 0 20px #000,0 0 10px #00f5ff,0 0 20px #00f5ff; margin: 4vh 0; }
+        .btn { background: linear-gradient(45deg, #ff0080, #00f5ff); border: none; padding: 20px; font-size: 5vw; font-family: 'Orbitron', monospace; font-weight: 900; color: #000; cursor: pointer; border-radius: 10px; width: 90vw; max-width: 520px; margin: 10px auto; display: block; }
+      </style>
+      <div class="menu-wrap">
+        <h1 class="title">TRIANGLES</h1>
+        <button class="btn" id="createBtn">${this.i18n.get('create-room') || 'CREAR SALA'}</button>
+        <button class="btn" id="joinBtn">${this.i18n.get('join-room') || 'UNIRTE A SALA'}</button>
+      </div>`;
+    const container = this.add.dom(w / 2, h / 2).createFromHTML(html);
+    container.setOrigin(0.5, 0.5);
+    container.setDepth(10);
+    container.addListener('click');
+    container.on('click', (e) => {
+      if (e.target.id === 'joinBtn') this.goToJoin();
+      if (e.target.id === 'createBtn') this.showComingSoon();
     });
-    if (this.previousName) this.form.getChildByID('name').value = this.previousName;
-    if (this.previousRoom) this.form.getChildByID('room').value = this.previousRoom;
+    this.menuContainer = container;
+  }
 
-    // Sanitiza en vivo el input de sala: solo [0-9A-Z] y mayúsculas
-    const roomInput = this.form.getChildByID('room');
-    if (roomInput) {
-      const sanitize = (value) => value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 12);
-      // Inicial: limpia el valor precargado
-      roomInput.value = sanitize(roomInput.value || '');
-      roomInput.addEventListener('input', (e) => {
-        const target = e.target;
-        const start = target.selectionStart;
-        const end = target.selectionEnd;
-        const before = target.value;
-        const after = sanitize(before);
-        if (before !== after) {
-          target.value = after;
-          const newPos = Math.min(after.length, (start || after.length));
-          try { target.setSelectionRange(newPos, newPos); } catch (_) { /* noop */ }
-        }
-      });
-    }
-    return this.form;
+  goToJoin() {
+    this.scene.start(SCENE_KEYS.JOIN_SCENE, {
+      checkValidity: this.checkValidity,
+      oncomplete: this.oncomplete,
+      previousName: this.previousName,
+      previousRoom: this.previousRoom,
+    });
+  }
+
+  showComingSoon() {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    const html = `
+      <style>
+        .toast { font-family: 'Orbitron', monospace; background: rgba(0,0,0,0.9); color: #ff0; border: 2px solid #ff0; padding: 16px 20px; border-radius: 8px; text-align: center; }
+      </style>
+      <div class="toast">${this.i18n.get('coming-soon') || 'Próximamente'}</div>`;
+    const t = this.add.dom(w / 2, h * 0.8).createFromHTML(html);
+    t.setOrigin(0.5, 0.5);
+    t.setDepth(20);
+    this.add.tween({ targets: [t], duration: 1600, alpha: 0, ease: 'Power2', onComplete: () => t.destroy() });
   }
 
   addFullScreenButton () {
