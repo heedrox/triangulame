@@ -330,9 +330,19 @@ class PlayingScene extends Phaser.Scene {
     const colorIndex = (rectangle.id + this.neonOffset) % NEON_PALETTE.length;
     const neonColor = NEON_PALETTE[colorIndex];
 
-    // Glow pass (thicker, translucent)
+    // Fill pass (solid neon, higher opacity)
+    this.graphics.fillStyle(neonColor, 0.7);
+    this.graphics.beginPath();
+    this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p3.x * this.xFactor, rectangle.p3.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p2.x * this.xFactor, rectangle.p2.y * this.yFactor);
+    this.graphics.closePath();
+    this.graphics.fillPath();
+
+    // Glow pass (thicker, stronger neon)
     const glowWidth = Math.round(this.cameras.main.width / 70);
-    this.graphics.lineStyle(glowWidth, neonColor, 0.35);
+    this.graphics.lineStyle(glowWidth, neonColor, 0.65);
     this.graphics.beginPath();
     this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
     this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
@@ -341,9 +351,9 @@ class PlayingScene extends Phaser.Scene {
     this.graphics.closePath();
     this.graphics.strokePath();
 
-    // Core white pass (thin, sharp)
+    // Core neon pass (thin, sharp neon outline)
     const coreWidth = Math.round(this.cameras.main.width / 120);
-    this.graphics.lineStyle(coreWidth, 0xffffff, 1);
+    this.graphics.lineStyle(coreWidth, neonColor, 1);
     this.graphics.beginPath();
     this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
     this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
@@ -357,18 +367,32 @@ class PlayingScene extends Phaser.Scene {
     const textPosition = getTextPosition(rectangle, this.xFactor, this.yFactor);
     const colorIndex = (rectangle.id + this.neonOffset) % NEON_PALETTE.length;
     const neonColor = NEON_PALETTE[colorIndex];
-    const text = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
+    // Back glow text to add subtle neon halo while keeping number dark
+    const glowText = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
       fontFamily: 'Orbitron, monospace',
       fontSize: '25vw',
       color: '#ffffff',
       stroke: `#${neonColor.toString(16).padStart(6, '0')}`,
-      strokeThickness: 10,
+      strokeThickness: 14,
+      align: 'center',
+    });
+    glowText.setOrigin(0.5);
+    glowText.setAlpha(0.4);
+    glowText.setScale(1.02, 1.02);
+
+    const text = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
+      fontFamily: 'Orbitron, monospace',
+      fontSize: '25vw',
+      color: '#0a0a0a',
+      stroke: '#000000',
+      strokeThickness: 6,
       align: 'center',
     });
     text.setOrigin(0.5);
-    text.setShadow(0, 0, '#ffffff', 6, false, true);
+    // Dark number with a neon halo behind
     const textStretch = getStretch(text.getBounds(), rectangle, this.xFactor, this.yFactor);
     text.setScale(textStretch.x, textStretch.y);
+    glowText.setScale(textStretch.x * 1.02, textStretch.y * 1.02);
     return text;
   }
 
@@ -407,12 +431,17 @@ class PlayingScene extends Phaser.Scene {
   }
 
   removeRectangle (polygon, text) {
+    // Match neon color to the rectangle id shown in text
+    const rectId = Number(text.text);
+    const colorIndex = (rectId + this.neonOffset) % NEON_PALETTE.length;
+    const neonColor = NEON_PALETTE[colorIndex];
+
     const poly = new Phaser.GameObjects.Polygon(
       this,
       0,
       0,
       polygon.points,
-      BACKGROUND_PIECE,
+      neonColor,
       1,
     );
     const bounds = poly.getBounds();
@@ -430,7 +459,7 @@ class PlayingScene extends Phaser.Scene {
       minx,
       miny,
       newPoints,
-      BACKGROUND_PIECE,
+      neonColor,
       1,
     );
     const bounds2 = newPoly.getBounds();

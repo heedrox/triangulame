@@ -499,3 +499,155 @@ He sustituido el sistema de partículas por un spawner ligero con sprites + twee
 
 ---
 
+_**User (2025-09-24 09:08Z)**_
+
+la pantalla me gusta, pero... ¿y si hicieramos los rectangulos en colores invertidos? es decir, el rectangulo/triangulo de color solido, y el numero de color oscuro...
+
+Haz /commit primero, y luego prueba ese enfoque a ver como queda.
+
+--- Cursor Command: commit.md ---
+Haz commit y push directamente.
+
+Para obtener el mensaje, revisa las diferencias existentes en los ficheros (puedes hacer un git diff --cached, tras hacer add de todos los ficheros), y complementa lo que se ha hecho (el what) con la intención (el why) a través de la conversación actual.
+
+El mensaje debe ser la continuación de la siguiente frase: "este commit hace que...", y usa verbo presente, por ejemplo "el asesino puede lanzar bombas"; pero no debe incluir la frase "este commit hace que".
+
+Solo usa una frase. 
+
+Utiliza también "feat:" o "bugfix" o "refactor" al principio del mensaje.
+
+El commit debe ser una única linea.
+--- End Command ---
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+Voy a hacer commit y push de los cambios actuales y, a continuación, aplicaré el enfoque de colores invertidos en `playing-scene.js` (relleno neon sólido para polígonos y números oscuros).
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git add -A && git commit -m "feat: aplica rediseño neon en playing scene con fuente Orbitron, grid animado, colores deterministas por djb2 y partículas ligeras, mejorando estética sin cambiar la lógica" && git push
+```
+
+```
+[main 0867b2b] feat: aplica rediseño neon en playing scene con fuente Orbitron, grid animado, colores deterministas por djb2 y partículas ligeras, mejorando estética sin cambiar la lógica
+ 4 files changed, 776 insertions(+), 9 deletions(-)
+ create mode 100644 ".specstory/history/2025-09-24_10-14Z-redise\303\261o-de-pantalla-con-estilo-neon.md"
+ create mode 100644 docs/features/0006_PLAN.md
+To github.com:heedrox/triangulame.git
+   ce5d6d7..0867b2b  main -> main
+
+```
+
+---
+
+<think><details><summary>Thought Process</summary>**Implementing color changes**
+
+I need to implement inverted colors with polygons filled in neon colors and dark text. I first think of adjusting the addRectangle function to ensure it fills properly; I also might need to tweak how I handle removing rectangles since they currently fill with black. Right now, the polygons are only outlined, so I’ll set the fillStyle to a neon color with an alpha of around 0.3. The user prefers solid color fills, so I’ll work with that in mind.
+**Adding polygon fills**
+
+I need to incorporate a fill for polygon points, starting with setting the fill style to a neon color with an alpha of 0.25. I think I can reuse the rectangle coordinates to compute polygon points for the fill. The order will be to fill first, then add strokes. I’ll structure it using the Phaser graphics methods: beginPath, closePath, and fillPath. For the text, I’ll set the color to a dark shade and adjust the shadow to keep it subtle, ensuring good legibility.
+**Updating graphics settings**
+
+I'm deciding on the stroke color, which I'll set to black with a thickness of 6, and I'll remove the shadow entirely. For the HUD goal text, I think sticking with white could be best since it contrasts well. Since the user’s request centers on rectangles and triangles, I’ll keep the HUD unchanged for now. I’ll also adjust the removeRectangle function to fill with black; that might work just fine. Now, it’s time to apply the patch!</details></think>
+
+---
+
+
+
+---
+
+He hecho commit y push. Implementé el modo “colores invertidos”: ahora los polígonos se rellenan con color neon semitransparente y los números son oscuros con trazo negro para contraste. Pruébalo y dime si ajustamos opacidades/grosor de bordes o el color del relleno.
+
+---
+
+_**User (2025-09-24 09:08Z)**_
+
+queda un poco triston. Podemos hacer:
+- un poco menos transparente.
+- y el borde del rectangulo/triangulo con color neon fuerte.
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Adjusting design elements**
+
+I need to adjust the opacity and enhance the neon border effect. I think raising the opacity from 0.3 to 0.5 for the fill and changing the glow alpha to around 0.7 would work better. I should consider replacing the core's white with a neon color while keeping it visible. The plan is to set the glow thicker with an alpha of 0.6 and use the neon color for the core. Let's make these changes to the design!
+**Adjusting text features**
+
+I should consider slightly increasing the text stroke thickness to enhance visibility, while ensuring that the numbers remain dark as they're currently set. It seems like keeping that part consistent is important to the user. I need to remember to apply this patch after making the adjustments. Overall, my focus is on balancing readability and aesthetics without losing the original intent or feel of the design. Let’s implement these changes!</details></think>
+
+---
+
+Haré los ajustes: aumentaré la opacidad del relleno (p. ej., 0.3 → 0.5) y cambiaré el borde principal a neon intenso (línea fina 100% neon en lugar de blanco) aumentando también la intensidad del glow. Procedo a editar `playing-scene.js`.
+
+---
+
+
+
+---
+
+He subido la opacidad del relleno a 0.5 y el borde ahora es neon puro con glow más intenso. Pruébalo y me dices si ajustamos a 0.6/0.7 de relleno o cambiamos el grosor del glow.
+
+---
+
+_**User (2025-09-24 09:08Z)**_
+
+bien, probemos 0.7.
+
+Tambien quizas el numero en si deberia tener algun efecto, queda soso con el numero en oscuro sin mas.
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Adjusting visual effects**
+
+I'm considering the right adjustments for fill opacity, settling on 0.7. Adding effects to the number could enhance it, like using an inner shadow or a subtle gradient. The text shadow is off, but I could try a darker number with a slight inner glow, although that’s not possible. Another idea is to add a thin neon outline while keeping the number dark, using a lighter neon stroke. Let’s explore using a gradient overlay too, along with an inner outline in a slightly lighter dark gray.
+**Implementing text effects**
+
+I’m thinking about adding a two-pass stroke for the text, where I create the text and then set the stroke. Since Phaser Text only allows for a single stroke, I might duplicate the text behind with a neon stroke at low opacity to simulate a halo effect. I’ll adjust the fill transparency to 0.7 and modify the colors accordingly. After creating the text, I’ll ensure the glow effect is set correctly with proper depth and possibly add a minimal white shadow. Let's get this implemented!</details></think>
+
+---
+
+
+
+---
+
+He subido el relleno a 0.7 y añadí un halo neon detrás del número: una capa de texto duplicada con stroke del color del polígono, baja opacidad y ligera escala para dar brillo sin perder la legibilidad del número oscuro. Pruébalo y dime si ajustamos intensidad del halo o grosor del trazo.
+
+---
+
+_**User (2025-09-24 09:08Z)**_
+
+Genial!
+
+Queda pendiente una cosa: cuando le das al triangulo / rectangulo, hay un sprite de ese rectangulo rotando, y ahora sale amarillo (el color anitguo).
+
+¿Puedes hacer que matchee el color actual?
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Implementing polygon changes**
+
+I need to replace the fill color for newPoly and possibly for poly temp as well. They create two polygons: poly for bounds and newPoly for the actual use. I should change the fill color to neonColor and set alpha to 1 for fillAlpha, as indicated in the Phaser.GameObjects.Polygon constructor. I might keep the alpha around 1 or 0.9. Black is being used for the original polygon, which helps with visibility, so maybe I'll keep that for hiding purposes. I'll make these modifications in removeRectangle and use neonColor for both polygon creations. Let's proceed with the apply_patch editing for removeRectangle.</details></think>
+
+---
+
+
+
+---
+
+He hecho que el polígono rotatorio en `removeRectangle` use el mismo color neon que el de su figura: calculo el `colorIndex` con `(id + neonOffset) % 4` a partir del número del texto y aplico ese color en lugar del amarillo fijo. Pruébalo y confirma que ya matchea.
+
+---
+
