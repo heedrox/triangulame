@@ -179,11 +179,7 @@ class PlayersScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    if (this.gridTileSprite) {
-      const shift = (delta || 16) * 0.02;
-      this.gridTileSprite.tilePositionX += shift;
-      this.gridTileSprite.tilePositionY += shift;
-    }
+    // Fondo fijo: no mover grid
     if (this.particles && this.particles.length) {
       const h = this.cameras.main.height;
       this.particles.forEach((p) => {

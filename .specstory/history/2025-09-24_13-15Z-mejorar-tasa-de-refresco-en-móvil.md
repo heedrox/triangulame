@@ -265,3 +265,433 @@ Comprueba en móvil la pantalla de jugadores y la de juego. Si notas mejora, sig
 
 ---
 
+_**User (2025-09-24 09:29Z)**_
+
+/commit 
+
+--- Cursor Command: commit.md ---
+Haz commit y push directamente.
+
+Para obtener el mensaje, revisa las diferencias existentes en los ficheros (puedes hacer un git diff --cached, tras hacer add de todos los ficheros), y complementa lo que se ha hecho (el what) con la intención (el why) a través de la conversación actual.
+
+El mensaje debe ser la continuación de la siguiente frase: "este commit hace que...", y usa verbo presente, por ejemplo "el asesino puede lanzar bombas"; pero no debe incluir la frase "este commit hace que".
+
+Solo usa una frase. 
+
+Utiliza también "feat:" o "bugfix" o "refactor" al principio del mensaje.
+
+El commit debe ser una única linea.
+--- End Command ---
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Executing git commands**
+
+I’m thinking about running three Git commands: `git add -A`, `git commit`, and `git push`. They could be combined into one command, but I feel it's better to run them sequentially with `run_terminal_cmd`. They depend on each other, so I can't run them in parallel. I’ll go ahead and execute them in that order to ensure everything goes smoothly.</details></think>
+
+---
+
+Voy a hacer add de los cambios, crear el commit con un mensaje orientado a la mejora de FPS en móvil y hacer push a origin/main.
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git add -A
+```
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git diff --cached | cat
+```
+
+```
+diff --git "a/.specstory/history/2025-09-24_13-15Z-mejorar-tasa-de-refresco-en-m\303\263vil.md" "b/.specstory/history/2025-09-24_13-15Z-mejorar-tasa-de-refresco-en-m\303\263vil.md"
+index e285350..2ef885f 100644
+--- "a/.specstory/history/2025-09-24_13-15Z-mejorar-tasa-de-refresco-en-m\303\263vil.md"
++++ "b/.specstory/history/2025-09-24_13-15Z-mejorar-tasa-de-refresco-en-m\303\263vil.md"
+@@ -207,3 +207,61 @@ Pruébalo en móvil y dime cómo notas el FPS y la suavidad en la pantalla de in
+ 
+ ---
+ 
++_**User (2025-09-24 09:29Z)**_
++
++¿puedes hacer los mismo a @players-scene.js y @playing-scene.js ?
++
++---
++
++_**Assistant**_
++
++<think><details><summary>Thought Process</summary>**Optimizing scenes**
++
++I need to implement optimizations in both the players-scene and the playing-scene. The playing-scene already has an optimized grid using TileSprite and particle effects with timed spawn tweens, so I’m considering adjusting it to fit the DPR cap style. We could reduce the number of particles and reuse the pool to minimize the use of tweens. For the players-scene, I’ll replace the animated grid with a cached TileSprite texture and make similar adjustments for particle management. I’ll also focus on reducing the spawn rate in mobile scenarios to keep performance smooth.
++**Implementing visual improvements**
++
++I'm considering a few adjustments to optimize the visuals in both the players scene and the playing scene. I might want to cap the vignette effect, but since both scenes are similar, maintaining the current TileSprite setup could be best. For particles, I plan to modify floating particles by using a pool or reducing their spawn rate. In the players scene, I’ll adjust the grid creation and ensure proper update methods are in place. For mobile, I’ll reduce particle frequency, detect the device type, and establish a todo list to streamline these tasks across both scenes.</details></think>
++
++---
++
++Voy a aplicar las mismas optimizaciones: en `players-scene.js` cambiaré el grid a `TileSprite` y migraré sus partículas a un pool con actualización en `update`. En `playing-scene.js` ya hay `TileSprite`; ajustaré las partículas para reducir carga en móvil (menos frecuencia y cantidad). Luego paso el linter.
++
++---
++
++## Todo List
++
++- [-] Optimizar grid y partículas en players-scene.js
++- [ ] Ajustar partículas para móvil en playing-scene.js
++
++---
++
++Voy a editar `players-scene.js` para usar `TileSprite` en el grid y un pool de partículas con update manual, y ajustaré el spawner de partículas en `playing-scene.js` para reducir frecuencia y cantidad en móvil. Luego revisaré linter.
++
++---
++
++
++
++---
++
++
++
++---
++
++
++
++---
++
++## Todo List
++
++- [x] Optimizar grid y partículas en players-scene.js
++- [x] Ajustar partículas para móvil en playing-scene.js
++
++---
++
++- He aplicado `TileSprite` cacheado para el grid y un pool de partículas con update manual en `src/phaser-ui/scenes/players-scene.js` (menos tweens, menos draw calls). También mueve el grid con `tilePosition` en `update`.
++- En `src/phaser-ui/scenes/playing-scene.js` ya usabas `TileSprite`; he reducido la frecuencia y cantidad de partículas en móvil y ajustado duraciones/tintes para menor coste. Sin errores de linter.
++
++Comprueba en móvil la pantalla de jugadores y la de juego. Si notas mejora, siguiente ronda: cachear el gradiente de fondo y recortar glows en móvil en estas escenas también.
++
++---
++
+diff --git a/src/phaser-ui/scenes/players-scene.js b/src/phaser-ui/scenes/players-scene.js
+index 975e77f..f0d0a75 100644
+--- a/src/phaser-ui/scenes/players-scene.js
++++ b/src/phaser-ui/scenes/players-scene.js
+@@ -122,117 +122,79 @@ class PlayersScene extends Phaser.Scene {
+ 
+   createAnimatedGrid(w, h) {
+     const gridSize = 50;
+-    const gridGraphics = this.add.graphics();
+-    gridGraphics.lineStyle(1, 0x00f5ff, 0.1);
+-
+-    // Create vertical lines
+-    for (let x = 0; x <= w + gridSize; x += gridSize) {
+-      gridGraphics.moveTo(x, 0);
+-      gridGraphics.lineTo(x, h + gridSize);
+-    }
+-
+-    // Create horizontal lines
+-    for (let y = 0; y <= h + gridSize; y += gridSize) {
+-      gridGraphics.moveTo(0, y);
+-      gridGraphics.lineTo(w + gridSize, y);
++    const texKey = `grid-${gridSize}`;
++    if (!this.textures.exists(texKey)) {
++      const gfx = this.make.graphics({ x: 0, y: 0, add: false });
++      const tile = 256;
++      gfx.clear();
++      gfx.lineStyle(1, 0x00f5ff, 0.1);
++      for (let x = 0; x <= tile; x += gridSize) {
++        gfx.lineBetween(x, 0, x, tile);
++      }
++      for (let y = 0; y <= tile; y += gridSize) {
++        gfx.lineBetween(0, y, tile, y);
++      }
++      gfx.generateTexture(texKey, tile, tile);
++      gfx.destroy();
+     }
+-
+-    gridGraphics.strokePath();
+-
+-    // Animate the grid
+-    this.tweens.add({
+-      targets: gridGraphics,
+-      x: -gridSize,
+-      y: -gridSize,
+-      duration: 20000,
+-      repeat: -1,
+-      ease: 'Linear'
+-    });
++    const tileSprite = this.add.tileSprite(0, 0, w + gridSize, h + gridSize, texKey).setOrigin(0, 0);
++    this.gridTileSprite = tileSprite;
+   }
+ 
+   createFloatingParticles(w, h) {
+     const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
+     const particles = [];
++    const count = window.navigator.userAgent.match(/Mobile|Android|iPhone/i) ? 6 : 12;
+ 
+-    // Create 12 triangle particles
+-    for (let i = 0; i < 12; i++) {
+-      const particle = this.add.graphics();
++    for (let i = 0; i < count; i++) {
++      const g = this.add.graphics();
+       const color = colors[i % colors.length];
+       const size = Phaser.Math.Between(2, 4);
+-      
+-      particle.fillStyle(color, 0.8);
+-      
+-      // Draw small triangle
+-      particle.beginPath();
+-      particle.moveTo(0, -size);
+-      particle.lineTo(-size, size);
+-      particle.lineTo(size, size);
+-      particle.closePath();
+-      particle.fillPath();
+-      
+-      // Random starting position
+-      particle.x = Phaser.Math.Between(0, w);
+-      particle.y = h + 50;
+-      
++      g.fillStyle(color, 0.8);
++      g.beginPath();
++      g.moveTo(0, -size);
++      g.lineTo(-size, size);
++      g.lineTo(size, size);
++      g.closePath();
++      g.fillPath();
++
++      const speed = Phaser.Math.FloatBetween(20, 40);
++      const rotationSpeed = Phaser.Math.FloatBetween(0.3, 0.6);
++      const startDelay = Phaser.Math.Between(0, 1500);
++
++      const particle = { node: g, speed, rotationSpeed, alive: false, startDelay };
+       particles.push(particle);
+-
+-      // Animate particle floating up
+-      const delay = Phaser.Math.Between(0, 6000);
+-      const duration = Phaser.Math.Between(4000, 8000);
+-
+-      this.time.delayedCall(delay, () => {
+-        this.animateParticle(particle, w, h, duration);
+-      });
+     }
+ 
+     this.particles = particles;
++    this.particles.forEach((p) => this.time.delayedCall(p.startDelay, () => this.resetParticle(p, w, h)));
+   }
+ 
+-  animateParticle(particle, w, h, duration) {
+-    // Reset particle position
+-    particle.x = Phaser.Math.Between(0, w);
+-    particle.y = h + 50;
+-    particle.alpha = 0;
+-
+-    // Create floating animation
+-    this.tweens.add({
+-      targets: particle,
+-      y: -50,
+-      alpha: 1,
+-      duration: duration,
+-      ease: 'Sine.easeInOut',
+-      onComplete: () => {
+-        // Restart animation
+-        const newDuration = Phaser.Math.Between(4000, 8000);
+-        this.animateParticle(particle, w, h, newDuration);
+-      }
+-    });
+-
+-    // Add rotation
+-    this.tweens.add({
+-      targets: particle,
+-      rotation: Math.PI * 2,
+-      duration: duration,
+-      ease: 'Linear'
+-    });
+-
+-    // Add fade out at the end
+-    this.tweens.add({
+-      targets: particle,
+-      alpha: 0,
+-      duration: 1000,
+-      delay: duration - 1000,
+-      ease: 'Sine.easeIn'
+-    });
++  resetParticle(p, w, h) {
++    p.node.x = Phaser.Math.Between(0, w);
++    p.node.y = h + 50;
++    p.node.alpha = 0;
++    p.node.rotation = 0;
++    p.alive = true;
++  }
+ 
+-    // Add fade in at the beginning
+-    this.tweens.add({
+-      targets: particle,
+-      alpha: 1,
+-      duration: 1000,
+-      delay: 500,
+-      ease: 'Sine.easeOut'
+-    });
++  update(time, delta) {
++    if (this.gridTileSprite) {
++      const shift = (delta || 16) * 0.02;
++      this.gridTileSprite.tilePositionX += shift;
++      this.gridTileSprite.tilePositionY += shift;
++    }
++    if (this.particles && this.particles.length) {
++      const h = this.cameras.main.height;
++      this.particles.forEach((p) => {
++        if (!p.alive) return;
++        const dy = (p.speed * (delta || 16)) / 1000;
++        p.node.y -= dy;
++        if (p.node.alpha < 1) p.node.alpha = Math.min(1, p.node.alpha + 0.02);
++        p.node.rotation += p.rotationSpeed * ((delta || 16) / 1000);
++        if (p.node.y < -50) this.resetParticle(p, this.cameras.main.width, h);
++      });
++    }
+   }
+ 
+   addRoomName() {
+diff --git a/src/phaser-ui/scenes/playing-scene.js b/src/phaser-ui/scenes/playing-scene.js
+index 7558d43..220b9cd 100644
+--- a/src/phaser-ui/scenes/playing-scene.js
++++ b/src/phaser-ui/scenes/playing-scene.js
+@@ -244,6 +244,9 @@ class PlayingScene extends Phaser.Scene {
+     }
+ 
+     const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
++    const isMobile = !!window.navigator.userAgent.match(/Mobile|Android|iPhone/i);
++    const maxPerTick = isMobile ? 1 : 2;
++    const delayMs = isMobile ? 300 : 200;
+     const spawnOne = () => {
+       const x = Math.random() * w;
+       const tint = colors[(Math.random() * colors.length) | 0];
+@@ -251,8 +254,8 @@ class PlayingScene extends Phaser.Scene {
+       sprite.setDepth(-5);
+       sprite.setTint(tint);
+       sprite.setAlpha(0.5);
+-      const driftX = (Math.random() - 0.5) * 20;
+-      const duration = 5000 + Math.random() * 3000;
++      const driftX = (Math.random() - 0.5) * (isMobile ? 12 : 20);
++      const duration = (isMobile ? 4500 : 5000) + Math.random() * (isMobile ? 2000 : 3000);
+       this.tweens.add({
+         targets: sprite,
+         x: x + driftX,
+@@ -265,10 +268,10 @@ class PlayingScene extends Phaser.Scene {
+     };
+ 
+     this.particleTimer = this.time.addEvent({
+-      delay: 200,
++      delay: delayMs,
+       loop: true,
+       callback: () => {
+-        const count = 1 + (Math.random() < 0.3 ? 1 : 0);
++        const count = 1 + (Math.random() < 0.3 ? (maxPerTick - 1) : 0);
+         for (let i = 0; i < count; i++) spawnOne();
+       },
+     });
+
+```
+
+---
+
+<think><details><summary>Thought Process</summary>**Crafting commit message**
+
+I need to create a commit message that starts with "feat:", "bugfix," or "refactor." The message should communicate that it improves performance. Based on the diffs, we're updating the players-scene grid to TileSprite, implementing particle pooling, and reducing particles in the playing scene for mobile. I noticed that previous edits aren't showing up in the current diff, but they should be included. The focus is on improving FPS on mobile. I'll write the sentence in Spanish.
+**Composing commit message**
+
+I'm crafting a commit message that begins with "feat:" to indicate an improvement. The message will say, "mejora el rendimiento en móvil usando TileSprite para el grid y un pool de partículas en players-scene y reduce la frecuencia/cantidad de partículas en playing-scene para subir FPS." Once it's composed, I'll run the command git commit -m "..." and then push the changes. After that, I’ll proceed to execute the necessary commands.</details></think>
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git commit -m "feat: mejora el rendimiento en móvil usando TileSprite para el grid y un pool de partículas en players-scene y reduce la frecuencia/cantidad de partículas en playing-scene para subir FPS"
+```
+
+```
+[main f880c30] feat: mejora el rendimiento en móvil usando TileSprite para el grid y un pool de partículas en players-scene y reduce la frecuencia/cantidad de partículas en playing-scene para subir FPS
+ 3 files changed, 122 insertions(+), 99 deletions(-)
+
+```
+
+---
+
+```bash
+cd /Users/jmarti/Development/personal/triangulame && git push origin main
+```
+
+```
+To github.com:heedrox/triangulame.git
+   d94febd..f880c30  main -> main
+
+```
+
+---
+
+He hecho commit y push.
+
+Mensaje:
+feat: mejora el rendimiento en móvil usando TileSprite para el grid y un pool de partículas en players-scene y reduce la frecuencia/cantidad de partículas en playing-scene para subir FPS
+
+- Cambios subidos a `origin/main`.
+
+---
+
+_**User (2025-09-24 09:29Z)**_
+
+lo malo de la solucion que hemos implenentado es que el fondo como ves tiene unos cuadros muy finos; esos cuadros tambien se desplazan y queda raro, la idea es que no se desplacen (s´se desplazan las particulas que son como triangulos)
+
+--- Cursor Command: commit.md ---
+Haz commit y push directamente.
+
+Para obtener el mensaje, revisa las diferencias existentes en los ficheros (puedes hacer un git diff --cached, tras hacer add de todos los ficheros), y complementa lo que se ha hecho (el what) con la intención (el why) a través de la conversación actual.
+
+El mensaje debe ser la continuación de la siguiente frase: "este commit hace que...", y usa verbo presente, por ejemplo "el asesino puede lanzar bombas"; pero no debe incluir la frase "este commit hace que".
+
+Solo usa una frase. 
+
+Utiliza también "feat:" o "bugfix" o "refactor" al principio del mensaje.
+
+El commit debe ser una única linea.
+--- End Command ---
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Adjusting tile movement**
+
+I need to modify the grid TileSprite so that its tilePosition stays still. Currently, we’ve added movement in different scenes like welcome, ending, and players. The goal is to keep the background grid static while only allowing particles to move. 
+
+So, I’ll change the update functions to eliminate the shifting of tilePosition across scenes. I’ll revise the welcome, ending, players, and playing scene updates to ensure the grid doesn’t move at all for consistency.
+**Preparing for commits**
+
+I’ll apply the necessary patches and then get ready to commit. I need a concise message in Spanish, starting with either "bugfix" or "feat." Since it's a behavior change that improves visuals, it might fit better as a bugfix. Something like, "quita desplazamiento del grid para que no parezca raro" could work well. After that, I'll go ahead and commit and push the changes. Let's make sure everything is smooth!</details></think>
+
+---
+
+Voy a detener el desplazamiento del grid en todas las escenas (`welcome`, `ending`, `players`, `playing`) manteniendo solo el movimiento de partículas. Luego haré commit y push con un mensaje adecuado.
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+

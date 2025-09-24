@@ -660,10 +660,7 @@ class PlayingScene extends Phaser.Scene {
   }
 
   update () {
-    if (this.grid) {
-      this.grid.tilePositionX += 0.15;
-      this.grid.tilePositionY += 0.08;
-    }
+    // Fondo fijo: no mover grid
   }
 }
 
