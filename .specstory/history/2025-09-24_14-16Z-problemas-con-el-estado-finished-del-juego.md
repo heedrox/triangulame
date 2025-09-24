@@ -474,3 +474,116 @@ He hecho commit y push a main.
 
 ---
 
+_**User (2025-09-24 09:29Z)**_
+
+mmh, ahora alguien puede unirse pero pasan dos cosas:
+- La escena anterior queda y entonces solapsan (veo el ranking y la de conectarse jugadores)
+- La pantall ade ranking parpadea cada 2-3 segundos, que creo qu ees cuando se vuelve a actualizar, no sé sit iene mucho sentido. Solo deja de parpadear cuando alguien vuelve a la pantalla de jugadores.
+
+No sé si la 2 tiene mucho sentido; puedes arreglar la 1 y entender que´ podria pasar con la 2?
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Analyzing game update issues**
+
+I’m thinking about how periodic updates of players could lead to issues, like possibly restarting scenes when the game transitions to the end. If the `endGame` doesn’t stop the watch and just starts the scene, I wonder if multiple identical updates could trigger it repeatedly. With the current conditions, it's likely that every update could call `endGame` again, which is causing that annoying flicker. I need to figure out how to avoid these repeated calls when the game is already finished.
+**Improving endGame functionality**
+
+I'm considering an option to track a flag, like `hasEnded`, to prevent calling `endGame` when both `previousStatus` and `this.game.status` are `FINISHED`. Instead, I could call it only when transitioning into `FINISHED` or the first time after joining. Adding a guard to check if we haven’t already shown the ending makes sense, too. I'll set `this.hasShownEnding = false;` in the constructor and update it in `endGame`. I also need to ensure we stop player keep-alive when ending the game.
+**Implementing unkeepPlayerAlive**
+
+I need to call `unkeepPlayerAlive` when showing the end after initially finishing. I could do this in `endGame` or when entering the finished path. Adding it to `endGame` before switching scenes seems smart. Existing tests expect one call from the playing to finished path, so adding extra calls shouldn’t break anything. I can access the repository through `this.repository` and use it to call `unkeepPlayerAlive`. I also need to modify the `phaser-ui.index` to stop overlapping scenes. Time to implement these changes and run tests!</details></think>
+
+---
+
+Voy a arreglar el solapamiento deteniendo también `PLAYERS_SCENE` al entrar en la pantalla final, y evitaré que la EndingScene se reinicie cada vez que llegan actualizaciones en FINISHED guardando un flag para mostrarla solo una vez; también cortaré el keep-alive cuando se muestre el final para evitar actualizaciones periódicas. Ahora aplico los cambios y corro los tests.
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+```bash
+npm test --silent | cat
+```
+
+```
+PASS src/domain/combo-check/combo-check.spec.js
+PASS src/domain/rectangle/rectangle.spec.js
+PASS src/domain/game/game.spec.js
+PASS src/domain/rectangles-creator/rectangles-creator.spec.js
+PASS src/domain/player/player.spec.js
+PASS src/domain/game-engine/game-engine-10-starts.spec.js
+PASS src/domain/game-engine/game-engine-30-waits-players.spec.js
+PASS src/domain/game-engine/game-engine-43-handles-clicks.spec.js
+PASS src/domain/game-engine/game-engine-20-asks-name.spec.js
+PASS src/domain/game-engine/game-engine-40-plays-game.spec.js
+PASS src/domain/game-engine/game-engine-50-ends-game.spec.js
+--------------------------------|---------|----------|---------|---------|-----------------------
+File                            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s     
+--------------------------------|---------|----------|---------|---------|-----------------------
+All files                       |   96.75 |    97.04 |   93.65 |   96.75 |                       
+ src/domain                     |     100 |      100 |     100 |     100 |                       
+  game-status.js                |     100 |      100 |     100 |     100 |                       
+ src/domain/combo-check         |     100 |      100 |     100 |     100 |                       
+  combo-check.js                |     100 |      100 |     100 |     100 |                       
+ src/domain/game                |   93.61 |    95.45 |     100 |   93.61 |                       
+  game.js                       |   93.61 |    95.45 |     100 |   93.61 | 37-39                 
+ src/domain/game-engine         |   94.64 |    97.36 |   88.88 |   94.64 |                       
+  game-engine.js                |   94.64 |    97.36 |   88.88 |   94.64 | 15-16,144-147,161-163 
+ src/domain/player              |     100 |      100 |     100 |     100 |                       
+  player.js                     |     100 |      100 |     100 |     100 |                       
+ src/domain/point               |     100 |      100 |     100 |     100 |                       
+  point.js                      |     100 |      100 |     100 |     100 |                       
+ src/domain/rectangle           |   98.94 |    96.55 |     100 |   98.94 |                       
+  rectangle.js                  |   98.94 |    96.55 |     100 |   98.94 | 41,132                
+ src/domain/rectangles-creator  |   97.26 |    95.83 |     100 |   97.26 |                       
+  rectangles-creator.js         |   97.26 |    95.83 |     100 |   97.26 | 58-59                 
+ src/lib                        |     100 |      100 |     100 |     100 |                       
+  shuffle-array.js              |     100 |      100 |     100 |     100 |                       
+ src/lib/random-provider        |     100 |      100 |     100 |     100 |                       
+  default-operation-provider.js |     100 |      100 |     100 |     100 |                       
+ tests                          |   92.15 |      100 |      75 |   92.15 |                       
+  local-storage-mock.js         |    82.6 |      100 |      60 |    82.6 | 7-8,19-20             
+  mock-repository.js            |     100 |      100 |     100 |     100 |                       
+  mock-ui.js                    |     100 |      100 |     100 |     100 |                       
+--------------------------------|---------|----------|---------|---------|-----------------------
+
+Test Suites: 11 passed, 11 total
+Tests:       1 todo, 80 passed, 81 total
+Snapshots:   0 total
+Time:        3.013 s
+Ran all test suites.
+
+```
+
+---
+
+- Arreglé el solapamiento: ahora al mostrar la pantalla final también se detiene `PLAYERS_SCENE`, así no quedan escenas visibles superpuestas.
+- Para el parpadeo: añadí un flag `endingShown` en `GameEngine` para mostrar la pantalla final solo una vez si entras a una sala ya en FINISHED. También se resetea el flag al volver a jugar. Esto debería evitar reinicios/reentradas de la `EndingScene` cuando llegan actualizaciones periódicas de la sala.
+
+He ejecutado los tests y todo sigue pasando.
+
+¿Probamos en local para confirmar que ya no se solapa y si el parpadeo desaparece?
+
+---
+

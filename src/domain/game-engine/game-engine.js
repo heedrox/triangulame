@@ -25,6 +25,7 @@ class GameEngine {
     this.localDb = localDb;
     this.game = null;
     this.currentGoal = 1;
+    this.endingShown = false;
   }
 
   async start () {
@@ -90,14 +91,15 @@ class GameEngine {
       && newGame.status === GAME_STATUS.PLAYING) {
       this.playGame();
     } else if (newGame.status === GAME_STATUS.PLAYING) {
+      this.endingShown = false;
       this.ui.updateGameDuringPlay({
         currentGoals: {
           ...this.game.currentGoals,
         },
       });
     } else if (newGame.status === GAME_STATUS.FINISHED && previousStatus !== GAME_STATUS.PLAYING) {
-      // If we join a room already finished, go directly to ending
-      this.endGame();
+      // If we join a room already finished, go directly to ending once
+      if (!this.endingShown) this.endGame();
     } else if (this.game.canBeJoined()) {
       const alivePlayers = removePlayersAgoSecs(this.player.id, newGame.players, 10);
       this.ui.updatePlayers(alivePlayers, this.player.id);
@@ -145,8 +147,10 @@ class GameEngine {
   }
 
   endGame () {
+    this.endingShown = true;
     this.ui.endGame(this.game, {
       onRestart: async () => {
+        this.endingShown = false;
         await this.repository.game.update(this.game.id, {
           status: GAME_STATUS.WAITING_FOR_PLAYERS,
         });
