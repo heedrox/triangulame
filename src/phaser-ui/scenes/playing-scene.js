@@ -14,6 +14,18 @@ const INGAME_THEME = 'INGAME_THEME';
 const COMBO_THEME = 'COMBO_THEME';
 const COMBO_SECS = 1.5;
 
+// Neon palette (cian, magenta, lima, amarillo)
+const NEON_PALETTE = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
+
+const djb2 = (str) => {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i); // hash * 33 + c
+    hash &= 0xffffffff; // force 32-bit
+  }
+  return Math.abs(hash);
+};
+
 const getTextPosition = (r, xf, yf) => {
   const type = r.getType();
 
@@ -116,6 +128,9 @@ class PlayingScene extends Phaser.Scene {
 
     this.totalGoal = this.rectangles.length;
 
+    // Deterministic offset based on total rectangles
+    this.neonOffset = djb2(String(this.totalGoal)) % NEON_PALETTE.length;
+
     this.polygons = this.rectangles.map((r) => new Phaser.Geom.Polygon([
       r.p0.x * this.xFactor, r.p0.y * this.yFactor,
       r.p1.x * this.xFactor, r.p1.y * this.yFactor,
@@ -147,6 +162,8 @@ class PlayingScene extends Phaser.Scene {
 
   create () {
     this.loadingText.destroy();
+    this.addCyberBackground();
+    this.addFloatingParticles();
     this.graphics = this.buildGraphics();
 
     this.paintScreen();
@@ -156,6 +173,105 @@ class PlayingScene extends Phaser.Scene {
     });
 
     this.playMusic();
+  }
+
+  addCyberBackground () {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    // Create grid texture (50x50 px with 1px lines)
+    const gridSize = 50;
+    const gridGfx = this.make.graphics({ x: 0, y: 0, add: false });
+    gridGfx.fillStyle(0x0f0f23, 1);
+    gridGfx.fillRect(0, 0, gridSize, gridSize);
+    gridGfx.lineStyle(1, 0x00f5ff, 0.12);
+    // horizontal line
+    gridGfx.beginPath();
+    gridGfx.moveTo(0, 0.5);
+    gridGfx.lineTo(gridSize, 0.5);
+    gridGfx.strokePath();
+    // vertical line
+    gridGfx.beginPath();
+    gridGfx.moveTo(0.5, 0);
+    gridGfx.lineTo(0.5, gridSize);
+    gridGfx.strokePath();
+    gridGfx.generateTexture('neon-grid', gridSize, gridSize);
+    gridGfx.destroy();
+
+    // TileSprite grid
+    this.grid = this.add.tileSprite(0, 0, w, h, 'neon-grid').setOrigin(0, 0);
+    this.grid.setScrollFactor(0, 0);
+    this.grid.setDepth(-10);
+
+    // Radial/linear background approximation using semi-transparent overlays
+    const bg = this.add.graphics();
+    bg.fillStyle(0x1a1a2e, 1);
+    bg.fillRect(0, 0, w, h);
+    bg.fillStyle(0x00f5ff, 0.05);
+    bg.fillRect(0, 0, w * 0.6, h * 0.6);
+    bg.fillStyle(0xff0080, 0.05);
+    bg.fillRect(w * 0.4, 0, w * 0.6, h * 0.4);
+    bg.fillStyle(0x39ff14, 0.05);
+    bg.fillRect(0, h * 0.5, w * 0.5, h * 0.5);
+    bg.setDepth(-9);
+
+    // Vignette borders
+    const vignette = this.add.graphics();
+    const edge = Math.max(20, Math.round(Math.min(w, h) * 0.035));
+    vignette.fillStyle(0x000000, 0.35);
+    // top
+    vignette.fillRect(0, 0, w, edge);
+    // bottom
+    vignette.fillRect(0, h - edge, w, edge);
+    // left
+    vignette.fillRect(0, 0, edge, h);
+    // right
+    vignette.fillRect(w - edge, 0, edge, h);
+    vignette.setDepth(-8);
+  }
+
+  addFloatingParticles () {
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+
+    // Create tiny white dot texture if not exists
+    if (!this.textures.exists('particle-dot')) {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(2, 2, 2);
+      g.generateTexture('particle-dot', 4, 4);
+      g.destroy();
+    }
+
+    const colors = [0x00f5ff, 0xff0080, 0x39ff14, 0xffff00];
+    const spawnOne = () => {
+      const x = Math.random() * w;
+      const tint = colors[(Math.random() * colors.length) | 0];
+      const sprite = this.add.image(x, -10, 'particle-dot');
+      sprite.setDepth(-5);
+      sprite.setTint(tint);
+      sprite.setAlpha(0.5);
+      const driftX = (Math.random() - 0.5) * 20;
+      const duration = 5000 + Math.random() * 3000;
+      this.tweens.add({
+        targets: sprite,
+        x: x + driftX,
+        y: h + 10,
+        alpha: 0,
+        duration,
+        ease: 'Sine.easeInOut',
+        onComplete: () => sprite.destroy(),
+      });
+    };
+
+    this.particleTimer = this.time.addEvent({
+      delay: 200,
+      loop: true,
+      callback: () => {
+        const count = 1 + (Math.random() < 0.3 ? 1 : 0);
+        for (let i = 0; i < count; i++) spawnOne();
+      },
+    });
   }
 
   showWaitingScreen () {
@@ -184,6 +300,10 @@ class PlayingScene extends Phaser.Scene {
       if (this.music) {
         this.music.stop();
       }
+      if (this.particleTimer) {
+        this.particleTimer.remove(false);
+        this.particleTimer = null;
+      }
     }, this);
   }
 
@@ -206,6 +326,24 @@ class PlayingScene extends Phaser.Scene {
   }
 
   addRectangle (rectangle) {
+    // Compute neon color deterministically per rectangle id
+    const colorIndex = (rectangle.id + this.neonOffset) % NEON_PALETTE.length;
+    const neonColor = NEON_PALETTE[colorIndex];
+
+    // Glow pass (thicker, translucent)
+    const glowWidth = Math.round(this.cameras.main.width / 70);
+    this.graphics.lineStyle(glowWidth, neonColor, 0.35);
+    this.graphics.beginPath();
+    this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p3.x * this.xFactor, rectangle.p3.y * this.yFactor);
+    this.graphics.lineTo(rectangle.p2.x * this.xFactor, rectangle.p2.y * this.yFactor);
+    this.graphics.closePath();
+    this.graphics.strokePath();
+
+    // Core white pass (thin, sharp)
+    const coreWidth = Math.round(this.cameras.main.width / 120);
+    this.graphics.lineStyle(coreWidth, 0xffffff, 1);
     this.graphics.beginPath();
     this.graphics.moveTo(rectangle.p0.x * this.xFactor, rectangle.p0.y * this.yFactor);
     this.graphics.lineTo(rectangle.p1.x * this.xFactor, rectangle.p1.y * this.yFactor);
@@ -217,12 +355,18 @@ class PlayingScene extends Phaser.Scene {
 
   addTextToRectangle (rectangle) {
     const textPosition = getTextPosition(rectangle, this.xFactor, this.yFactor);
+    const colorIndex = (rectangle.id + this.neonOffset) % NEON_PALETTE.length;
+    const neonColor = NEON_PALETTE[colorIndex];
     const text = this.add.text(textPosition.x, textPosition.y, rectangle.id, {
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, monospace',
       fontSize: '25vw',
-      color: '#000000',
+      color: '#ffffff',
+      stroke: `#${neonColor.toString(16).padStart(6, '0')}`,
+      strokeThickness: 10,
+      align: 'center',
     });
     text.setOrigin(0.5);
+    text.setShadow(0, 0, '#ffffff', 6, false, true);
     const textStretch = getStretch(text.getBounds(), rectangle, this.xFactor, this.yFactor);
     text.setScale(textStretch.x, textStretch.y);
     return text;
@@ -327,13 +471,20 @@ class PlayingScene extends Phaser.Scene {
     const splitSizeX = w * 0.25;
     const leftX = w - splitSizeX;
     const topY = h * (0.925);
-    this.graphics.fillStyle(this.currentColor(), 1);
+    this.graphics.fillStyle(this.currentColor(), 0.85);
     this.graphics.fillRect(leftX, topY, splitSizeX - 1 * VH, h * 0.075 - 2 * VH);
+    // subtle glow border
+    this.graphics.lineStyle(Math.round(this.cameras.main.width / 200), 0x00f5ff, 0.5);
+    this.graphics.strokeRect(leftX, topY, splitSizeX - 1 * VH, h * 0.075 - 2 * VH);
     this.goalText = this.add.text(w - splitSizeX / 2, h * (0.955), this.goalId, {
-      fontFamily: 'Arial',
+      fontFamily: 'Orbitron, monospace',
       fontSize: splitSizeX * 0.2,
-      color: '#000000',
-    }).setShadow(2, 2, '#ffffff', 2, false, true);
+      color: '#ffffff',
+      stroke: '#00f5ff',
+      strokeThickness: 6,
+      align: 'center',
+    });
+    this.goalText.setShadow(0, 0, '#ffffff', 6, false, true);
     this.goalText.setOrigin(0.5);
     this.add.tween({
       targets: [this.goalText],
@@ -409,13 +560,15 @@ class PlayingScene extends Phaser.Scene {
 
   showCombo (number) {
     const comboText = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, `COMBO\nx${number}`, {
-      font: '4vh monospace',
-      fill: '#000000',
+      fontFamily: 'Orbitron, monospace',
+      fontSize: '6vh',
+      color: '#ffffff',
       align: 'center',
-      stroke: '#ffffff',
+      stroke: '#ff0080',
       strokeThickness: 10,
     });
     comboText.setOrigin(0.5);
+    comboText.setShadow(0, 0, '#ffffff', 10, false, true);
     this.add.tween({
       targets: comboText,
       alpha: 0,
@@ -424,10 +577,18 @@ class PlayingScene extends Phaser.Scene {
       duration: 1500,
       ease: Phaser.Math.Easing.Quadratic.Out,
     });
+    this.cameras.main.shake(120, 0.002);
     this.sound.add(COMBO_THEME, {
       volume: 1,
       loop: false,
     }).play();
+  }
+
+  update () {
+    if (this.grid) {
+      this.grid.tilePositionX += 0.15;
+      this.grid.tilePositionY += 0.08;
+    }
   }
 }
 
