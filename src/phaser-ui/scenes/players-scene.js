@@ -697,14 +697,8 @@ class PlayersScene extends Phaser.Scene {
         if (warnDiv) {
           warnDiv.textContent = this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name });
         }
-      } else if (isSinglePlayer) {
-        // Show single player mode message when only one player
-        const warnDiv = this.warnTextElement.node.querySelector('#cyberWarnText');
-        if (warnDiv) {
-          warnDiv.textContent = this.i18n.get('single-player-mode');
-        }
-        this.warnTextElement.setVisible(true);
       }
+      // Removed single player mode message - no warning shown in single player mode
     }
   }
 
