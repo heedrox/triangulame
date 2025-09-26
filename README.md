@@ -7,14 +7,14 @@ Triangles es un juego competitivo donde los jugadores deben hacer clic en formas
 ## 🎮 Cómo se Juega
 
 1. **Únete a una sala** con tu nombre y código de sala
-2. **Espera a otros jugadores** (multijugador en tiempo real)
+2. **Juega solo o espera a otros jugadores** (modo solitario o multijugador en tiempo real)
 3. **Encuentra y haz clic** en las formas numeradas del 1 al N en orden
 4. **Compite por el mejor tiempo** - el jugador más rápido gana
 5. **Sistema de combos** - haz clic rápido (< 1.5s) para activar combos de 3+ números
 
 ## ✨ Características
 
-- **Multijugador en tiempo real** con Firebase
+- **Modo solitario y multijugador** en tiempo real con Firebase
 - **Generación procedural** de tableros únicos cada partida
 - **Sistema de combos** que recompensa la velocidad
 - **Múltiples rondas** con dificultad creciente
@@ -33,6 +33,7 @@ Construido con tecnologías web modernas para máximo rendimiento:
 
 ## 🚀 Ideas Futuras
 - ✅ Share easily games [DONE]
+- ✅ Single-player mode [DONE]
 - 📊 Show progress of other users  
 - ❌ Penalization if users touch wrong number
 - 🎯 Combos provide you things to fail
