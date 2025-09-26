@@ -681,8 +681,12 @@ class PlayersScene extends Phaser.Scene {
 
   updateStartOrWarnTextVisibility(myId) {
     if (this.warnTextElement && this.startButtonElement) {
-      const wVisible = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id !== myId;
-      const bVisible = this.sortedPlayers.length >= 2 && this.sortedPlayers[0].id === myId;
+      const isMainPlayer = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id === myId;
+      const isWaitingForMainPlayer = this.sortedPlayers.length >= 1 && this.sortedPlayers[0].id !== myId;
+      const isSinglePlayer = this.sortedPlayers.length === 1 && isMainPlayer;
+      
+      const wVisible = isWaitingForMainPlayer;
+      const bVisible = isMainPlayer;
       
       this.warnTextElement.setVisible(wVisible);
       this.startButtonElement.setVisible(bVisible);
@@ -693,6 +697,13 @@ class PlayersScene extends Phaser.Scene {
         if (warnDiv) {
           warnDiv.textContent = this.i18n.get('start-only-main-player', { mainPlayer: this.getMainPlayer().name });
         }
+      } else if (isSinglePlayer) {
+        // Show single player mode message when only one player
+        const warnDiv = this.warnTextElement.node.querySelector('#cyberWarnText');
+        if (warnDiv) {
+          warnDiv.textContent = this.i18n.get('single-player-mode');
+        }
+        this.warnTextElement.setVisible(true);
       }
     }
   }
